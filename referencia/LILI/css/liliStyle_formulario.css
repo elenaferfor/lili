@@ -1,0 +1,229 @@
+/* RESULTADOS BÚSQUEDA */
+.tituloAnadir{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.tituloAnadir a{
+    text-decoration: none;
+    background-color: var(--light_blue_second);
+    color: var(--dark_blue);
+    padding: .3rem 1.2rem;
+    border-radius: 10rem;
+    font-family: 'Jost', sans-serif;
+    font-weight: bold;
+    text-align: center;
+    transition: all 200ms ease-in-out;
+}
+
+.tituloAnadir a:hover{
+    background-color: var(--dark_blue);
+    color: var(--white);
+}
+
+.tituloAnadir a:active{
+    background-color: var(--green);
+    color: var(--white);
+}
+
+.resultadosBusqueda{
+    padding: 0 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem 0;
+    margin-bottom: 3rem;
+}
+
+.resultadosBusqueda > h2{
+    font-weight: normal;
+    font-size: 1.2rem;
+}
+
+.resultadosBusqueda > h2 > span{
+    font-weight: bold;
+}
+
+.libroResultadosBusqueda{
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 1rem 2rem;
+    flex-basis: content;
+    flex-wrap: wrap;
+}
+
+.libroResultadosBusqueda .libroBusqueda{
+    /*width: 50%; height: 201px;*/
+    width: auto;
+    height: auto;
+    display: flex;
+    gap: 0 2rem;
+    align-items: center;
+    flex: 0.5 .5 auto;
+    flex-wrap: wrap;
+}
+
+.libroResultadosBusqueda .libroBusqueda .libro{
+    width: 133px;
+    height: 201px;
+}
+
+.libroResultadosBusqueda .libroBusqueda .textoLibroBusqueda{
+    display: flex;
+    flex-direction: column;
+    font-size: .8rem;
+    width: max-content;
+}
+
+.libroResultadosBusqueda .libroBusqueda .textoLibroBusqueda p:nth-child(2){
+    margin-bottom: 1rem;
+}
+
+.libroResultadosBusqueda .libroBusqueda .textoLibroBusqueda span{
+    font-weight: bold;
+}
+
+/* FORMULARIO */
+#formularioAnadir{
+    padding: .5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    color: var(--dark_blue);
+}
+
+#formularioAnadir .grid_formulario{
+    display: grid;
+    justify-content: left;
+    grid-template-columns: 1fr 1fr .5fr;
+    grid-template-areas:
+    'isbn isbn isbn'
+    'titulo titulo titulo'
+    'autor autor autor'
+    'editorial formato .'
+    'pub_original pub_edicion .'
+    'portada portada portada';
+    gap: 1rem 1.2rem;
+}
+
+.grid_formulario > .isbn{ grid-area: isbn; }
+.grid_formulario > .titulo{ grid-area: titulo; }
+.grid_formulario > .autor{ grid-area: autor; }
+.grid_formulario > .editorial{ grid-area: editorial; }
+.grid_formulario > .formato{ grid-area: formato; }
+.grid_formulario > .pub_original{ grid-area: pub_original; }
+.grid_formulario > .pub_edicion{ grid-area: pub_edicion; }
+.grid_formulario > .portada{ grid-area: portada; }
+
+#formularioAnadir label{
+    display: block;
+    font-size: .9rem;
+    margin-bottom: .1rem;
+}
+
+#formularioAnadir input:not(.boton_enviar){
+    width: 100%;
+    height: 1.8rem;
+    border-radius: .4rem;
+    border: .8px solid var(--dark_blue);
+    padding: .4rem;
+    background-color: var(--white);
+
+    font-family: 'Epunda Sans', sans-serif;
+    color: var(--dark_blue);
+}
+
+#formularioAnadir input:not(.boton_enviar):focus, #formularioAnadir select:focus{
+    outline: none;
+    box-shadow: 0 0 10px var(--light_blue_second);
+}
+
+#formularioAnadir select{
+    color: var(--dark_blue);
+    width: 100%;
+    height: 1.8rem;
+    border-radius: .4rem;
+    border: .8px solid var(--dark_blue);
+    padding: .1rem .3rem;
+    font-family: 'Epunda Sans', sans-serif;
+    appearance: none;
+    pointer-events: auto;
+    cursor: pointer;
+}
+
+#formularioAnadir .formato > span{
+    position: relative;
+}
+
+#formularioAnadir .formato > span > i{
+    position: absolute;
+    top: 0;
+    right: 0;
+    pointer-events: none;
+}
+
+/* Si averiguo cómo, faltaría cambiar color del icono del calendario
+form .pub_original > input[type="date"]{} */
+
+#formularioAnadir .portada > input{
+    position: relative;
+    padding: auto .1rem;
+}
+
+#formularioAnadir .portada > input::file-selector-button{
+    font-family: ' Jost', sans-serif;
+    font-weight: 600;
+    font-size: .7rem;
+    background-color: var(--dark_blue);
+    color: var(--white);
+    border: none;
+    border-radius: .4rem;
+
+    height: 90%;
+    padding: 0 .7rem;
+
+    position: absolute;
+    right: -.15rem;
+    top: .1rem;
+    cursor: pointer;
+}
+
+#formularioAnadir .portada > input::file-selector-button:hover{
+    background-color: var(--light_blue_second);
+}
+
+#formularioAnadir .portada > input::file-selector-button:active{
+    background-color: var(--blue_main);
+}
+
+#formularioAnadir .boton_enviar, .libroResultadosBusqueda .anadirResultadosBusqueda{
+    border: none;
+    padding: .3rem 1.2rem;
+    border-radius: 10rem;
+    background-color: var(--green);
+    color: var(--dark_blue);
+    cursor: pointer;
+
+    font-family: 'Jost', sans-serif;
+    font-weight: bold;
+
+    display: flex;
+    align-items: center;
+    gap: .2rem;
+
+    transition: all 200ms ease-in-out;
+}
+
+#formularioAnadir .boton_enviar{
+    align-self: end;
+}
+
+#formularioAnadir .boton_enviar:hover, .libroResultadosBusqueda .anadirResultadosBusqueda:hover{
+    background-color: var(--blue_grey_second);
+}
+
+#formularioAnadir .boton_enviar:active, .libroResultadosBusqueda .anadirResultadosBusqueda:active{
+    background-color: var(--dark_blue);
+    color: var(--white);
+}

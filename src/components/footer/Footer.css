@@ -1,0 +1,18 @@
+.footer{
+    margin-left: 18rem;
+    text-align: center;
+    font-size: .7rem;
+    padding: 5rem 1rem 2rem 1rem;
+    color: var(--dark_blue);
+}
+
+.footer a{
+    color: var(--dark_blue);
+    text-decoration: underline;
+}
+
+.cc img{
+    max-width: 1em;
+    max-height:1em;
+    margin-left: .2em;
+}

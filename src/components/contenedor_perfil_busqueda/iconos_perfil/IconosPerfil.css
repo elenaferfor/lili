@@ -1,0 +1,68 @@
+.iconos_perfil{
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 0 .8rem;
+    margin-bottom: .8rem;
+}
+
+.iconos_perfil > .menu_burger{
+    display: none;
+}
+
+.iconos_perfil > .boton_perfil{
+    display: flex;
+    justify-content: space-between;
+    padding: .4rem .9rem;
+    gap: 0 .4rem;
+}
+
+.boton_notificaciones{
+    text-decoration: none;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.boton_notificaciones{
+    color: var(--dark_blue);
+    transition: all 200ms ease-in-out;
+}
+
+.boton_notificaciones:hover{
+    color: var(--blue_grey_second);
+}
+
+.boton_notificaciones:active{
+    color: var(--green);
+}
+
+.boton_perfil{
+    font-family: "Jost", sans-serif;;
+    font-size: 1rem;
+    font-weight: bold;
+
+    display: flex;
+    align-items: center;
+    border-radius: 5rem;
+    padding: .2rem .8rem;
+    background-color: var(--dark_blue);
+    color: var(--white);
+    text-decoration: none;
+    transition: all 200ms ease-in-out;
+}
+
+.boton_perfil.perfilActivo{
+    background-color: var(--green);
+    color: var(--dark_blue);
+}
+
+.boton_perfil:hover{
+    background-color: var(--blue_grey_second);
+    color: var(--dark_blue);
+}
+
+.boton_perfil:active{
+    background-color: var(--blue_main);
+    color: var(--dark_blue);
+}

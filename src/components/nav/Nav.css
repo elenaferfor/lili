@@ -1,0 +1,50 @@
+nav{
+    width: fit-content;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+}
+
+nav a{
+    font-size: 1.2rem;
+    font-weight: bold;
+
+    text-decoration: none;
+    color: #343B57;
+    background-color: var(--blue_main);
+
+    width: 13rem;
+    margin-bottom: .4rem;
+    padding: .6rem .8rem;
+    border-radius: .5rem;
+}
+
+nav a.submenu{
+    background-color: var(--light_blue_second);
+    width: 10rem;
+}
+
+nav a, nav a.submenu{
+    transition: all 200ms ease-in-out;
+}
+
+nav a.activo{
+    background-color: var(--green);
+    color: var(--dark_blue);
+}
+
+nav a:hover:not(.activo){
+    background-color: var(--blue_grey_second);
+    color: var(--dark_blue);
+    transform: translateX(8%);
+}
+
+nav a:active:not(.activo){
+    background-color: var(--white);
+}
+
+nav a:active{
+    background-color: var(--white);
+}

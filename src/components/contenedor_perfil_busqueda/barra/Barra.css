@@ -1,0 +1,47 @@
+.barra form{
+    position: relative;
+    /*z-index: 2;*/
+}
+
+.barra input.f_barra{
+    border: none;
+    width: 100%;
+    box-shadow: 0 0 10px rgb(0, 0, 0, 0.4);
+    border-radius: 5rem;
+    height: 2.2rem;
+    padding: 1rem;
+    font-family: "Epunda Sans", sans-serif;
+    background-color: var(--white);
+}
+
+.barra input.f_barra:focus{
+    outline: none;
+}
+
+.barra .lupa{
+    position: absolute;
+    right: 0;
+    width: 2rem;
+    height: 2rem;
+    color: var(--white);
+    background-color: var(--dark_blue);
+
+    margin: .1rem;
+    border: none;
+    border-radius: 100%;
+    padding: .2rem;
+    cursor: pointer;
+    transition: all 200ms ease-in-out;
+}
+
+.barra .lupa:hover{
+    background-color: var(--light_blue_second);
+}
+
+.barra .lupa:active{
+    background-color: var(--blue_main);
+}
+
+.barra button.lupa > i{
+    color: inherit;
+}

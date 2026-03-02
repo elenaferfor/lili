@@ -1,0 +1,64 @@
+/* CARRUSEL */
+.carruselLibros, .sinCarrusel{
+    display: grid;
+    gap: .5rem 0;
+    overflow: hidden;
+    grid-auto-flow: column;
+    justify-content: start;
+    justify-items: stretch;
+    grid-auto-columns: 160px;
+}
+
+.sinCarrusel{
+    justify-content: start;
+}
+
+.carruselLibrosCategorias{
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    justify-content: center;
+    gap: .5rem 0;
+}
+
+
+/* BOTONES CARRUSEL */
+.botonesCarruselLibros{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: .5rem;
+    color: var(--blue_grey_second);
+}
+
+.botonesCarruselLibros button{
+    border: none;
+    color: var(--blue_grey_second);
+    width: 0;
+    height: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: unset;
+}
+
+.botonesCarruselLibros .inactive{
+    pointer-events: none;
+}
+
+.botonesCarruselLibros .arrow:hover{
+    border-radius: 100%;
+    background-color: var(--light_blue_second);
+}
+
+.botonesCarruselLibros .arrow:active{
+    background-color: var(--dark_blue);
+    color: var(--white);
+}
+
+.botonesCarruselLibros .dot{
+    font-size: .5rem;
+}
+
+.botonesCarruselLibros .activo{
+    color: var(--dark_blue);
+}

@@ -1,0 +1,57 @@
+/* ICONOS */
+.material-symbols-rounded{
+  font-variation-settings:
+          'FILL' 0,
+          'wght' 400,
+          'GRAD' 0,
+          'opsz' 24
+}
+
+.icon_fill{
+  font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24
+}
+
+/* COLORES */
+:root{
+  --blue_main: #aecaf5;
+  --dark_blue: #343b57;
+  --green: #e3ec8b;
+
+  --light_blue_second: #d0e3f5;
+  --blue_grey_second: #9fb1cf;
+  --white: #fffdfa;
+
+  --black: #000000;
+  --orange: #ffd771;
+  --red: #ff9e9f;
+  --pink: #f986ae;
+}
+
+.blue_main{color: var(--blue_main);}
+.dark_blue{color: var(--dark_blue);}
+.green{color: var(--green);}
+.light_blue_second{color: var(--light_blue_second);}
+.blue_grey_second{color: var(--blue_grey_second);}
+.white{color: var(--white);}
+.black{color: var(--black);}
+.orange{color: var(--orange);}
+.red{color: var(--red);}
+.pink{color: var(--pink);}
+
+/* ESTILOS GLOBALES */
+*{
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+
+body{
+  font-family: "Epunda Sans", sans-serif;
+  font-optical-sizing: auto;
+  font-style: normal;
+  background-color: var(--white);
+}
+
+#root{
+  width: 100%;
+}

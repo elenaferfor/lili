@@ -1,0 +1,125 @@
+.libro{
+    width: 160px;
+    height: 300px;
+    padding: 10px 0 10px 0;
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    position: relative;
+
+    transition: all 200ms ease-in-out;
+}
+
+.oculto{
+    display: none;
+}
+
+.serie, .grupoSerie{
+    border: 2px solid var(--blue_main);
+}
+
+.serie.mostrar{
+    background-color: var(--blue_main);
+}
+
+.serie:hover{
+    background-color: var(--blue_main);
+}
+
+.libro > .portada{
+    width: 133px;
+    height: 201px;
+    overflow: hidden;
+    position: relative;
+}
+
+.libro > .portada > img{
+    width: 100%;
+    height: auto;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    transition: all 100ms ease-in-out;
+}
+
+.libro > .portada:hover > img{
+    filter: brightness(30%);
+}
+
+.hoverLibro, .hoverSerie{
+    display: none;
+    width: 100%;
+    position: absolute;
+    flex-flow: column nowrap;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+    left: 50%;
+    top: 40%;
+    transform: translatex(-50%);
+}
+
+.hoverLibro > .iconosHoverLibro, .hoverSerie > .iconosHoverSerie{
+    width: 100%;
+    display: flex;
+    flex-wrap: nowrap;
+    justify-content: center;
+    gap: .1rem;
+}
+
+.hoverLibro i, .hoverSerie i{
+    border-radius: 100%;
+    padding: .2rem;
+    cursor: pointer;
+    transition: all 200ms ease-in-out;
+}
+
+.hoverLibro i:hover, .hoverSerie i:hover{
+    background-color: var(--white);
+    color: var(--blue_grey_second);
+}
+
+.hoverLibro i:active, .hoverSerie i:active{
+    background-color: var(--white);
+    color: var(--dark_blue);
+}
+
+.hoverLibro > a, .hoverSerie > button{
+    text-decoration: none;
+    background-color: var(--white);
+    color: var(--dark_blue);
+    font-weight: bold;
+    font-family: "Jost", sans-serif;
+    font-size: .75rem;
+    padding: .6rem 1.8rem;
+    border-radius: 2rem;
+    width: fit-content;
+    border: none;
+    cursor: pointer;
+    transition: all 200ms ease-in-out;
+}
+
+.hoverLibro > a:hover, .hoverSerie > button:hover{
+    background-color: var(--light_blue_second);
+    color: var(--dark_blue);
+}
+
+.hoverLibro > a:active, .hoverSerie > button:active{
+    background-color: var(--green);
+    color: var(--dark_blue);
+}
+
+.libro > .portada:hover > .hoverLibro, .libro > .portada:hover > .hoverSerie{
+    display: flex;
+}
+
+.libro > a{
+    color: var(--dark_blue);
+    text-decoration: none;
+    font-weight: 600;
+    font-size: .9rem;
+    text-align: center;
+    padding: 0 .25rem;
+}
