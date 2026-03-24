@@ -1,5 +1,5 @@
 /* CARRUSEL */
-.carruselLibros, .sinCarrusel{
+.sinCarrusel{ /* carruselLibros pasa a embla__container */
     display: grid;
     gap: .5rem 0;
     overflow: hidden;
@@ -7,10 +7,6 @@
     justify-content: start;
     justify-items: stretch;
     grid-auto-columns: 160px;
-}
-
-.sinCarrusel{
-    justify-content: start;
 }
 
 .carruselLibrosCategorias{
@@ -30,9 +26,60 @@
     color: var(--blue_grey_second);
 }
 
-.botonesCarruselLibros button{
+.embla .arrow:hover{
+    border-radius: 100%;
+    background-color: var(--light_blue_second);
+}
+
+.embla .arrow:active{
+    background-color: var(--dark_blue);
+    color: var(--white);
+}
+
+.embla__dots .dot{
+    font-size: .5rem;
+}
+
+.botonesCarruselLibros .activo{
+    color: var(--dark_blue);
+}
+
+.controls{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+
+/* EMBLA */
+.embla{
+    --slide-spacing: .5rem;
+    --slide-size: 160px;
+}
+
+.embla__viewport {
+    overflow: hidden;
+}
+
+.embla__container {
+    touch-action: pan-y pinch-zoom;
+    display: flex;
+    gap: .5rem 0;
+    justify-content: start;
+    justify-items: stretch;
+    margin-left: calc(var(--slide-spacing) * -1);
+}
+
+.embla__slide {
+    min-width: 0;
+    flex: 0 0 var(--slide-size);
+    padding-left: var(--slide-spacing);
+}
+
+/* EMBLA - BUTTONS */
+.embla button.embla__prev, .embla button.embla__next{
     border: none;
-    color: var(--blue_grey_second);
+    color: var(--dark_blue);
     width: 0;
     height: 0;
     display: flex;
@@ -41,24 +88,42 @@
     background-color: unset;
 }
 
-.botonesCarruselLibros .inactive{
-    pointer-events: none;
+.embla button.embla__prev:focus, .embla button.embla__next:focus {
+    outline: none;
 }
 
-.botonesCarruselLibros .arrow:hover{
-    border-radius: 100%;
-    background-color: var(--light_blue_second);
+/* EMBLA - DOTS */
+.embla__dots{
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
-.botonesCarruselLibros .arrow:active{
-    background-color: var(--dark_blue);
-    color: var(--white);
+button.embla__dot{
+    display: inline-flex;
+    align-items: center;
 }
 
-.botonesCarruselLibros .dot{
+.embla__dot {
+    background-color: unset;
+    color: var(--blue_grey_second);
     font-size: .5rem;
+    outline: none;
+    border: none;
 }
 
-.botonesCarruselLibros .activo{
+.embla__dot:focus {
+    outline: none;
+    border: none;
+}
+
+.embla__dot--selected {
     color: var(--dark_blue);
+    outline: none;
+    border: none;
+}
+
+.embla__dot--selected:focus {
+    outline: none;
+    border: none;
 }

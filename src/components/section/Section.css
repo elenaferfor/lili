@@ -5,6 +5,7 @@ section{
     display: flex;
     flex-direction: column;
     gap: .6rem;
+    position: relative;
 }
 
 .no_shadow_section{

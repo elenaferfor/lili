@@ -5,7 +5,14 @@ import Libro from "../libro/Libro.tsx";
 
 const Section = (props: { titulo: string; }) => {
     
-    const [listaLibros, setListaLibros] = useState([<Libro/>, <Libro/>, <Libro/>, <Libro/>, <Libro/>, <Libro/>, <Libro/>]);
+    const [listaLibros, setListaLibros] = useState([
+        <Libro portada={"covers/carrie.webp"}/>, 
+        <Libro portada={"covers/bunny.webp"}/>, 
+        <Libro portada={"covers/conjuros.webp"}/>, 
+        <Libro portada={"covers/eternidad.webp"}/>, 
+        <Libro portada={"covers/gideon.webp"}/>, 
+        <Libro portada={"covers/hambre.jpg"}/>, 
+        <Libro portada={"covers/dracula.webp"}/>]);
     
     // TODO: crear un axios que traiga los últimos libros añadidos
     

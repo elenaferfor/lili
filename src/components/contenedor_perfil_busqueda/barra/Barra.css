@@ -12,6 +12,7 @@
     padding: 1rem;
     font-family: "Epunda Sans", sans-serif;
     background-color: var(--white);
+    color: var(--dark_blue);
 }
 
 .barra input.f_barra:focus{

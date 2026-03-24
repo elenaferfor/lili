@@ -1,12 +1,13 @@
 import {Link} from "react-router-dom";
 import "./Libro.css"
 
-const Libro = () => {
+const Libro = (props) => {
     
     
-    return <div className="libro">
+    return <div className="libro embla__slide">
         <div className="portada">
-            <img src="/covers/hambre.jpg" alt="Un hambre insaciable"/>
+            {/*<img src="/covers/hambre.jpg" alt="Un hambre insaciable"/>*/}
+            <img src={props.portada} alt="Un hambre insaciable"/>
             <div className="hoverLibro">
                 <div className="iconosHoverLibro">
                     <i className="material-symbols-rounded green">check</i>
