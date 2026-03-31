@@ -4,7 +4,7 @@ import "./Libro.css"
 const Libro = (props) => {
     
     
-    return <div className="libro embla__slide">
+    return <div className="libro">
         <div className="portada">
             {/*<img src="/covers/hambre.jpg" alt="Un hambre insaciable"/>*/}
             <img src={props.portada} alt="Un hambre insaciable"/>

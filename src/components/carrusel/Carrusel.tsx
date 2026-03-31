@@ -1,68 +1,53 @@
-import "./Carrusel.css"
-import {useEffect, useState} from "react";
+import { useRef, type RefObject } from "react";
 
-import useEmblaCarousel from "embla-carousel-react";
-import type { EmblaCarouselType } from "embla-carousel";
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
+import Slider from "react-slick";
+import BotonAtras from "./botones/BotonAtras.tsx";
+import BotonSiguiente from "./botones/BotonSiguiente.tsx";
+import "./Carrusel.css"
 
 
 const Carrusel = (props) => {
+    
+    let sliderRef = useRef(null);
+    const next = () => {
+        sliderRef.slickNext();
+    };
+    const previous = () => {
+        sliderRef.slickPrev();
+    };
 
-    const [emblaRef, emblaApi] = useEmblaCarousel({
-        loop: true,
-        slidesToScroll: "auto",
-        align: "start",
+    var settings = {
+        dots: true,
+        appendDots: dots => (
+            <div className="dots-wrapper">
+                <button className="button" onClick={previous}>
+                    <i className="material-symbols-rounded arrow">arrow_left</i>
+                </button>
+                <ul>{dots}</ul>
+                <button className="button" onClick={next}>
+                    <i className="material-symbols-rounded arrow">arrow_right</i>
+                </button>
+            </div>
+        ),
+        infinite: true,
+        speed: 500,
+        slidesToShow: 5,
+        slidesToScroll: 5,
 
-    });
-
-    const scrollPrev = () => emblaApi?.scrollPrev();
-    const scrollNext = () => emblaApi?.scrollNext();
-
-    const [scrollSnaps, setScrollSnaps] = useState<number[]>([]);
-    const [selectedSnap, setSelectedSnap] = useState(0);
-
-    const scrollTo = (index: number) => emblaApi?.scrollTo(index);
-    const setupSnaps = (emblaApi: EmblaCarouselType) => setScrollSnaps(emblaApi.scrollSnapList());
-    const setActiveSnap = (emblaApi: EmblaCarouselType) => setSelectedSnap(emblaApi.selectedScrollSnap());
-
-    useEffect(() => {
-        if(!emblaApi) return;
-
-        setupSnaps(emblaApi);
-        setActiveSnap(emblaApi);
-
-        emblaApi.on("reInit", setupSnaps);
-        emblaApi.on("reInit", setActiveSnap);
-        emblaApi.on("select", setActiveSnap);
-
-    }, [emblaApi]);
+        prevArrow: <BotonAtras/>,
+        nextArrow: <BotonSiguiente/>,
+    };
     
     return <>
-
-        <div className="embla">
-            <div className="embla__viewport" ref={emblaRef}>
-                <div className="embla__container">
-                    {props.libros}
-                </div>
-            </div>
-            
-            <div className="controls">
-                <button className="embla__prev" onClick={scrollPrev}><i className="material-symbols-rounded arrow">arrow_left</i></button>
-                <div className="embla__dots">
-                    {scrollSnaps.map((_, index) => (
-                        <button
-                            className={"embla__dot".concat(
-                                index === selectedSnap ? ' embla__dot--selected' : ''
-                            )}
-                            key={index}
-                            onClick={() => scrollTo(index)}
-                        >
-                            <i className="material-symbols-rounded icon_fill dot">circle</i>
-                        </button>
-                    ))}
-                </div>
-                <button className="embla__next" onClick={scrollNext}><i className="material-symbols-rounded arrow">arrow_right</i></button>
-            </div>
-        </div>
+        <Slider
+            ref={(slider: RefObject<null>) => {
+                sliderRef = slider;
+            }}
+            {...settings}>
+            {props.libros}
+        </Slider>
     </>
 }
 

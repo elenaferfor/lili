@@ -1,5 +1,5 @@
 /* CARRUSEL */
-.sinCarrusel{ /* carruselLibros pasa a embla__container */
+.carruselLibros, .sinCarrusel{
     display: grid;
     gap: .5rem 0;
     overflow: hidden;
@@ -16,68 +16,38 @@
     gap: .5rem 0;
 }
 
+.slick-slider{
+    overflow: hidden;
+}
+
+.slick-slide > div {
+    margin: 0 .5rem;
+}
+
+.slick-list {
+    margin: 0 -.5rem;
+}
 
 /* BOTONES CARRUSEL */
-.botonesCarruselLibros{
+/*.botonesCarruselLibros{ # Pasa a .slick-dots
     display: flex;
     justify-content: center;
     align-items: center;
     gap: .5rem;
     color: var(--blue_grey_second);
-}
+}*/
 
-.embla .arrow:hover{
-    border-radius: 100%;
-    background-color: var(--light_blue_second);
-}
-
-.embla .arrow:active{
-    background-color: var(--dark_blue);
-    color: var(--white);
-}
-
-.embla__dots .dot{
-    font-size: .5rem;
-}
-
-.botonesCarruselLibros .activo{
-    color: var(--dark_blue);
-}
-
-.controls{
+.slick-dots{
     display: flex;
     justify-content: center;
     align-items: center;
+    gap: .5rem;
+    color: var(--blue_grey_second);
+    position: relative;
+    bottom: unset;
 }
 
-
-/* EMBLA */
-.embla{
-    --slide-spacing: .5rem;
-    --slide-size: 160px;
-}
-
-.embla__viewport {
-    overflow: hidden;
-}
-
-.embla__container {
-    touch-action: pan-y pinch-zoom;
-    display: flex;
-    gap: .5rem 0;
-    justify-content: start;
-    justify-items: stretch;
-    margin-left: calc(var(--slide-spacing) * -1);
-}
-
-.embla__slide {
-    min-width: 0;
-    flex: 0 0 var(--slide-size);
-    padding-left: var(--slide-spacing);
-}
-
-/* EMBLA - BUTTONS */
-.embla button.embla__prev, .embla button.embla__next{
+.slick-dots button{
     border: none;
     color: var(--dark_blue);
     width: 0;
@@ -86,44 +56,40 @@
     align-items: center;
     justify-content: center;
     background-color: unset;
+    padding: 0 .6rem;
 }
 
-.embla button.embla__prev:focus, .embla button.embla__next:focus {
+.slick-dots .activo{
+    color: var(--dark_blue);
+}
+
+.slick-dots button:focus {
     outline: none;
 }
 
-/* EMBLA - DOTS */
-.embla__dots{
-    display: flex;
-    justify-content: center;
-    align-items: center;
+.arrow:hover{
+    border-radius: 100%;
+    background-color: var(--light_blue_second);
 }
 
-button.embla__dot{
+.arrow:active{
+    background-color: var(--dark_blue);
+    color: var(--white);
+}
+
+.slick-dots ul{
     display: inline-flex;
     align-items: center;
 }
 
-.embla__dot {
-    background-color: unset;
+.slick-dots > li{
+    margin: 0;
+}
+
+.slick-dots > ul > li{
     color: var(--blue_grey_second);
-    font-size: .5rem;
-    outline: none;
-    border: none;
 }
 
-.embla__dot:focus {
-    outline: none;
-    border: none;
-}
-
-.embla__dot--selected {
+.slick-dots > ul > li.slick-active{
     color: var(--dark_blue);
-    outline: none;
-    border: none;
-}
-
-.embla__dot--selected:focus {
-    outline: none;
-    border: none;
 }
