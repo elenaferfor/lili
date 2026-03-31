@@ -1,0 +1,152 @@
+/* DETALLE LIBRO */
+
+.detalleLibro{
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem 0;
+}
+
+.detalleLibroInfo{
+    display: flex;
+    gap: 0 1.5rem;
+    align-items: flex-start;
+    height: 347.14px;
+}
+
+.detalleLibro .detalleLibroInfo .detalleLibroPortada{
+    width: 230px;
+    height: 347.14px;
+    position: relative;
+}
+
+.detalleLibro .detalleLibroInfo .detalleLibroPortada img{
+    width: 100%;
+    height: auto;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.detalleLibroInfo .detalleLibroTexto{
+    height: 100%;
+    display: grid;
+    grid-template-rows: 2fr 2fr repeat(6, 1fr) 2fr;
+}
+
+.detalleLibroInfo .detalleLibroTexto .autor{
+    font-size: 1.3rem;
+}
+
+.detalleLibroInfo .detalleLibroTexto span{
+    font-weight: bold;
+}
+
+.detalleLibroEstados{
+    align-self: flex-end;
+    display: flex;
+    gap: .5rem;
+    flex-wrap: wrap;
+}
+
+/* BOTONES DE ESTADO */
+.detalleLibroEstados button, #estadoLectura button{
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 0 .4rem;
+    font-size: .8rem;
+    font-family: 'Jost', sans-serif;
+    font-weight: bold;
+
+    padding: .2rem .7rem;
+    border: none;
+    border-radius: .4rem;
+    background-color: var(--blue_grey_second);
+    color: var(--dark_blue);
+    cursor: pointer;
+
+    transition: all 200ms ease-in-out;
+}
+
+.detalleLibroEstados button i{
+    font-size: 1rem;
+}
+
+.detalleLibroEstados button:is(.estadoAnadir, .estadoPrestar){
+    background-color: var(--dark_blue);
+    color: var(--white);
+}
+
+.detalleLibroEstados button.estadoFavorito{
+    background-color: var(--pink);
+    color: var(--white);
+}
+
+.detalleLibroEstados button.estadoPrestamo{
+    background-color: var(--dark_blue);
+    color: var(--green);
+}
+
+.detalleLibroEstados button:hover, #estadoLectura button:hover{
+    color: var(--dark_blue);
+    background-color: var(--light_blue_second);
+}
+
+.detalleLibroEstados button:active, #estadoLectura button:active{
+    color: var(--white);
+    background-color: var(--dark_blue);
+}
+
+#estadoLectura .estadoLecturaOpciones{
+    list-style: none;
+    position: absolute;
+    width: max-content;
+    display: none;
+}
+
+#estadoLectura .estadoLecturaOpciones button{
+    border-radius: 0;
+}
+
+#estadoLectura.desplegado > button:first-child{
+    border-radius: .4rem .4rem 0 0;
+}
+
+#estadoLectura .estadoLecturaOpciones li:last-child button{
+    border-radius: 0 0 .4rem .4rem;
+}
+
+#estadoLectura.desplegado button{
+    width: 8rem;
+}
+
+#estadoLectura.desplegado .estadoLecturaOpciones{
+    display: block;
+}
+
+#estadoLectura .estadoVerde{
+    background-color: var(--green);
+    color: var(--dark_blue);
+}
+
+#estadoLectura .estadoNaranja{
+    background-color: var(--orange);
+    color: var(--dark_blue);
+}
+
+#estadoLectura .estadoRojo{
+    background-color: var(--red);
+    color: var(--dark_blue);
+}
+
+/* SELECTOR LECTURA */
+#estadoLectura{
+    position: relative;
+}
+
+/* TEXTO SINOPSIS */
+.detalleLibro .detalleLibroSinopsis p{
+    margin-bottom: 1rem;
+}
