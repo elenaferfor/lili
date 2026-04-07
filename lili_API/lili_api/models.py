@@ -1,3 +1,4 @@
+import datetime
 from django.contrib.auth.models import AbstractUser
 from django.core.validators import MinValueValidator
 from django.db import models
@@ -76,12 +77,12 @@ class Categoria(models.Model):
         ]
 
     def __str__(self):
-        return self.nombre
+        return f'{self.nombre} de {self.usuario.username}'
 
 class UsuarioLibro(models.Model):
     usuario = models.ForeignKey(UsuarioLili, on_delete=models.CASCADE)
     libro = models.ForeignKey(Libro, on_delete=models.CASCADE, related_name='libros')
-    serie = models.ForeignKey(Serie, null=True, on_delete=models.SET_NULL)
+    serie = models.ForeignKey(Serie, blank=True, null=True, on_delete=models.SET_NULL)
     numero_en_serie = models.IntegerField(blank=True, null=True)
 
     ESTADOS_LECTURA = [
@@ -94,8 +95,9 @@ class UsuarioLibro(models.Model):
     estado = models.CharField(max_length=10, choices=ESTADOS_LECTURA, blank=True, null=True, default='s_e')
     favorito = models.BooleanField(default=False)
     publico = models.BooleanField(default=False)
+    fecha_anadido = models.DateTimeField(auto_now_add=True)
 
-    categorias = models.ManyToManyField(Categoria, related_name='libros_usuario')
+    categorias = models.ManyToManyField(Categoria, through='LibroCategoria', related_name='libros_usuario')
 
     class Meta:
         constraints = [
@@ -149,7 +151,7 @@ class Amistad(models.Model):
 class Prestamo(models.Model):
     usuario_libro = models.ForeignKey(UsuarioLibro, on_delete=models.CASCADE)
     prestatario = models.ForeignKey(UsuarioLili, on_delete=models.SET_NULL, null=True)
-    fecha_inicio = models.DateField(auto_now_add=True)
+    fecha_inicio = models.DateField(default=datetime.date.today)
     fecha_fin = models.DateField(blank=True, null=True)
 
     ESTADOS_PRESTAMO = [
@@ -186,3 +188,11 @@ class Notificacion(models.Model):
 
     def __str__(self):
         return f'Notificación {self.pk} del usuario {self.usuario.username}'
+
+class LibroCategoria(models.Model):
+    usuario_libro = models.ForeignKey(UsuarioLibro, on_delete=models.CASCADE)
+    categoria = models.ForeignKey(Categoria, on_delete=models.CASCADE)
+    fecha_creacion = models.DateField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('usuario_libro', 'categoria')
