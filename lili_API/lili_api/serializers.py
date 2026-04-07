@@ -93,7 +93,7 @@ class UsuarioLibroSerializer(serializers.ModelSerializer):
         fields = ['id', 'usuario', 'libro',
                   'serie', 'numero_en_serie',
                   'estado', 'favorito', 'publico',
-                  'categorias']
+                  'fecha_anadido', 'categorias']
 
 class AmistadSerializer(serializers.ModelSerializer):
     usuario_a = UsuarioNombreSerializer()

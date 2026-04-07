@@ -151,7 +151,8 @@ class Amistad(models.Model):
 class Prestamo(models.Model):
     usuario_libro = models.ForeignKey(UsuarioLibro, on_delete=models.CASCADE)
     prestatario = models.ForeignKey(UsuarioLili, on_delete=models.SET_NULL, null=True)
-    fecha_inicio = models.DateField(default=datetime.date.today)
+    fecha_solicitud = models.DateField(auto_now_add=True)
+    fecha_inicio = models.DateField(blank=True, null=True)
     fecha_fin = models.DateField(blank=True, null=True)
 
     ESTADOS_PRESTAMO = [
