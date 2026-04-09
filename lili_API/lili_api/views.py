@@ -344,3 +344,7 @@ class PrestamoView(ModelViewSet):
 class NotificacionView(ModelViewSet):
     queryset = Notificacion.objects.all()
     serializer_class = NotificacionSerializer
+
+class LibroCategoriaView(ModelViewSet):
+    queryset = LibroCategoria.objects.all()
+    serializer_class = LibroCategoriaSerializer

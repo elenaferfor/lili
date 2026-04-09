@@ -14,6 +14,11 @@ class AutorNombreSerializer(serializers.ModelSerializer):
         model = Autor
         fields = ['id', 'nombre']
 
+class SerieNombreSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Serie
+        fields = ['id', 'nombre', 'volumenes']
+
 class CategoriaNombreSerializer(serializers.ModelSerializer):
     class Meta:
         model = Categoria
@@ -26,23 +31,31 @@ class UsuarioNombreSerializer(serializers.ModelSerializer):
 
 # ===================== Serializers principales ===========================
 class AutorSerializer(serializers.ModelSerializer):
-    libros = LibroTituloSerializer(many=True)
+    libros = LibroTituloSerializer(many=True, read_only=True)
 
     class Meta:
         model = Autor
         fields = ['id', 'nombre', 'openlibrary_key', 'libros']
 
 class LibroSerializer(serializers.ModelSerializer):
-    autores = AutorNombreSerializer(many=True)
+    autores = serializers.PrimaryKeyRelatedField(queryset=Autor.objects.all(), many=True, write_only=True)
+    autores_detalle = AutorNombreSerializer(source="autores", many=True, read_only=True)
     class Meta:
         model = Libro
         fields = ['id', 'isbn', 'titulo', 'formato',
                   'ano_pub', 'ano_pub_og',
                   'portada', 'sinopsis',
                   'openlibrary_key', 'fecha_actualizacion',
-                  'autores']
+                  'autores', 'autores_detalle']
+
+        def create(self, validated_data):
+            autores = validated_data.pop('autores')
+            libro = Libro.objects.create(**validated_data)
+            libro.autores.set(autores)
+            return libro
 
 class UsuarioLiliSerializer(serializers.ModelSerializer):
+    password = serializers.CharField(write_only=True)
     amistades = serializers.SerializerMethodField()
     prestamos_hechos = serializers.SerializerMethodField()
     prestamos_recibidos = serializers.SerializerMethodField()
@@ -67,10 +80,16 @@ class UsuarioLiliSerializer(serializers.ModelSerializer):
         prestamos = Prestamo.objects.filter(prestatario=obj)
         return prestamos.values_list('id', flat=True)
 
+    def create(self, validated_data):
+        libros = validated_data.pop('libros', [])
+        user = UsuarioLili.objects.create_user(**validated_data)
+        user.libros.set(libros)
+        return user
+
     class Meta:
         model = UsuarioLili
         fields = ['id', 'username', 'first_name', 'last_name',
-                  'email', 'is_staff', 'is_active', 'date_joined',
+                  'email', 'password', 'is_staff', 'is_active', 'date_joined',
                   'libros', 'amistades', 'prestamos_hechos', 'prestamos_recibidos']
 
 class SerieSerializer(serializers.ModelSerializer):
@@ -84,33 +103,50 @@ class CategoriaSerializer(serializers.ModelSerializer):
         fields = ['id', 'usuario', 'nombre', 'publica']
 
 class UsuarioLibroSerializer(serializers.ModelSerializer):
-    libro = serializers.CharField(source='libro.titulo')
-    serie = serializers.CharField(source='serie.nombre', allow_null=True)
-    categorias = CategoriaNombreSerializer(many=True)
+    libro = serializers.PrimaryKeyRelatedField(queryset=Libro.objects.all(), write_only=True)
+    libro_detalle = LibroTituloSerializer(source="libro", read_only=True)
+    serie = serializers.PrimaryKeyRelatedField(queryset=Serie.objects.all(), allow_null=True, write_only=True)
+    serie_detalle = SerieNombreSerializer(source="serie", read_only=True)
+    categorias = serializers.PrimaryKeyRelatedField(queryset=Categoria.objects.all(), many=True, write_only=True)
+    categorias_detalle = CategoriaNombreSerializer(source="categorias", read_only=True, many=True)
 
     class Meta:
         model = UsuarioLibro
-        fields = ['id', 'usuario', 'libro',
-                  'serie', 'numero_en_serie',
+        fields = ['id', 'usuario', 'libro', 'libro_detalle',
+                  'serie', 'serie_detalle', 'numero_en_serie',
                   'estado', 'favorito', 'publico',
-                  'fecha_anadido', 'categorias']
+                  'fecha_anadido', 'categorias', 'categorias_detalle']
+
+        def create(self, validated_data):
+            libro_usuario = UsuarioLibro.objects.create(**validated_data)
+            libro = validated_data.pop('libro')
+            serie = validated_data.pop('serie')
+            categorias = validated_data.pop('categorias')
+            libro_usuario.libro.set(libro)
+            libro_usuario.serie.set(serie)
+            libro_usuario.categorias.set(categorias)
+            return libro_usuario
 
 class AmistadSerializer(serializers.ModelSerializer):
-    usuario_a = UsuarioNombreSerializer()
-    usuario_b = UsuarioNombreSerializer()
+    usuario_a = serializers.PrimaryKeyRelatedField(queryset=UsuarioLili.objects.all(), write_only=True)
+    usuario_a_nombre = UsuarioNombreSerializer(source="usuario_a", read_only=True)
+    usuario_b = serializers.PrimaryKeyRelatedField(queryset=UsuarioLili.objects.all(), write_only=True)
+    usuario_b_nombre = UsuarioNombreSerializer(source="usuario_b", read_only=True)
 
     class Meta:
         model = Amistad
-        fields = ['id', 'usuario_a', 'usuario_b', 'estado',
+        fields = ['id', 'usuario_a', 'usuario_a_nombre', 'usuario_b', 'usuario_b_nombre', 'estado',
                   'fecha_creacion', 'fecha_actualizacion']
 
 class PrestamoSerializer(serializers.ModelSerializer):
-    usuario_libro = serializers.CharField(source='usuario_libro.libro.titulo')
-    prestatario = UsuarioNombreSerializer()
+    usuario_libro = serializers.PrimaryKeyRelatedField(queryset=UsuarioLibro.objects.all(), write_only=True)
+    usuario_libro_titulo = serializers.CharField(source='usuario_libro.libro.titulo', read_only=True)
+    prestatario = serializers.PrimaryKeyRelatedField(queryset=UsuarioLili.objects.all(), write_only=True)
+    prestatario_nombre = UsuarioNombreSerializer(source='prestatario', read_only=True)
 
     class Meta:
         model = Prestamo
-        fields = ['id', 'usuario_libro', 'prestatario',
+        fields = ['id', 'usuario_libro', 'usuario_libro_titulo', 'prestatario', 'prestatario_nombre',
                   'fecha_inicio', 'fecha_fin', 'estado']
 
 class NotificacionSerializer(serializers.ModelSerializer):

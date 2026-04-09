@@ -197,3 +197,6 @@ class LibroCategoria(models.Model):
 
     class Meta:
         unique_together = ('usuario_libro', 'categoria')
+
+
+# TODO: Añadir tabla de Editorial y añadírsela a Libro
