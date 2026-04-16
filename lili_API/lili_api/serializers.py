@@ -1,7 +1,7 @@
 from django.db.models import Q
 from rest_framework import serializers
 
-from .models import Autor, Libro, UsuarioLili, Amistad, Prestamo, Serie, Categoria, UsuarioLibro, Notificacion, LibroCategoria
+from .models import Autor, Editorial, Libro, UsuarioLili, Amistad, Prestamo, Serie, Categoria, UsuarioLibro, Notificacion, LibroCategoria
 
 # ===================== Serializers de detalle ===========================
 class LibroTituloSerializer(serializers.ModelSerializer):
@@ -12,6 +12,11 @@ class LibroTituloSerializer(serializers.ModelSerializer):
 class AutorNombreSerializer(serializers.ModelSerializer):
     class Meta:
         model = Autor
+        fields = ['id', 'nombre']
+
+class EditorialNombreSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Editorial
         fields = ['id', 'nombre']
 
 class SerieNombreSerializer(serializers.ModelSerializer):
@@ -37,16 +42,25 @@ class AutorSerializer(serializers.ModelSerializer):
         model = Autor
         fields = ['id', 'nombre', 'openlibrary_key', 'libros']
 
+class EditorialSerializer(serializers.ModelSerializer):
+    libros = LibroTituloSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Editorial
+        fields = ['id', 'nombre', 'libros']
+
 class LibroSerializer(serializers.ModelSerializer):
     autores = serializers.PrimaryKeyRelatedField(queryset=Autor.objects.all(), many=True, write_only=True)
     autores_detalle = AutorNombreSerializer(source="autores", many=True, read_only=True)
+    editorial = serializers.PrimaryKeyRelatedField(queryset=Editorial.objects.all(), write_only=True, allow_null=True, allow_empty=True)
+    editorial_detalle = EditorialNombreSerializer(source="editorial", read_only=True)
     class Meta:
         model = Libro
         fields = ['id', 'isbn', 'titulo', 'formato',
                   'ano_pub', 'ano_pub_og',
                   'portada', 'sinopsis',
                   'openlibrary_key', 'fecha_actualizacion',
-                  'autores', 'autores_detalle']
+                  'autores', 'autores_detalle', 'editorial', 'editorial_detalle']
 
         def create(self, validated_data):
             autores = validated_data.pop('autores')

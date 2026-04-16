@@ -14,6 +14,13 @@ class Autor(models.Model):
     def __str__(self):
         return self.nombre
 
+class Editorial(models.Model):
+    nombre = models.CharField(max_length=120, blank=False, null=False)
+    class Meta:
+        verbose_name_plural = 'Editoriales'
+    def __str__(self):
+        return self.nombre
+
 class Libro(models.Model):
     isbn = models.CharField(max_length=10, unique=True)
     titulo = models.CharField(max_length=120)
@@ -31,6 +38,7 @@ class Libro(models.Model):
     sinopsis = models.TextField(blank=True, null=True)
     openlibrary_key = models.CharField(max_length=16, blank=True, null=True)
     fecha_actualizacion = models.DateField(auto_now=True)
+    editorial = models.ForeignKey(Editorial, on_delete=models.SET_NULL, blank=True, null=True)
 
     autores = models.ManyToManyField(Autor, related_name='libros')
 
@@ -197,6 +205,3 @@ class LibroCategoria(models.Model):
 
     class Meta:
         unique_together = ('usuario_libro', 'categoria')
-
-
-# TODO: Añadir tabla de Editorial y añadírsela a Libro
