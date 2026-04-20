@@ -28,8 +28,8 @@ class AutorView(ModelViewSet):
 
     def get_permissions(self):
         if self.action not in ["destroy", "partial_update"]:
-            return [IsAuthenticated]
-        return [IsAdminUser]
+            return [IsAuthenticated()]
+        return [IsAdminUser()]
 
 class EditorialView(ModelViewSet):
     queryset = Editorial.objects.all()
@@ -41,8 +41,8 @@ class EditorialView(ModelViewSet):
 
     def get_permissions(self):
         if self.action not in ["destroy", "partial_update"]:
-            return [IsAuthenticated]
-        return [IsAdminUser]
+            return [IsAuthenticated()]
+        return [IsAdminUser()]
 
 class LibroView(ModelViewSet):
     queryset = Libro.objects.all().select_related('editorial').prefetch_related('autores')
@@ -54,8 +54,8 @@ class LibroView(ModelViewSet):
 
     def get_permissions(self):
         if self.action not in ["destroy", "partial_update"]:
-            return [IsAuthenticated]
-        return [IsAdminUser]
+            return [IsAuthenticated()]
+        return [IsAdminUser()]
 
 class UsuarioLiliView(ModelViewSet):
     queryset = UsuarioLili.objects.all().prefetch_related('libros')
@@ -67,7 +67,7 @@ class UsuarioLiliView(ModelViewSet):
 
     # Permisos: cada usuario puede cambiar sus cosas
     def get_permissions(self):
-        return [IsAdminUser, OwnProfilePermission]
+        return [OwnProfilePermission()]
 
 class SerieView(ModelViewSet):
     queryset = Serie.objects.all().select_related('usuario')
@@ -79,7 +79,7 @@ class SerieView(ModelViewSet):
 
     # Permisos: cada usuario puede cambiar sus cosas y el admin las de todos
     def get_permissions(self):
-        return [IsAdminUser, OwnProfilePermission]
+        return [OwnProfilePermission()]
 
 class CategoriaView(ModelViewSet):
     queryset = Categoria.objects.all().select_related('usuario')
@@ -91,11 +91,16 @@ class CategoriaView(ModelViewSet):
 
     # Permisos: cada usuario puede cambiar sus cosas y el admin las de todos
     def get_permissions(self):
-        return [IsAdminUser, OwnProfilePermission]
+        return [OwnProfilePermission()]
 
 class UsuarioLibroView(ModelViewSet):
-    queryset = UsuarioLibro.objects.all().select_related('usuario', 'libro', 'serie').prefetch_related('categorias')
+    # queryset = UsuarioLibro.objects.all().select_related('usuario', 'libro', 'serie').prefetch_related('categorias')
     serializer_class = UsuarioLibroSerializer
+
+    def get_queryset(self):
+        if self.request.user.is_staff:
+            return UsuarioLibro.objects.all().select_related('usuario', 'libro', 'serie').prefetch_related('categorias')
+        return UsuarioLibro.objects.filter(usuario__pk=self.request.user.pk).select_related('usuario', 'libro', 'serie').prefetch_related('categorias')
 
     # Cambiar estado de libro
     @action(detail=True, methods=['post']) # permission_classes=[]
@@ -103,7 +108,8 @@ class UsuarioLibroView(ModelViewSet):
         libro = self.get_object()
         nuevo_estado = request.data.get('estado')
 
-        if nuevo_estado not in UsuarioLibro.ESTADOS_LECTURA.values:
+        estados_validos = [estado[0] for estado in UsuarioLibro.ESTADOS_LECTURA]
+        if nuevo_estado not in estados_validos:
             return Response(
                 {"error": "El estado no es válido"},
                 status=status.HTTP_400_BAD_REQUEST
@@ -262,7 +268,7 @@ class UsuarioLibroView(ModelViewSet):
 
     # Permisos: cada usuario puede cambiar sus cosas y el admin las de todos
     def get_permissions(self):
-        return [IsAdminUser, OwnProfilePermission]
+        return [OwnProfilePermission()]
 
 class AmistadView(ModelViewSet):
     queryset = Amistad.objects.all().select_related('usuario_a', 'usuario_b')
@@ -332,7 +338,7 @@ class AmistadView(ModelViewSet):
 
     # Permisos: cada usuario puede cambiar sus cosas y el admin las de todos
     def get_permissions(self):
-        return [IsAdminUser, AmistadPermission]
+        return [AmistadPermission()]
 
 class PrestamoView(ModelViewSet):
     queryset = Prestamo.objects.all().select_related('usuario_libro', 'prestatario')
@@ -424,7 +430,7 @@ class PrestamoView(ModelViewSet):
     # Permisos: cada usuario puede cambiar sus cosas, pero sólo el prestador puede marcar devuelto
     # y el admin las de todos
     def get_permissions(self):
-        return [IsAdminUser, PrestamoPermission]
+        return [PrestamoPermission()]
 
 class NotificacionView(ModelViewSet):
     queryset = Notificacion.objects.all().select_related('usuario')
@@ -437,7 +443,7 @@ class NotificacionView(ModelViewSet):
 
     # Permisos: cada usuario puede cambiar sus cosas y el admin las de todos
     def get_permissions(self):
-        return [IsAdminUser, OwnProfilePermission]
+        return [OwnProfilePermission()]
 
 class LibroCategoriaView(ModelViewSet):
     queryset = LibroCategoria.objects.all().select_related('usuario_libro', 'categoria')
@@ -450,4 +456,4 @@ class LibroCategoriaView(ModelViewSet):
 
     # Permisos: cada usuario puede cambiar sus cosas y el admin las de todos
     def get_permissions(self):
-        return [IsAdminUser, LibroCategoriaPermission]
+        return [LibroCategoriaPermission()]

@@ -17,11 +17,15 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from lili_api.routers import router as lili_router
+from lili_api.authentication.views import LoginView, LogoutView, RefreshView
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/token/', TokenObtainPairView.as_view()),
-    path('api/token/refresh/', TokenRefreshView.as_view()),
+    # path('api/token/', TokenObtainPairView.as_view()),
+    # path('api/token/refresh/', TokenRefreshView.as_view()),
+    path('auth/login/', LoginView.as_view()),
+    path('auth/refresh/', RefreshView.as_view()),
+    path('auth/logout/', LogoutView.as_view()),
     path('api/', include(lili_router.urls)),
 ]
