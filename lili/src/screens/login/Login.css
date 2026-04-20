@@ -1,0 +1,80 @@
+.login{
+    padding: 5% 0;
+    height: 100vh;
+    background-color: var(--dark_blue);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.logo_login{
+    margin: 3rem auto;
+}
+
+.logo_login img{
+    width: 6rem;
+}
+
+.login form{
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+
+.login input{
+    background-color: var(--white);
+    border: none;
+    border-radius: 10rem;
+    padding: .5rem .8rem;
+    font-family: "Epunda Sans", sans-serif;
+    font-size: 1rem;
+    color: var(--dark_blue);
+}
+
+.login input:focus{
+    outline: 2px solid var(--green);
+}
+
+.login button{
+    background-color: var(--green);
+    width: fit-content;
+    border-radius: 10rem;
+    color: var(--dark_blue);
+    font-family: "Jost", sans-serif;
+    font-weight: bold;
+    font-size: 1rem;
+    border: none;
+}
+
+.login button:hover{
+    background-color: var(--blue_grey_second);
+    border: none;
+}
+
+.login button:active{
+    background-color: var(--dark_blue);
+    color: var(--white);
+}
+
+.link_registro, .p_registrate{
+    font-size: .8rem;
+}
+
+.link_registro{
+    color: var(--green);
+    cursor: pointer;
+}
+
+.link_registro:hover{
+    color: var(--blue_grey_second);
+}
+
+.link_registro:active{
+    color: var(--white);
+}
+
+.error{
+    color: var(--red);
+}

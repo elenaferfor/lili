@@ -7,7 +7,7 @@
     align-items: center;
 }
 
-.boton_sesion a{
+.boton_sesion button{
     background-color: var(--white);
     padding: .4rem .9rem;
     border-radius: 2rem;
@@ -18,11 +18,11 @@
     transition: all 200ms ease-in-out;
 }
 
-.boton_sesion a:hover{
+.boton_sesion button:hover{
     background-color: var(--blue_grey_second);
 }
 
-.boton_sesion a:active{
+.boton_sesion button:active{
     background-color: var(--green);
 }
 

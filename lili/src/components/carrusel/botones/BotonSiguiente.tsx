@@ -1,4 +1,4 @@
-const BotonSiguiente = (props) => {
+const BotonSiguiente = (props: { className: any; style: any; onClick: any; }) => {
     
     const { className, style, onClick } = props;
     
