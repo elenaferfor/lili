@@ -10,11 +10,12 @@ from rest_framework.permissions import AllowAny, IsAdminUser, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 
+from .filters import UsuarioLibroFilter, AmistadFilter, PrestamoFilter, NotificacionFilter, LibroCategoriaFilter, LibroFilter
 from .models import Autor, Libro, UsuarioLili, Amistad, Prestamo, Serie, Categoria, UsuarioLibro, Notificacion, \
     LibroCategoria, Editorial
 from lili_api.serializers import AutorSerializer, LibroSerializer, UsuarioLiliSerializer, SerieSerializer, \
     CategoriaSerializer, UsuarioLibroSerializer, AmistadSerializer, PrestamoSerializer, NotificacionSerializer, \
-    LibroCategoriaSerializer, EditorialSerializer
+    LibroCategoriaSerializer, EditorialSerializer, UsuarioLiliPublicoSerializer
 from .permissions import OwnProfilePermission, PrestamoPermission, LibroCategoriaPermission, AmistadPermission
 
 
@@ -50,7 +51,8 @@ class LibroView(ModelViewSet):
 
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
     search_fields = ['titulo', 'isbn', 'autores', 'editorial', 'ano_pub_og', 'sinopsis']
-    ordering_fields = ['nombre']
+    ordering_fields = ['nombre', 'autores__nombre', 'editorial__nombre']
+    filterset_class = LibroFilter
 
     def get_permissions(self):
         if self.action not in ["destroy", "partial_update"]:
@@ -58,8 +60,22 @@ class LibroView(ModelViewSet):
         return [IsAdminUser()]
 
 class UsuarioLiliView(ModelViewSet):
-    queryset = UsuarioLili.objects.all().prefetch_related('libros')
-    serializer_class = UsuarioLiliSerializer
+    # Los admins no salen en la lista
+    queryset = UsuarioLili.objects.filter(is_staff=False).prefetch_related('libros')
+
+    def get_serializer_class(self):
+        # admin y uno mismo pueden ver todo
+        if self.action in ['retrieve', 'update', 'partial_update', 'destroy']:
+            obj = self.get_object()
+            if self.request.user.is_staff or obj == self.request.user:
+                return UsuarioLiliSerializer
+            return UsuarioLiliPublicoSerializer
+
+        # en la lista completa sólo admin puede ver todo
+        if self.request.user.is_staff:
+            return UsuarioLiliSerializer
+        return UsuarioLiliPublicoSerializer
+
 
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
     search_fields = ['username']
@@ -70,11 +86,16 @@ class UsuarioLiliView(ModelViewSet):
         return [OwnProfilePermission()]
 
 class SerieView(ModelViewSet):
-    queryset = Serie.objects.all().select_related('usuario')
+    def get_queryset(self):
+        if self.request.user.is_staff:
+            return Serie.objects.all().select_related('usuario')
+        return Serie.objects.filter(usuario__pk=self.request.user.pk).select_related('usuario')
+
     serializer_class = SerieSerializer
 
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
-    search_fields = ['nombre']
+    search_fields = ['nombre', 'usuario__username']
+    filterset_fields = ['usuario']
     ordering_fields = ['nombre']
 
     # Permisos: cada usuario puede cambiar sus cosas y el admin las de todos
@@ -82,11 +103,17 @@ class SerieView(ModelViewSet):
         return [OwnProfilePermission()]
 
 class CategoriaView(ModelViewSet):
-    queryset = Categoria.objects.all().select_related('usuario')
+    def get_queryset(self):
+        if self.request.user.is_staff:
+            return Categoria.objects.all().select_related('usuario')
+        return Categoria.objects.filter(usuario__pk=self.request.user.pk).select_related('usuario')
+
+    #queryset = Categoria.objects.all().select_related('usuario')
     serializer_class = CategoriaSerializer
 
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
-    search_fields = ['nombre']
+    search_fields = ['nombre', 'usuario__username']
+    filterset_fields = ['publica', 'usuario']
     ordering_fields = ['nombre']
 
     # Permisos: cada usuario puede cambiar sus cosas y el admin las de todos
@@ -262,16 +289,20 @@ class UsuarioLibroView(ModelViewSet):
         )
 
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
-    filter_fields = ['serie', 'estado', 'favorito', 'categorias']
-    search_fields = ['libro', 'serie', 'estado', 'favorito']
-    ordering_fields = ['libro', 'fecha_anadido']
+    filterset_class = UsuarioLibroFilter
+    search_fields = ['libro__titulo', 'serie__nombre']
+    ordering_fields = ['estado', 'fecha_anadido']
 
     # Permisos: cada usuario puede cambiar sus cosas y el admin las de todos
     def get_permissions(self):
         return [OwnProfilePermission()]
 
 class AmistadView(ModelViewSet):
-    queryset = Amistad.objects.all().select_related('usuario_a', 'usuario_b')
+    def get_queryset(self):
+        if self.request.user.is_staff:
+            return Amistad.objects.all().select_related('usuario_a', 'usuario_b')
+        return Amistad.objects.filter(Q(usuario_a__pk=self.request.user.pk) | Q(usuario_b__pk=self.request.user.pk)).select_related('usuario_a', 'usuario_b')
+
     serializer_class = AmistadSerializer
 
     @action(detail=True, methods=['post'])
@@ -334,14 +365,20 @@ class AmistadView(ModelViewSet):
         )
 
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
-    filter_fields = ['usuario_a', 'usuario_b', 'estado']
+    filterset_class = AmistadFilter
+    search_fields = ['usuario_a__username', 'usuario_b__username']
+    ordering_fields = ['fecha_creacion', 'fecha_actualizacion']
 
     # Permisos: cada usuario puede cambiar sus cosas y el admin las de todos
     def get_permissions(self):
         return [AmistadPermission()]
 
 class PrestamoView(ModelViewSet):
-    queryset = Prestamo.objects.all().select_related('usuario_libro', 'prestatario')
+    def get_queryset(self):
+        if self.request.user.is_staff:
+            return Prestamo.objects.all().select_related('usuario_libro', 'prestatario')
+        return Prestamo.objects.filter(Q(usuario_libro__usuario__username__pk=self.request.user.pk) | Q(prestatario__username__pk=self.request.user.pk)).select_related('usuario_libro', 'prestatario')
+
     serializer_class = PrestamoSerializer
 
     @action(detail=True, methods=['post'])
@@ -423,8 +460,8 @@ class PrestamoView(ModelViewSet):
         )
 
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
-    filter_fields = ['estado']
-    search_fields = ['usuario_libro', 'prestatario']
+    filterset_class = PrestamoFilter
+    search_fields = ['usuario_libro__usuario__username', 'prestatario__username']
     ordering_fields = ['usuario_libro', 'fecha_inicio', 'fecha_fin']
 
     # Permisos: cada usuario puede cambiar sus cosas, pero sólo el prestador puede marcar devuelto
@@ -433,24 +470,32 @@ class PrestamoView(ModelViewSet):
         return [PrestamoPermission()]
 
 class NotificacionView(ModelViewSet):
-    queryset = Notificacion.objects.all().select_related('usuario')
+    def get_queryset(self):
+        if self.request.user.is_staff:
+            return Notificacion.objects.all().select_related('usuario')
+        return Notificacion.objects.filter(usuario__pk=self.request.user.pk).select_related('usuario')
+
     serializer_class = NotificacionSerializer
 
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
-    filter_fields = ['usuario', 'tipo', 'leida']
-    search_fields = ['usuario', 'tipo']
-    ordering_fields = ['usuario', 'fecha_creacion']
+    filterset_class = NotificacionFilter
+    search_fields = ['usuario__username', 'tipo']
+    ordering_fields = ['usuario', 'fecha_creacion', 'leida']
 
     # Permisos: cada usuario puede cambiar sus cosas y el admin las de todos
     def get_permissions(self):
         return [OwnProfilePermission()]
 
 class LibroCategoriaView(ModelViewSet):
-    queryset = LibroCategoria.objects.all().select_related('usuario_libro', 'categoria')
+    def get_queryset(self):
+        if self.request.user.is_staff:
+            return LibroCategoria.objects.all().select_related('usuario_libro', 'categoria')
+        return LibroCategoria.objects.filter(usuario__pk=self.request.user.pk).select_related('usuario_libro', 'categoria')
+
     serializer_class = LibroCategoriaSerializer
 
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
-    filter_fields = ['usuario_libro', 'categoria']
+    filterset_class = LibroCategoriaFilter
     search_fields = ['usuario_libro', 'categoria']
     ordering_fields = ['usuario_libro', 'fecha_creacion']
 

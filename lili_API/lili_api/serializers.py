@@ -7,7 +7,7 @@ from .models import Autor, Editorial, Libro, UsuarioLili, Amistad, Prestamo, Ser
 class LibroTituloSerializer(serializers.ModelSerializer):
     class Meta:
         model = Libro
-        fields = ['id', 'titulo']
+        fields = ['id', 'titulo', 'portada']
 
 class AutorNombreSerializer(serializers.ModelSerializer):
     class Meta:
@@ -105,6 +105,12 @@ class UsuarioLiliSerializer(serializers.ModelSerializer):
         fields = ['id', 'username', 'first_name', 'last_name',
                   'email', 'password', 'is_staff', 'is_active', 'date_joined',
                   'libros', 'amistades', 'prestamos_hechos', 'prestamos_recibidos']
+
+class UsuarioLiliPublicoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UsuarioLili
+        fields = ['id', 'username', 'first_name', 'last_name', 'date_joined']
+
 
 class SerieSerializer(serializers.ModelSerializer):
     class Meta:

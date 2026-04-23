@@ -22,7 +22,7 @@ class Editorial(models.Model):
         return self.nombre
 
 class Libro(models.Model):
-    isbn = models.CharField(max_length=10, unique=True)
+    isbn = models.CharField(max_length=13, unique=True)
     titulo = models.CharField(max_length=120)
 
     FORMATOS_LIBROS = [

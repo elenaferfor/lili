@@ -7,6 +7,8 @@ from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.exceptions import TokenError
 
+from lili_api.models import UsuarioLili
+
 
 class LoginView(APIView):
     permission_classes = [permissions.AllowAny]
@@ -33,15 +35,24 @@ class LoginView(APIView):
 
         res = Response(
             {
-                'access': str(access),
+                # 'access': str(access),
                 'user': {'id': user.pk, 'username': user.get_username()},
             }
         )
 
         res.set_cookie(
+            key='access_token',
+            value=str(access),
+            # httponly=getattr(settings, 'AUTH_COOKIE_HTTPONLY', True),
+            secure=getattr(settings, 'AUTH_COOKIE_SECURE', True),
+            samesite=getattr(settings, 'AUTH_COOKIE_SAMESITE', 'Lax'),
+            # path='/auth/',
+            max_age=5 * 60
+        )
+        res.set_cookie(
             key='refresh_token',
             value=str(refresh),
-            httponly=getattr(settings, 'AUTH_COOKIE_HTTPONLY', True),
+            httponly=True,
             secure=getattr(settings, 'AUTH_COOKIE_SECURE', True),
             samesite=getattr(settings, 'AUTH_COOKIE_SAMESITE', 'Lax'),
             path='/api/auth/',
@@ -57,7 +68,7 @@ class RefreshView(APIView):
         refresh_token = request.COOKIES.get('refresh_token')
         if not refresh_token:
             return Response(
-                {'dertail': 'No refresh cookie'},
+                {'detail': 'No refresh cookie'},
                 status=status.HTTP_401_UNAUTHORIZED
             )
 
@@ -65,52 +76,32 @@ class RefreshView(APIView):
             refresh = RefreshToken(refresh_token)
             access = refresh.access_token
 
-            if settings.SIMPLE_JWT.get('ROTATE_REFRESH_TOKENS', False):
-                if settings.SIMPLE_JWT.get('BLACKLIST_AFTER_ROTATION', False):
-                    try:
-                        refresh.blacklist()
-                    except Exception:
-                        pass
-
-                user_id = refresh.get("user_id")
-                if not user_id:
-                    return Response(
-                        {'detail': 'No user id'},
-                        status=status.HTTP_401_UNAUTHORIZED
-                    )
-
-                user = User.objects.get(pk=user_id)
-                new_refresh = RefreshToken.for_user(user)
-                new_refresh_value = str(new_refresh)
-
-            else:
-                new_refresh_value = None
-
-        except User.DoesNotExist:
-            return Response(
-                {'detail': 'Usuario no existe'},
-                status=status.HTTP_401_UNAUTHORIZED
-            )
         except TokenError:
             return Response(
                 {'detail': 'Refresh inválido'},
                 status=status.HTTP_401_UNAUTHORIZED
             )
 
-        res = Response({'access': str(access)}, status=status.HTTP_200_OK)
+        res = Response({'detail': 'ok'}, status=status.HTTP_200_OK)
 
-        if new_refresh_value:
-            res.set_cookie(
-                key='refresh_token',
-                value=new_refresh_value,
-                httponly=getattr(settings, 'AUTH_COOKIE_HTTPONLY', True),
-                secure=getattr(settings, 'AUTH_COOKIE_SECURE', True),
-                samesite=getattr(settings, 'AUTH_COOKIE_SAMESITE', 'Lax'),
-                path='/api/auth/',
-                max_age=7 * 24 * 60 * 60
-            )
+        res.set_cookie(
+            key='access_token',
+            value=str(access),
+            httponly=True,
+            secure=getattr(settings, 'AUTH_COOKIE_SECURE', True),
+            samesite=getattr(settings, 'AUTH_COOKIE_SAMESITE', 'Lax'),
+            max_age=5 * 60
+        )
 
         return res
+
+class MeView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request):
+        return Response(
+            {'id': request.user.pk, 'username': request.user.get_username(), })
+
 
 class LogoutView(APIView):
     permission_classes = [permissions.AllowAny]
@@ -132,5 +123,5 @@ class LogoutView(APIView):
             {'detail': 'logout ok'},
             status=status.HTTP_200_OK
         )
-        res.delete_cookie('refresh_token', path='/api/auth/')
+        res.delete_cookie('refresh_token', path='/auth/')
         return res
