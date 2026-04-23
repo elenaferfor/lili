@@ -8,7 +8,7 @@ import BotonSiguiente from "./botones/BotonSiguiente.tsx";
 import "./Carrusel.css"
 
 
-const Carrusel = (props) => {
+const Carrusel = (props: any) => {
     
     let sliderRef = useRef(null);
     const next = () => {

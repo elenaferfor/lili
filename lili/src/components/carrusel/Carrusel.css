@@ -28,15 +28,11 @@
     margin: 0 -.5rem;
 }
 
-/* BOTONES CARRUSEL */
-/*.botonesCarruselLibros{ # Pasa a .slick-dots
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: .5rem;
-    color: var(--blue_grey_second);
-}*/
+.slick-track{
+    margin-left: 0;
+}
 
+/* BOTONES CARRUSEL */
 .slick-dots{
     display: flex;
     justify-content: center;
@@ -45,6 +41,7 @@
     color: var(--blue_grey_second);
     position: relative;
     bottom: unset;
+    margin-bottom: .2rem;
 }
 
 .slick-dots button{

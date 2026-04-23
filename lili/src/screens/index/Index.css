@@ -38,6 +38,7 @@ main{
 
 .migas{
     margin-bottom: 1.5rem;
+    color: var(--dark_blue);
 }
 
 .volver{
@@ -53,16 +54,20 @@ main{
     width: fit-content;
     display: block;
     transition: all 200ms ease-in-out;
+    border: none;
 }
 
 .volver:hover{
     color: var(--dark_blue);
     background-color: var(--blue_grey_second);
+    border: none;
 }
 
 .volver:active{
     color: var(--dark_blue);
     background-color: var(--green);
+    border: none;
+    outline: none;
 }
 
 .secciones{

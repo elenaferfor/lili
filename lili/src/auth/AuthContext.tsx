@@ -26,7 +26,7 @@ const AuthProvider = ({ children }: AuthProviderProps) => {
     
     // Al cargar la página comprueba si la cookie de sesión es válida
     useEffect(() => {
-        api.get("/auth/login/")
+        api.get("/auth/me/", )
             .then(response => setUser(response.data))
             .catch( () => setUser(null))
             .finally(() => setLoading(false));

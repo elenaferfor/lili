@@ -16,6 +16,8 @@
     color: var(--dark_blue);
     text-decoration: none;
     transition: all 200ms ease-in-out;
+    border: none;
+    outline: none;
 }
 
 .boton_sesion button:hover{
