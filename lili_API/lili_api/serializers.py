@@ -111,7 +111,6 @@ class UsuarioLiliPublicoSerializer(serializers.ModelSerializer):
         model = UsuarioLili
         fields = ['id', 'username', 'first_name', 'last_name', 'date_joined']
 
-
 class SerieSerializer(serializers.ModelSerializer):
     class Meta:
         model = Serie
@@ -160,13 +159,13 @@ class AmistadSerializer(serializers.ModelSerializer):
 
 class PrestamoSerializer(serializers.ModelSerializer):
     usuario_libro = serializers.PrimaryKeyRelatedField(queryset=UsuarioLibro.objects.all(), write_only=True)
-    usuario_libro_titulo = serializers.CharField(source='usuario_libro.libro.titulo', read_only=True)
+    libro_detalle = LibroTituloSerializer(source="usuario_libro.libro", read_only=True)
     prestatario = serializers.PrimaryKeyRelatedField(queryset=UsuarioLili.objects.all(), write_only=True)
     prestatario_nombre = UsuarioNombreSerializer(source='prestatario', read_only=True)
 
     class Meta:
         model = Prestamo
-        fields = ['id', 'usuario_libro', 'usuario_libro_titulo', 'prestatario', 'prestatario_nombre',
+        fields = ['id', 'usuario_libro', 'libro_detalle', 'prestatario', 'prestatario_nombre',
                   'fecha_inicio', 'fecha_fin', 'estado']
 
 class NotificacionSerializer(serializers.ModelSerializer):

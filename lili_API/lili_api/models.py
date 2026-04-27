@@ -25,13 +25,12 @@ class Libro(models.Model):
     isbn = models.CharField(max_length=13, unique=True)
     titulo = models.CharField(max_length=120)
 
-    FORMATOS_LIBROS = [
-        ('t_dura', 'Tapa dura'),
-        ('t_blanda', 'Tapa blanda'),
-        ('bolsillo', 'Bolsillo'),
-    ]
+    class FormatoLibro(models.TextChoices):
+        TAPA_DURA = "t_dura", "Tapa dura"
+        TAPA_BLANDA = "t_blanda", "Tapa blanda"
+        BOLSILLO = "bolsillo", "Bolsillo"
 
-    formato = models.CharField(max_length=10, choices=FORMATOS_LIBROS, blank=True, null=True)
+    formato = models.CharField(max_length=10, choices=FormatoLibro.choices, blank=True, null=True)
     ano_pub = models.DateField(blank=True, null=True)
     ano_pub_og = models.DateField(blank=True, null=True)
     portada = models.CharField(max_length=200, blank=True, null=True)
@@ -93,14 +92,13 @@ class UsuarioLibro(models.Model):
     serie = models.ForeignKey(Serie, blank=True, null=True, on_delete=models.SET_NULL)
     numero_en_serie = models.IntegerField(blank=True, null=True)
 
-    ESTADOS_LECTURA = [
-        ('leido', 'Leído'),
-        ('leyendo', 'Leyendo'),
-        ('ab', 'Abandonado'),
-        ('s_e', 'Sin empezar')
-    ]
+    class EstadosLectura(models.TextChoices):
+        LEIDO = "leido", "Leído"
+        LEYENDO = "leyendo", "Leyendo"
+        ABANDONADO = "ab", "Abandonado"
+        SIN_EMPEZAR = "s_e", "Sin empezar"
 
-    estado = models.CharField(max_length=10, choices=ESTADOS_LECTURA, blank=True, null=True, default='s_e')
+    estado = models.CharField(max_length=10, choices=EstadosLectura.choices, blank=True, null=True, default='s_e')
     favorito = models.BooleanField(default=False)
     publico = models.BooleanField(default=False)
     fecha_anadido = models.DateTimeField(auto_now_add=True)
@@ -122,14 +120,13 @@ class Amistad(models.Model):
     usuario_a = models.ForeignKey(UsuarioLili, on_delete=models.CASCADE, related_name='amistades_enviadas')
     usuario_b = models.ForeignKey(UsuarioLili, on_delete=models.CASCADE, related_name='amistades_recibidas')
 
-    ESTADOS_AMISTAD = [
-        ('s_s', 'Sin solicitar'),
-        ('pen', 'Pendiente'),
-        ('ac', 'Aceptada'),
-        ('blo', 'Bloqueada'),
-    ]
+    class EstadosAmistad(models.TextChoices):
+        SIN_SOLICITAR = 's_s', 'Sin solicitar'
+        PENDIENTE = 'pen', 'Pendiente'
+        ACEPTADA = 'ac', 'Aceptada'
+        BLOQUEADA = 'blo', 'Bloqueada'
 
-    estado = models.CharField(max_length=16, choices=ESTADOS_AMISTAD, default='s_s')
+    estado = models.CharField(max_length=16, choices=EstadosAmistad.choices, default='s_s')
     fecha_creacion = models.DateField(auto_now_add=True)
     fecha_actualizacion = models.DateField(auto_now=True)
 
@@ -163,13 +160,12 @@ class Prestamo(models.Model):
     fecha_inicio = models.DateField(blank=True, null=True)
     fecha_fin = models.DateField(blank=True, null=True)
 
-    ESTADOS_PRESTAMO = [
-        ('activo', 'Activo'),
-        ('devuelto', 'Devuelto'),
-        ('solicitado', 'Solicitado'),
-    ]
+    class EstadosPrestamo(models.TextChoices):
+        ACTIVO = 'activo', 'Activo'
+        DEVUELTO = 'devuelto', 'Devuelto'
+        SOLICITADO = 'solicitado', 'Solicitado'
 
-    estado = models.CharField(max_length=16, choices=ESTADOS_PRESTAMO, default='activo')
+    estado = models.CharField(max_length=16, choices=EstadosPrestamo.choices, default='activo')
 
     class Meta:
         verbose_name_plural = 'Prestamos'

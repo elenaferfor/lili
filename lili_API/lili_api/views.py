@@ -136,8 +136,7 @@ class UsuarioLibroView(ModelViewSet):
         libro = self.get_object()
         nuevo_estado = request.data.get('estado')
 
-        estados_validos = [estado[0] for estado in UsuarioLibro.ESTADOS_LECTURA]
-        if nuevo_estado not in estados_validos:
+        if nuevo_estado not in UsuarioLibro.EstadosLectura.values:
             return Response(
                 {"error": "El estado no es válido"},
                 status=status.HTTP_400_BAD_REQUEST
@@ -210,7 +209,7 @@ class UsuarioLibroView(ModelViewSet):
         usuario_libro, _ = UsuarioLibro.objects.get_or_create(
             usuario=request.user,
             libro=libro_id,
-            defaults={'estado': UsuarioLibro.ESTADOS_LECTURA.s_e}
+            defaults={'estado': UsuarioLibro.EstadosLectura.SIN_EMPEZAR}
         )
 
         # Categoría ID o nombre
@@ -315,7 +314,7 @@ class AmistadView(ModelViewSet):
                 status=status.HTTP_403_FORBIDDEN
             )
 
-        amistad.estado = Amistad.ESTADOS_AMISTAD.ac
+        amistad.estado = Amistad.EstadosAmistad.ACEPTADA
         amistad.save()
         return Response(
             {"mensaje": "Amistad aceptada"},
@@ -331,7 +330,7 @@ class AmistadView(ModelViewSet):
                 status=status.HTTP_403_FORBIDDEN
             )
 
-        amistad.estado = Amistad.ESTADOS_AMISTAD.s_s
+        amistad.estado = Amistad.EstadosAmistad.SIN_SOLICITAR
         amistad.save()
         return Response(
             {"mensaje": "Amistad ignorada"},
@@ -347,7 +346,7 @@ class AmistadView(ModelViewSet):
                 status=status.HTTP_403_FORBIDDEN
             )
 
-        amistad.estado = Amistad.ESTADOS_AMISTAD.blo
+        amistad.estado = Amistad.EstadosAmistad.BLOQUEADA
         amistad.save()
         return Response(
             {"mensaje": "Usuario bloqueado"},
@@ -391,7 +390,7 @@ class PrestamoView(ModelViewSet):
                 status=status.HTTP_403_FORBIDDEN
             )
 
-        prestamo.estado = Prestamo.ESTADOS_PRESTAMO.activo
+        prestamo.estado = Prestamo.EstadosPrestamo.ACTIVO
         prestamo.fecha_inicio = datetime.now()
         prestamo.save()
         return Response(
@@ -408,7 +407,7 @@ class PrestamoView(ModelViewSet):
                 status=status.HTTP_403_FORBIDDEN
             )
 
-        prestamo.estado = Prestamo.ESTADOS_PRESTAMO.devuelto
+        prestamo.estado = Prestamo.EstadosPrestamo.DEVUELTO
         prestamo.fecha_fin = datetime.now()
         prestamo.save()
         return Response(
@@ -420,7 +419,7 @@ class PrestamoView(ModelViewSet):
     def recibidos(self, request):
         prestamos_recibidos = Prestamo.objects.filter(
             prestatario = request.user,
-            estado = "activo"
+            estado = Prestamo.EstadosPrestamo.ACTIVO
         )
         return Response(
             PrestamoSerializer(prestamos_recibidos, many=True).data,
@@ -442,7 +441,7 @@ class PrestamoView(ModelViewSet):
     def solicitados_por_mi(self, request):
         prestamos_solicitados = Prestamo.objects.filter(
             prestatario = request.user,
-            estado = Prestamo.ESTADOS_PRESTAMO.solicitado
+            estado = Prestamo.EstadosPrestamo.SOLICITADO
         )
         return Response(
             PrestamoSerializer(prestamos_solicitados, many=True).data,
@@ -453,7 +452,7 @@ class PrestamoView(ModelViewSet):
     def solicitados_a_mi(self, request):
         prestamos_solicitados = Prestamo.objects.filter(
             usuario_libro__usuario = request.user,
-            estado = Prestamo.ESTADOS_PRESTAMO.solicitado
+            estado = Prestamo.EstadosPrestamo.SOLICITADO
         )
         return Response(
             PrestamoSerializer(prestamos_solicitados, many=True).data,
