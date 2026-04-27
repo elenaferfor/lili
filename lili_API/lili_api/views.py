@@ -10,7 +10,8 @@ from rest_framework.permissions import AllowAny, IsAdminUser, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 
-from .filters import UsuarioLibroFilter, AmistadFilter, PrestamoFilter, NotificacionFilter, LibroCategoriaFilter, LibroFilter
+from .filters import UsuarioLibroFilter, AmistadFilter, PrestamoFilter, NotificacionFilter, LibroCategoriaFilter, \
+    LibroFilter
 from .models import Autor, Libro, UsuarioLili, Amistad, Prestamo, Serie, Categoria, UsuarioLibro, Notificacion, \
     LibroCategoria, Editorial
 from lili_api.serializers import AutorSerializer, LibroSerializer, UsuarioLiliSerializer, SerieSerializer, \
@@ -291,7 +292,7 @@ class UsuarioLibroView(ModelViewSet):
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
     filterset_class = UsuarioLibroFilter
     search_fields = ['libro__titulo', 'serie__nombre']
-    ordering_fields = ['estado', 'fecha_anadido']
+    ordering_fields = ['estado', 'fecha_anadido', 'libro__titulo']
 
     # Permisos: cada usuario puede cambiar sus cosas y el admin las de todos
     def get_permissions(self):
@@ -377,7 +378,7 @@ class PrestamoView(ModelViewSet):
     def get_queryset(self):
         if self.request.user.is_staff:
             return Prestamo.objects.all().select_related('usuario_libro', 'prestatario')
-        return Prestamo.objects.filter(Q(usuario_libro__usuario__username__pk=self.request.user.pk) | Q(prestatario__username__pk=self.request.user.pk)).select_related('usuario_libro', 'prestatario')
+        return Prestamo.objects.filter(Q(usuario_libro__usuario__pk=self.request.user.pk) | Q(prestatario__pk=self.request.user.pk)).select_related('usuario_libro', 'prestatario')
 
     serializer_class = PrestamoSerializer
 
@@ -419,7 +420,7 @@ class PrestamoView(ModelViewSet):
     def recibidos(self, request):
         prestamos_recibidos = Prestamo.objects.filter(
             prestatario = request.user,
-            estado = Prestamo.ESTADOS_PRESTAMO.activo
+            estado = "activo"
         )
         return Response(
             PrestamoSerializer(prestamos_recibidos, many=True).data,
@@ -430,7 +431,7 @@ class PrestamoView(ModelViewSet):
     def cedidos(self, request):
         prestamos_cedidos = Prestamo.objects.filter(
             usuario_libro__usuario = request.user,
-            estado = Prestamo.ESTADOS_PRESTAMO.activo
+            estado = "activo"
         )
         return Response(
             PrestamoSerializer(prestamos_cedidos, many=True).data,
