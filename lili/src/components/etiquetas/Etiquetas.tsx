@@ -2,6 +2,7 @@ import './Etiquetas.css';
 import {useEffect, useState} from "react";
 import api from "../../api/Axios.tsx";
 import BotonEtiqueta from "./BotonEtiqueta.tsx";
+import NuevaEtiqueta from "./NuevaEtiqueta.tsx";
 
 const Etiquetas = (props: any) => {
     
@@ -29,15 +30,11 @@ const Etiquetas = (props: any) => {
     
     return <div className="tags">
         <div className="tags_ppales">
-
-            { /* TODO: Al seleccionar una categoría se queda marcada y hace llamada filtrada */ }
-            
             <BotonEtiqueta nombreBoton={`Todos ${catsUsuario.length}`} index={0} className={tagActivo === 0 ? "activo" : ""} onClick={onClickTag}/>
             <BotonEtiqueta nombreBoton="Leyendo" index={1} className={tagActivo === 1 ? "activo" : ""} onClick={onClickTag}/>
             <BotonEtiqueta nombreBoton="Deseos" index={2} className={tagActivo === 2 ? "activo" : ""} onClick={onClickTag}/>
             <BotonEtiqueta nombreBoton="Prestados" index={3} className={tagActivo === 3 ? "activo" : ""} onClick={onClickTag}/>
             <BotonEtiqueta nombreBoton="Préstamos" index={4} className={tagActivo === 4 ? "activo" : ""} onClick={onClickTag}/>
-            
         </div>
         <div className="tags_usuario">
             {
@@ -51,7 +48,7 @@ const Etiquetas = (props: any) => {
                             onClick={onClickTag}
                         />)
             }
-            
+            <NuevaEtiqueta />
             <button className="crear"><i className="material-symbols-rounded" onClick={crearTag}>add</i> Crear categoría</button>
         </div>
     </div>

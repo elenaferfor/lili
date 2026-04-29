@@ -23,18 +23,25 @@ const Categorias = () => {
         if(tag === "Leyendo"){
             setFiltroActual("/libros_usuarios/leyendo");
             setTipoJson("estado");
+            setTituloActual("Leyendo");
         }else if(tag === "Prestados"){
             setFiltroActual("/prestamos/cedidos");
             setTipoJson("prestamo");
+            setTituloActual("Prestados");
         }else if(tag === "Préstamos"){
             setFiltroActual("/prestamos/recibidos");
             setTipoJson("prestamo");
-        }else{
+            setTituloActual("Préstamos");
+        }else if(tag !== ""){
             setFiltroActual("/libros_usuarios/?ordering=libro__titulo&categoria_nombre=" + tag);
             setTipoJson("categoria");
+            setTituloActual(tag);
+        }else{
+            setFiltroActual("/libros_usuarios/?ordering=libro__titulo");
+            setTipoJson("categoria");
+            setTituloActual("Todos los libros");
         }
-    } 
-    
+    }
     
     return <>
         <header id="header">
@@ -49,8 +56,6 @@ const Categorias = () => {
                 <button onClick={() => navigate(-1)} className="volver">Volver</button>
                 <div className="secciones">
                     <Etiquetas onChangeTag={onChangeTag}/>
-                    { /* TODO: enviar la llamada según la categoría marcada. También mandarle el título
-                     */ }
                     <GetLibrosCategoria tipoJson={tipoJson} tituloCat={tituloActual} filtroBusqueda={filtroActual}/>
                 </div>
             </div>

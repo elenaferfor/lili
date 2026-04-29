@@ -14,7 +14,7 @@
     gap: 1rem .5rem
 }
 
-.tags button{
+.tags button, .tags input{
     padding: .5rem .8rem;
     background-color: var(--blue_main);
     border: none;

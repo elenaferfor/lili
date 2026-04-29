@@ -1,9 +1,21 @@
 import "../section/Section.css";
 import "./InfoLibro.css"
+import EstadoLecturaLibro from "./EstadoLecturaLibro.tsx";
+import EstadoCategoriasLibro from "./EstadoCategoriasLibro.tsx";
+import {useState} from "react";
+import EstadoPrestamo from "./EstadoPrestamo.tsx";
 
 const InfoLibro = (props: any) => {
     
-    console.log(props.data);
+    const [isFav, setIsFav] = useState(false);
+    const [favClase, setFavClase] = useState("");
+    const [favIconoClase, setFavIconoClase] = useState("material-symbols-rounded notificaciones");
+    
+    const toggleFav = () => {
+        setIsFav(!isFav);
+        setFavClase(isFav ? "estadoFavorito" : "");
+        setFavIconoClase(isFav ? "material-symbols-rounded notificaciones icon_fill" : "material-symbols-rounded notificaciones");
+    }
     
     return <section>
         <div className="detalleLibro">
@@ -21,32 +33,11 @@ const InfoLibro = (props: any) => {
                     <p><span>Año de la edición:</span> {props.data.ano_pub}</p>
                     <p><span>Editorial:</span> {props.data.editorial_detalle?.nombre}</p>
                     <div className="detalleLibroEstados">
-                        <button className="">Eliminar de <i className="material-symbols-rounded">close</i></button>
-                        <div id="estadoLectura">
-                            <button className="estadoVerde">Leído <i className="material-symbols-rounded">check</i>
-                            </button>
-                            <ul className="estadoLecturaOpciones">
-                                <li>
-                                    <button className="estadoVerde">Leído <i
-                                        className="material-symbols-rounded">check</i></button>
-                                </li>
-                                <li>
-                                    <button className="">Leyendo <i className="material-symbols-rounded">menu_book</i>
-                                    </button>
-                                </li>
-                                <li>
-                                    <button className="">Abandonado <i className="material-symbols-rounded">close</i>
-                                    </button>
-                                </li>
-                                <li>
-                                    <button className="">Sin empezar</button>
-                                </li>
-                            </ul>
-                        </div>
-                        <button className="estadoFavorito">Favorito <i
-                            className="material-symbols-rounded notificaciones icon_fill">favorite</i></button>
-                        <button className="estadoPrestar">Prestar <i
-                            className="material-symbols-rounded notificaciones">partner_exchange</i></button>
+                        <EstadoCategoriasLibro/>
+                        <EstadoLecturaLibro/>
+                        <button className={favClase} onClick={toggleFav}>Favorito <i
+                            className={favIconoClase}>favorite</i></button>
+                        <EstadoPrestamo/>
                     </div>
                 </div>
             </div>

@@ -62,6 +62,7 @@
 
     padding: .2rem .7rem;
     border: none;
+    outline: none;
     border-radius: .4rem;
     background-color: var(--blue_grey_second);
     color: var(--dark_blue);
@@ -89,43 +90,57 @@
     color: var(--green);
 }
 
-.detalleLibroEstados button:hover, #estadoLectura button:hover{
+/* DESPLEGABLES ESTADOS */
+#estadoLectura .estadoLecturaOpciones button, #estadoCategorias .categorias button{
+    background-color: unset;
+    width: 100%;
+    justify-content: flex-start;
+}
+
+/* HOVERS */
+.detalleLibroEstados button:hover, #estadoLectura button:hover, #estadoCategorias button:hover{
     color: var(--dark_blue);
     background-color: var(--light_blue_second);
 }
 
-.detalleLibroEstados button:active, #estadoLectura button:active{
+#estadoLectura .estadoLecturaOpciones button:hover, .categorias button:hover {
+    border-radius: 0;
+}
+
+.detalleLibroEstados button:active, #estadoLectura button:active, #estadoCategorias button:active{
     color: var(--white);
     background-color: var(--dark_blue);
 }
 
-#estadoLectura .estadoLecturaOpciones{
-    list-style: none;
-    position: absolute;
-    width: max-content;
-    display: none;
-}
-
-#estadoLectura .estadoLecturaOpciones button{
+#estadoLectura .estadoLecturaOpciones button:active, .categorias button:active {
     border-radius: 0;
 }
 
-#estadoLectura.desplegado > button:first-child{
-    border-radius: .4rem .4rem 0 0;
+/* FONDO DESPLEGABLES */
+#estadoLectura .estadoLecturaOpciones, .categorias{
+    position: absolute;
+    top: 105%;
+    width: max-content;
+    border-radius: .8rem;
+    background-color: var(--blue_grey_second);
+    overflow: hidden;
 }
 
-#estadoLectura .estadoLecturaOpciones li:last-child button{
+/* OPCIONES DESPLEGABLE CATEGORÍAS */
+#estadoCategorias .categorias .catActiva{
+    background-color: var(--light_blue_second);
+    color: var(--dark_blue);
+    border-radius: 0;
+}
+
+#estadoCategorias .categorias .catActiva:first-child {
+    border-radius: .4rem .4rem 0 0;
+}
+#estadoCategorias .categorias .catActiva:last-child {
     border-radius: 0 0 .4rem .4rem;
 }
 
-#estadoLectura.desplegado button{
-    width: 8rem;
-}
-
-#estadoLectura.desplegado .estadoLecturaOpciones{
-    display: block;
-}
-
+/* COLORES ESTADO DE LECTURA */
 #estadoLectura .estadoVerde{
     background-color: var(--green);
     color: var(--dark_blue);
@@ -141,8 +156,8 @@
     color: var(--dark_blue);
 }
 
-/* SELECTOR LECTURA */
-#estadoLectura{
+/* SELECTORES ESTADOS */
+#estadoLectura, #estadoCategorias{
     position: relative;
 }
 
