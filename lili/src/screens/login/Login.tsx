@@ -1,7 +1,7 @@
 import {type ChangeEvent, type SyntheticEvent, useState} from "react";
-import {Link, useNavigate} from "react-router-dom";
+import {Link, useLocation, useNavigate} from "react-router-dom";
 import {useAuth} from "../../auth/AuthContext.tsx";
-import './Login.css'
+import './LoginRegistro.css'
 
 const Login = () => {
 
@@ -11,6 +11,9 @@ const Login = () => {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
+    
+    const location = useLocation();
+    const successMessage = location.state?.message;
     
     const OnChangeUsername = (e: ChangeEvent<HTMLInputElement>) => {
         setUsername(e.target.value);
@@ -45,18 +48,19 @@ const Login = () => {
             <Link to="/" className="logo_link"><img src="./logo_dark.svg" alt="logo"/></Link>
         </div>
         <form id="login" onSubmit={OnSubmitCustom}>
-                <div className="username">
-                    <input type="text" name="f_username" id="f_username" onChange={OnChangeUsername} value={username} placeholder="Usuario" required/>
-                </div>
+            {successMessage && <p>{successMessage}</p>}
+            <div className="username">
+                <input type="text" name="f_username" id="f_username" onChange={OnChangeUsername} value={username} placeholder="Usuario" required/>
+            </div>
 
-                <div className="pass">
-                    <input type="password" name="f_pass" id="f_pass" onChange={OnChangePassword} value={password} placeholder="****" required/>
-                </div>
+            <div className="pass">
+                <input type="password" name="f_pass" id="f_pass" onChange={OnChangePassword} value={password} placeholder="****" required/>
+            </div>
             <p className="error">{error}</p>
             <button className="boton_login" type="submit">Iniciar sesión</button>
         </form>
         <p className="p_registrate">¿No tienes cuenta?</p>
-        <p className="link_registro">Regístrate</p>
+        <Link to="/register" className="link_registro">Regístrate</Link>
     </div>
 
 }

@@ -17,7 +17,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from lili_api.routers import router as lili_router
-from lili_api.authentication.views import LoginView, LogoutView, RefreshView, MeView
+from lili_api.authentication.views import LoginView, LogoutView, RefreshView, MeView, RegisterView
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
 urlpatterns = [
@@ -28,5 +28,6 @@ urlpatterns = [
     path('api/auth/refresh/', RefreshView.as_view()),
     path('api/auth/me/', MeView.as_view()),
     path('api/auth/logout/', LogoutView.as_view()),
+    path('api/auth/register/', RegisterView.as_view()),
     path('api/', include(lili_router.urls)),
 ]

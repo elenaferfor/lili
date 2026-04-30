@@ -102,7 +102,6 @@ class MeView(APIView):
         return Response(
             {'id': request.user.pk, 'username': request.user.get_username(), })
 
-
 class LogoutView(APIView):
     permission_classes = [permissions.AllowAny]
 
@@ -125,3 +124,36 @@ class LogoutView(APIView):
         )
         res.delete_cookie('refresh_token', path='/auth/')
         return res
+
+class RegisterView(APIView):
+    permission_classes = [permissions.AllowAny]
+
+    def post(self, request):
+        username = request.data.get('username')
+        password = request.data.get('password')
+        email = request.data.get('email')
+
+        if not username or not password or not email:
+            return Response(
+                {'detail': 'Todos los campos son obligatorios'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        if UsuarioLili.objects.filter(username=username).exists():
+            return Response(
+                {'detail': 'El usuario ya existe'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        if UsuarioLili.objects.filter(email=email).exists():
+            return Response(
+                {'detail': 'El email ya está registrado'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        user = UsuarioLili.objects.create_user(username=username, email=email, password=password)
+
+        return Response(
+            {'detail': 'Usuario creado correctamente'},
+            status=status.HTTP_201_CREATED
+        )

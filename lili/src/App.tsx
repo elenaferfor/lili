@@ -7,6 +7,7 @@ import RutaProtegida from "./components/ruta_protegida/RutaProtegida.tsx";
 import DetalleLibro from "./screens/detalle_libro/DetalleLibro.tsx";
 import Categorias from "./screens/categorias/Categorias.tsx";
 import {QueryClient, QueryClientProvider} from "@tanstack/react-query";
+import Register from "./screens/register/Register.tsx";
 
 const queryClient = new QueryClient();
 
@@ -18,6 +19,7 @@ function App() {
               <AuthProvider>
                 <Routes>
                     <Route path="/login" element={<Login/>} />
+                    <Route path="/register" element={<Register/>} />
                     <Route path="/" element={
                         <RutaProtegida>
                             <Index/>
