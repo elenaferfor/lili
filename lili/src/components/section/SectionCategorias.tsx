@@ -2,6 +2,9 @@ import './SectionCategorias.css';
 
 const SectionCategorias = (props: any ) => {
 
+    
+    
+    
     return <section>
         <div className="h1_herramientas">
             <h1>{props.tituloCat} ({props.numCat})</h1>

@@ -14,7 +14,7 @@
     gap: 1rem .5rem
 }
 
-.tags button, .tags input{
+.tags button, .tags .inputDiv{
     padding: .5rem .8rem;
     background-color: var(--blue_main);
     border: none;
@@ -30,9 +30,14 @@
     transition: all 200ms ease-in-out;
 }
 
+.tags button.crear{
+    display: flex;
+    justify-content: center;
+    gap: .2rem;
+}
+
 .tags button i{
     font-size: 1rem;
-    transform: translateY(20%);
 }
 
 .tags button:hover, .tags button.activo:hover, .tags button.crear:hover{
@@ -51,6 +56,41 @@
 }
 
 .tags button.crear{
+    background-color: var(--light_blue_second);
+    color: var(--dark_blue);
+}
+
+/* INPUT PARA CREAR ETIQUETAS */
+.tags .inputDiv{
+    display: flex;
+    align-items: center;
+    gap: .2rem;
+}
+
+.tags .inputDiv input{
+    background-color: unset;
+    border: none;
+    outline: none;
+    color: var(--dark_blue);
+    font-family: 'Jost', sans-serif;
+    font-weight: bold;
+    width: 5rem;
+}
+
+.tags .inputDiv button{
+    padding: .1rem;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+.tags .inputDiv button:hover{
+    background-color: var(--dark_blue);
+    color: var(--white);
+    border-radius: 5rem;
+}
+
+.tags .inputDiv button:active{
     background-color: var(--light_blue_second);
     color: var(--dark_blue);
 }

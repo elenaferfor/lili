@@ -47,7 +47,7 @@ class EditorialView(ModelViewSet):
         return [IsAdminUser()]
 
 class LibroView(ModelViewSet):
-    queryset = Libro.objects.all().select_related('editorial').prefetch_related('autores')
+    queryset = Libro.objects.all().select_related('editorial').prefetch_related('autores').order_by('id')
     serializer_class = LibroSerializer
 
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
@@ -127,7 +127,7 @@ class UsuarioLibroView(ModelViewSet):
 
     def get_queryset(self):
         if self.request.user.is_staff:
-            return UsuarioLibro.objects.all().select_related('usuario', 'libro', 'serie').prefetch_related('categorias')
+            return UsuarioLibro.objects.all().select_related('usuario', 'libro', 'serie').prefetch_related('categorias').order_by('id')
         return UsuarioLibro.objects.filter(usuario__pk=self.request.user.pk).select_related('usuario', 'libro', 'serie').prefetch_related('categorias')
 
     # Cambiar estado de libro
@@ -145,7 +145,7 @@ class UsuarioLibroView(ModelViewSet):
         libro.estado = nuevo_estado
         libro.save()
         return Response(
-            {"estado": f'Estado de {libro.titulo} cambiado correctamente a {libro.estado}'},
+            {"estado": f'Estado de {libro.libro.titulo} cambiado correctamente a {libro.estado}'},
             status=status.HTTP_200_OK
         )
 

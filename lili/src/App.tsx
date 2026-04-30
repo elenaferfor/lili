@@ -6,33 +6,37 @@ import AuthProvider from "./auth/AuthContext.tsx";
 import RutaProtegida from "./components/ruta_protegida/RutaProtegida.tsx";
 import DetalleLibro from "./screens/detalle_libro/DetalleLibro.tsx";
 import Categorias from "./screens/categorias/Categorias.tsx";
+import {QueryClient, QueryClientProvider} from "@tanstack/react-query";
 
+const queryClient = new QueryClient();
 
 function App() {
 
   return (
-      <BrowserRouter>
-          <AuthProvider>
-            <Routes>
-                <Route path="/login" element={<Login/>} />
-                <Route path="/" element={
-                    <RutaProtegida>
-                        <Index/>
-                    </RutaProtegida>
-                } />
-                <Route path="/categorias" element={
-                    <RutaProtegida>
-                        <Categorias/>
-                    </RutaProtegida>
-                }/>
-                <Route path="/libro/:libroId" element={
-                    <RutaProtegida>
-                        <DetalleLibro/>
-                    </RutaProtegida>
-                }/>
-            </Routes>
-          </AuthProvider>
-      </BrowserRouter>
+      <QueryClientProvider client={queryClient}>
+          <BrowserRouter>
+              <AuthProvider>
+                <Routes>
+                    <Route path="/login" element={<Login/>} />
+                    <Route path="/" element={
+                        <RutaProtegida>
+                            <Index/>
+                        </RutaProtegida>
+                    } />
+                    <Route path="/categorias" element={
+                        <RutaProtegida>
+                            <Categorias/>
+                        </RutaProtegida>
+                    }/>
+                    <Route path="/libro/:libroId" element={
+                        <RutaProtegida>
+                            <DetalleLibro/>
+                        </RutaProtegida>
+                    }/>
+                </Routes>
+              </AuthProvider>
+          </BrowserRouter>
+      </QueryClientProvider>
   )
 }
 

@@ -10,6 +10,8 @@ import GetLibrosCategoria from "../../components/get_libros/GetLibrosCategoria.t
 
 const Categorias = () => {
     
+    
+    
     const navigate = useNavigate();
     const [filtroActual, setFiltroActual] = useState("/libros_usuarios/?ordering=libro__titulo");
     const [tituloActual, setTituloActual] = useState("Todos los libros");
@@ -20,6 +22,7 @@ const Categorias = () => {
     }, []);
     
     const onChangeTag = (tag: string) => {
+        // Leyendo, prestados y préstamos no pertenecen a categorías, son llamadas a actions específicos
         if(tag === "Leyendo"){
             setFiltroActual("/libros_usuarios/leyendo");
             setTipoJson("estado");
@@ -32,10 +35,14 @@ const Categorias = () => {
             setFiltroActual("/prestamos/recibidos");
             setTipoJson("prestamo");
             setTituloActual("Préstamos");
+            
+            // Si la categoría tiene nombre, se llama a un filtro por nombre de categoría
         }else if(tag !== ""){
             setFiltroActual("/libros_usuarios/?ordering=libro__titulo&categoria_nombre=" + tag);
             setTipoJson("categoria");
             setTituloActual(tag);
+            
+            // La otra opción es "todos", que trae todos los libros del usuario
         }else{
             setFiltroActual("/libros_usuarios/?ordering=libro__titulo");
             setTipoJson("categoria");

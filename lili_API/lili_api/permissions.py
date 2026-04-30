@@ -29,7 +29,7 @@ class OwnProfilePermission(BasePermission):
         if request.user.is_staff:
             return True
 
-        propio = obj == request.user
+        propio = obj.usuario == request.user
         return propio
 
 class LibroCategoriaPermission(BasePermission):

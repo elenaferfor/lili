@@ -1,8 +1,19 @@
 import './Etiquetas.css';
-import {useEffect, useState} from "react";
-import api from "../../api/Axios.tsx";
+import {useEffect, useRef, useState} from "react";
 import BotonEtiqueta from "./BotonEtiqueta.tsx";
 import NuevaEtiqueta from "./NuevaEtiqueta.tsx";
+import {useCategorias} from "../../hooks/useUsuarioLibro.tsx";
+import {useMutation, useQueryClient} from "@tanstack/react-query";
+import api from "../../api/Axios.tsx";
+import {useAuth} from "../../auth/AuthContext.tsx";
+
+type SyncEstado = "idle" | "pendiente" | "enviando" | "ok";
+
+type CatPost = {
+    "usuario": number | undefined;
+    "nombre": string;
+    "publica": boolean;
+}
 
 const Etiquetas = (props: any) => {
     
@@ -10,12 +21,24 @@ const Etiquetas = (props: any) => {
     const categoriasPpales = ["Leyendo", "Lista de deseos", "Prestados", "Préstamos"];
     const [tagActivo, setTagActivo] = useState(0);
     
+    const queryClient = useQueryClient();
+    const [sync, setSync] = useState<SyncEstado>("idle");
+    const [nuevaCategoria, setNuevaCategoria] = useState<CatPost>();
+    const { user } = useAuth();
+    
+    const [inputIsOpen, setInputIsOpen] = useState<boolean>(false);
+    const inputRef = useRef<HTMLDivElement>(null);
+    const btnCrearRef = useRef<HTMLButtonElement>(null);
+    const btnCerrarRef = useRef<HTMLButtonElement>(null);
+    const btnGuardarRef = useRef<HTMLButtonElement>(null);
+    
+    // Traer categorías
+    const { data: categorias } = useCategorias();
     
     useEffect(() => {
-        api.get("/categorias?ordering=nombre").then(response => {
-            setCatsUsuario(response.data.results);
-        });
-    }, []);
+        if(!categorias) return;
+        setCatsUsuario(categorias);
+    }, [categorias]);
     
     const onClickTag = (pos: number, name: string) =>{
         setTagActivo(pos);
@@ -23,14 +46,65 @@ const Etiquetas = (props: any) => {
         console.log(pos + name);
     }
     
-    const crearTag = () => {
-        /* TODO: Añadir funcionalidad de crear categoría */
-        console.log("Por implementar panel para introducir nombre");
+    // Mutación crear categoría
+    const { mutate: crearCategoria } = useMutation({
+        mutationFn: () =>
+            api.post(`/categorias/`, nuevaCategoria),
+        onMutate: () => setSync("enviando"),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["categoriasUsuario"] });
+            setSync("ok");
+            setTimeout(() => setSync("idle"), 1500);
+        },
+        onError: () => setSync("idle"),
+    });
+    
+    
+    // Manejar abrir y cerrar input de crear
+    useEffect(() => {
+        if(inputIsOpen){
+            document.addEventListener("mousedown", cerrarInput);
+        }
+        return () => {
+            document.removeEventListener("mousedown", cerrarInput);
+        }
+    }, [inputIsOpen]);
+    
+    const abrirInput = () => {
+        if(btnCrearRef.current) {
+            setInputIsOpen(true);
+        }
     }
+    
+    const cerrarInput = (e: MouseEvent) => {
+        const clickEnCerrar = btnCerrarRef.current?.contains(e.target as Node);
+        const clickEnInput = inputRef.current?.contains(e.target as Node);
+        const clickEnAbrir = btnCrearRef.current?.contains(e.target as Node);
+            
+        if(clickEnCerrar || (!clickEnInput && !clickEnAbrir)){
+            setInputIsOpen(false);
+        }
+    }
+    
+    const crearTag = (nombre: string) => {
+        setNuevaCategoria({
+            "usuario": user?.id,
+            "nombre": nombre,
+            "publica": true,
+        })
+        crearCategoria();
+        setInputIsOpen(false);
+    }
+
+    const syncIcono = () => {
+        if(sync === "enviando") return <i className="material-symbols-rounded sync-enviando">sync</i>;
+        if(sync === "ok") return <i className="material-symbols-rounded sync-ok">check_circle</i>;
+        return null;
+    };
     
     return <div className="tags">
         <div className="tags_ppales">
-            <BotonEtiqueta nombreBoton={`Todos ${catsUsuario.length}`} index={0} className={tagActivo === 0 ? "activo" : ""} onClick={onClickTag}/>
+            <BotonEtiqueta nombreBoton="Todos" index={0} className={tagActivo === 0 ? "activo" : ""} onClick={onClickTag}/>
             <BotonEtiqueta nombreBoton="Leyendo" index={1} className={tagActivo === 1 ? "activo" : ""} onClick={onClickTag}/>
             <BotonEtiqueta nombreBoton="Deseos" index={2} className={tagActivo === 2 ? "activo" : ""} onClick={onClickTag}/>
             <BotonEtiqueta nombreBoton="Prestados" index={3} className={tagActivo === 3 ? "activo" : ""} onClick={onClickTag}/>
@@ -48,8 +122,10 @@ const Etiquetas = (props: any) => {
                             onClick={onClickTag}
                         />)
             }
-            <NuevaEtiqueta />
-            <button className="crear"><i className="material-symbols-rounded" onClick={crearTag}>add</i> Crear categoría</button>
+            {inputIsOpen &&
+                <NuevaEtiqueta crear={crearTag} inputRef={inputRef} cerrarRef={btnCerrarRef} crearRef={btnGuardarRef} cerrarEtiqueta={cerrarInput} iconoSync={syncIcono}/>}
+            {!inputIsOpen &&
+                <button className="crear" ref={btnCrearRef} onClick={abrirInput}><i className="material-symbols-rounded">add</i> Crear categoría</button>}
         </div>
     </div>
 }

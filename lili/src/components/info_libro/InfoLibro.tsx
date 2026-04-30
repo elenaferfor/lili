@@ -2,20 +2,140 @@ import "../section/Section.css";
 import "./InfoLibro.css"
 import EstadoLecturaLibro from "./EstadoLecturaLibro.tsx";
 import EstadoCategoriasLibro from "./EstadoCategoriasLibro.tsx";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import EstadoPrestamo from "./EstadoPrestamo.tsx";
+import {useParams} from "react-router-dom";
+import {useUsuarioLibro} from "../../hooks/useUsuarioLibro.tsx";
+import {useMutation, useQueryClient} from "@tanstack/react-query";
+import api from "../../api/Axios.tsx";
+import {useAuth} from "../../auth/AuthContext.tsx";
+
+type SyncEstado = "idle" | "pendiente" | "enviando" | "ok";
+
+type PostRequest = {
+    "usuario": number | undefined;
+    "libro": number;
+    "serie": number | null;
+    "numero_en_serie": number | null;
+    "estado": string;
+    "favorito": boolean;
+    "publico": boolean;
+    "categorias": number[];
+};
+
+type Favorito = {
+    isFav: boolean;
+    clase: string;
+    iconoClase: string;
+}
+
+const FAVORITOS: Favorito[] = [
+    { isFav: true, clase: "estadoFavorito", iconoClase: "material-symbols-rounded notificaciones icon_fill"},
+    { isFav: false, clase: "", iconoClase: "material-symbols-rounded notificaciones"}
+]
 
 const InfoLibro = (props: any) => {
+    const { libroId } = useParams();
+    const libroIdNum = Number(libroId);
+    const queryClient = useQueryClient();
+    const [noUsuarioLibro, setNoUsuarioLibro] = useState(true); 
+    const [requestBody, setRequestBody] = useState<PostRequest>();
+    const { user } = useAuth();
     
-    const [isFav, setIsFav] = useState(false);
-    const [favClase, setFavClase] = useState("");
-    const [favIconoClase, setFavIconoClase] = useState("material-symbols-rounded notificaciones");
+    const [isFav, setIsFav] = useState<Favorito>(FAVORITOS[1]);
+    const [syncFav, setSyncFav] = useState<SyncEstado>("idle");
+    const [syncCrear, setSyncCrear] = useState<SyncEstado>("idle");
     
-    const toggleFav = () => {
-        setIsFav(!isFav);
-        setFavClase(isFav ? "estadoFavorito" : "");
-        setFavIconoClase(isFav ? "material-symbols-rounded notificaciones icon_fill" : "material-symbols-rounded notificaciones");
+    // Traer favorito
+    const {data: usuarioLibro} = useUsuarioLibro(libroIdNum);
+    
+    useEffect(() => {
+        if(!usuarioLibro){
+            setNoUsuarioLibro(true);
+            setRequestBody({
+                "usuario": user?.id,
+                "libro": libroIdNum,
+                "serie": null,
+                "numero_en_serie": null,
+                "estado": "s_e",
+                "favorito": false,
+                "publico": true,
+                "categorias": []
+            })
+            return;
+        }
+        setNoUsuarioLibro(false);
+        const fav = usuarioLibro.favorito ? FAVORITOS[0] : FAVORITOS[1];
+        setIsFav(fav);
+    }, [usuarioLibro, user]);
+
+    // Mutación crear libroUsuario
+    const { mutate: crearLibroUsuario } = useMutation({
+        mutationFn: () =>
+            api.post(`/libros_usuarios/`, requestBody),
+        onMutate: () => setSyncCrear("enviando"),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["usuarioLibro", libroIdNum] });
+            setSyncCrear("ok");
+            setTimeout(() => setSyncCrear("idle"), 1500);
+        },
+        onError: () => setSyncCrear("idle"),
+    });
+
+    // Mutación borrar libroUsuario
+    const { mutate: borrarLibroUsuario } = useMutation({
+        mutationFn: () =>
+            api.delete(`/libros_usuarios/${usuarioLibro?.id}/`),
+        onMutate: () => setSyncCrear("enviando"),
+        onSuccess: () => {
+            console.log("DELETE ok, invalidando query...");
+            queryClient.invalidateQueries({ queryKey: ["usuarioLibro", libroIdNum] });
+            setSyncCrear("ok");
+            setTimeout(() => setSyncCrear("idle"), 1500);
+        },
+        onError: (error) => {
+            console.log("DELETE error: ", error);
+            setSyncCrear("idle");
+        }
+    });
+    
+    // Mutación nuevo estado favorito
+    const { mutate: cambiarFavorito } = useMutation({
+        mutationFn: () =>
+            api.post(`/libros_usuarios/${usuarioLibro?.id}/cambiar_favorito/`),
+        onMutate: () => setSyncFav("enviando"),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["usuarioLibro", libroIdNum] });
+            setSyncFav("ok");
+            setTimeout(() => setSyncFav("idle"), 1500);
+        },
+        onError: () => setSyncFav("idle"),
+    });
+    
+    const crearBorrarLibroUsuario = () => {
+        if(noUsuarioLibro) {
+            crearLibroUsuario();
+        }else{
+            borrarLibroUsuario();
+        }
     }
+    
+    const toggleFav = (fav: Favorito) => {
+        setIsFav(fav);
+        cambiarFavorito();
+    }
+
+    const syncIconoFav = () => {
+        if(syncFav === "enviando") return <i className="material-symbols-rounded">sync</i>;
+        if(syncFav === "ok") return <i className="material-symbols-rounded">check_circle</i>;
+        return null;
+    };
+
+    const syncIconoCrear = () => {
+        if(syncCrear === "enviando") return <i className="material-symbols-rounded">sync</i>;
+        if(syncCrear === "ok") return <i className="material-symbols-rounded">check_circle</i>;
+        return null;
+    };
     
     return <section>
         <div className="detalleLibro">
@@ -32,13 +152,22 @@ const InfoLibro = (props: any) => {
                     <p><span>Fecha publicación original:</span> {props.data.ano_pub_og}</p>
                     <p><span>Año de la edición:</span> {props.data.ano_pub}</p>
                     <p><span>Editorial:</span> {props.data.editorial_detalle?.nombre}</p>
-                    <div className="detalleLibroEstados">
-                        <EstadoCategoriasLibro/>
-                        <EstadoLecturaLibro/>
-                        <button className={favClase} onClick={toggleFav}>Favorito <i
-                            className={favIconoClase}>favorite</i></button>
-                        <EstadoPrestamo/>
-                    </div>
+                    { noUsuarioLibro ?
+                        <div className="detalleLibroEstados">
+                            <button className="estadoAnadir" onClick={crearBorrarLibroUsuario}>Añadir
+                                <i className="material-symbols-rounded">add</i>{syncIconoCrear()}</button>
+                        </div>
+                        :
+                        <div className="detalleLibroEstados">
+                            <EstadoCategoriasLibro/>
+                            <EstadoLecturaLibro/>
+                            <button className={isFav.clase} onClick={() => toggleFav(isFav)}>Favorito 
+                                <i className={isFav.iconoClase}>favorite</i>{syncIconoFav()}</button>
+                            <EstadoPrestamo/>
+                            <button onClick={crearBorrarLibroUsuario}>Eliminar
+                                <i className="material-symbols-rounded">close</i>{syncIconoCrear()}</button>
+                        </div>
+                    }
                 </div>
             </div>
             <div className="detalleLibroSinopsis">
