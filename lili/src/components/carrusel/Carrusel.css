@@ -11,8 +11,8 @@
 
 .carruselLibrosCategorias{
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-    justify-content: center;
+    grid-template-columns: repeat(auto-fit, 160px);
+    justify-content: start;
     gap: .5rem 0;
 }
 

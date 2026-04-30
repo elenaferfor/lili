@@ -3,6 +3,17 @@ section .h1_herramientas{
     display: flex;
     align-items: center;
     gap: .2rem;
+    padding: .6rem 0 0;
+}
+
+section .h1_herramientas h1{
+    padding: 0;
+}
+
+section .h1_herramientas .iconosCategorias{
+    align-self: center;
+    display: flex;
+    align-items: center;
 }
 
 section .h1_herramientas > i:nth-child(2){

@@ -2,7 +2,6 @@ import './Etiquetas.css';
 import {useEffect, useRef, useState} from "react";
 import BotonEtiqueta from "./BotonEtiqueta.tsx";
 import NuevaEtiqueta from "./NuevaEtiqueta.tsx";
-import {useCategorias} from "../../hooks/useUsuarioLibro.tsx";
 import {useMutation, useQueryClient} from "@tanstack/react-query";
 import api from "../../api/Axios.tsx";
 import {useAuth} from "../../auth/AuthContext.tsx";
@@ -17,7 +16,6 @@ type CatPost = {
 
 const Etiquetas = (props: any) => {
     
-    const [catsUsuario, setCatsUsuario] = useState<any[]>([]);
     const categoriasPpales = ["Leyendo", "Lista de deseos", "Prestados", "Préstamos"];
     const [tagActivo, setTagActivo] = useState(0);
     
@@ -32,17 +30,9 @@ const Etiquetas = (props: any) => {
     const btnCerrarRef = useRef<HTMLButtonElement>(null);
     const btnGuardarRef = useRef<HTMLButtonElement>(null);
     
-    // Traer categorías
-    const { data: categorias } = useCategorias();
-    
-    useEffect(() => {
-        if(!categorias) return;
-        setCatsUsuario(categorias);
-    }, [categorias]);
-    
     const onClickTag = (pos: number, name: string) =>{
         setTagActivo(pos);
-        props.onChangeTag(name);
+        props.onChangeTag(name, pos);
         console.log(pos + name);
     }
     
@@ -112,8 +102,8 @@ const Etiquetas = (props: any) => {
         </div>
         <div className="tags_usuario">
             {
-                catsUsuario.filter( cat => !categoriasPpales.includes(cat.nombre) )
-                    .map( (cat, index) => 
+                props.catsUsuario.filter( (cat: { nombre: string; }) => !categoriasPpales.includes(cat.nombre) )
+                    .map( (cat: { nombre: any; }, index: number) => 
                         <BotonEtiqueta
                             key={index}
                             nombreBoton={cat.nombre}

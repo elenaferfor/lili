@@ -36,7 +36,13 @@ const GetLibrosCategoria = (props:any) => {
         });
     }, [props.filtroBusqueda]);
     
-    return <SectionCategorias listaLibros={listaLibros}  tituloCat={props.tituloCat} numCat={listaLibros.length} />
+    return <SectionCategorias catsUsuario={props.catsUsuario}
+                              listaLibros={listaLibros}
+                              tituloCat={props.tituloCat}
+                              numCat={listaLibros.length}
+                              isTodos={props.isTodos}
+                              onBorrarCategoria={props.onBorrarCategoria}
+    />
     
 }
 

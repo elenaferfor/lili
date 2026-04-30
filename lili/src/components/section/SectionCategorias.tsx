@@ -1,15 +1,93 @@
 import './SectionCategorias.css';
+import {useMutation, useQueryClient} from "@tanstack/react-query";
+import api from "../../api/Axios.tsx";
+import {useEffect, useState} from "react";
+
+type SyncEstado = "idle" | "pendiente" | "enviando" | "ok";
+
+type Categoria = {
+    id: number;
+    nombre: string;
+    publica: boolean;
+}
 
 const SectionCategorias = (props: any ) => {
 
+    const [syncPublica, setSyncPublica] = useState<SyncEstado>("idle");
+    const [syncBorrar, setSyncBorrar] = useState<SyncEstado>("idle");
+    const queryClient = useQueryClient();
+    
+    const [catActual, setCatActual] = useState<Categoria>();
+    
+    useEffect(() => {
+        setCatActual(
+            props.catsUsuario.filter((cat: { nombre: any; }) => cat.nombre === props.tituloCat)[0]
+        );
+        
+    }, [props.tituloCat, props.catsUsuario]);
+
+    // Mutación cambiar pública-privada
+    const { mutate: cambiarPublica } = useMutation({
+        mutationFn: () =>
+            api.patch(`/categorias/${catActual?.id}/`, { publica: !catActual?.publica }),
+        onMutate: () => setSyncPublica("enviando"),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["categoriasUsuario"] });
+            setSyncPublica("ok");
+            setTimeout(() => setSyncPublica("idle"), 1500);
+        },
+        onError: () => setSyncPublica("idle"),
+    });
+
+    // Mutación cambiar pública-privada
+    const { mutate: borrar } = useMutation({
+        mutationFn: () =>
+            api.delete(`/categorias/${catActual?.id}/`),
+        onMutate: () => setSyncBorrar("enviando"),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["categoriasUsuario"] });
+            setSyncBorrar("ok");
+            setTimeout(() => setSyncBorrar("idle"), 1500);
+            props.onBorrarCategoria();
+        },
+        onError: () => setSyncBorrar("idle"),
+    });
     
     
+    const togglePublica = () => {
+        cambiarPublica();
+    }
+    
+    const borrarCategoria = () => {
+        borrar();
+    }
+
+    const syncIconoPublica = () => {
+        if(syncPublica === "enviando") return <i className="material-symbols-rounded">sync</i>;
+        if(syncPublica === "ok") return <i className="material-symbols-rounded">check_circle</i>;
+        return null;
+    };
+
+    const syncIconoBorrar = () => {
+        if(syncBorrar === "enviando") return <i className="material-symbols-rounded">sync</i>;
+        if(syncBorrar === "ok") return <i className="material-symbols-rounded">check_circle</i>;
+        return null;
+    };
     
     return <section>
         <div className="h1_herramientas">
             <h1>{props.tituloCat} ({props.numCat})</h1>
-            <i className="material-symbols-rounded icon_fill dark_blue">lock</i>
-            <i className="material-symbols-rounded icon_fill dark_blue">settings</i>
+            {!props.isTodos &&
+                <div className="iconosCategorias">
+                    { catActual?.publica ?
+                        <i className="material-symbols-rounded icon_fill dark_blue" onClick={togglePublica}>lock_open</i> :
+                        <i className="material-symbols-rounded icon_fill dark_blue" onClick={togglePublica}>lock</i>
+                    }
+                    <i className="material-symbols-rounded icon_fill dark_blue" onClick={borrarCategoria}>close</i>
+                    {syncIconoPublica()}
+                    {syncIconoBorrar()}
+                </div>
+            }
         </div>
         <div className="filtro_abc">
             <div className="filtro_abc_btn">A</div>
