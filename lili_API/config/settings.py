@@ -9,8 +9,11 @@ https://docs.djangoproject.com/en/4.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
+import os
 from datetime import timedelta
 from pathlib import Path
+
+# from django.conf.global_settings import EMAIL_BACKEND
 
 # from django.conf.global_settings import AUTH_USER_MODEL
 
@@ -162,3 +165,11 @@ CORS_ALLOW_CREDENTIALS = True
 AUTH_COOKIE_SECURE = True
 AUTH_COOKIE_HTTPONLY = True
 AUTH_COOKIE_SAMESITE = 'Lax'
+
+# Email backend
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+RESEND_API_KEY = '***REMOVED***'
+CONTACT_RECIPIENT_EMAIL = 'efernandezf25@fpcoruna.afundacion.org'

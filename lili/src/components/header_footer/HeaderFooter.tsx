@@ -24,7 +24,7 @@ const HeaderFooter = () => {
         </div>
         <div className="enlaces_footer">
             <div className="contenedor_enlace_footer">
-                <Link to="#">Contacto</Link>
+                <Link to="/contacto">Contacto</Link>
             </div>
             <div className="contenedor_enlace_footer">
                 <Link to="/legal">Legal</Link>

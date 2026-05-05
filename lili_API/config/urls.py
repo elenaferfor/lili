@@ -20,14 +20,15 @@ from lili_api.routers import router as lili_router
 from lili_api.authentication.views import LoginView, LogoutView, RefreshView, MeView, RegisterView
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
+from lili_api.views import ContactoView
+
 urlpatterns = [
     path('admin/', admin.site.urls),
-    # path('api/token/', TokenObtainPairView.as_view()),
-    # path('api/token/refresh/', TokenRefreshView.as_view()),
     path('api/auth/login/', LoginView.as_view()),
     path('api/auth/refresh/', RefreshView.as_view()),
     path('api/auth/me/', MeView.as_view()),
     path('api/auth/logout/', LogoutView.as_view()),
     path('api/auth/register/', RegisterView.as_view()),
     path('api/', include(lili_router.urls)),
+    path('api/contact/', ContactoView.as_view()),
 ]

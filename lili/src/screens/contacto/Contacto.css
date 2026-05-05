@@ -1,0 +1,78 @@
+#formularioContacto{
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    gap: 1.5rem;
+}
+
+#formularioContacto label{
+    display: block;
+    font-size: .9rem;
+    margin-bottom: .1rem;
+    color: var(--dark_blue)
+}
+
+#formularioContacto input:not(.boton_enviar){
+    width: 100%;
+    height: 1.8rem;
+    border-radius: .4rem;
+    border: .8px solid var(--dark_blue);
+    padding: .4rem;
+    background-color: var(--white);
+
+    font-family: 'Epunda Sans', sans-serif;
+    color: var(--dark_blue);
+}
+
+#formularioContacto input:not(.boton_enviar):focus, #formularioContacto textarea:focus{
+    outline: none;
+    box-shadow: 0 0 10px var(--light_blue_second);
+}
+
+#formularioContacto textarea{
+    width: 100%;
+    border-radius: .4rem;
+    border: .8px solid var(--dark_blue);
+    padding: .4rem;
+    background-color: var(--white);
+
+    font-family: 'Epunda Sans', sans-serif;
+    color: var(--dark_blue);
+}
+
+#formularioContacto .boton_enviar{
+    border: none;
+    padding: .3rem 1.2rem;
+    border-radius: 10rem;
+    background-color: var(--green);
+    color: var(--dark_blue);
+    cursor: pointer;
+
+    font-family: 'Jost', sans-serif;
+    font-weight: bold;
+
+    display: flex;
+    align-items: center;
+    gap: .2rem;
+
+    transition: all 200ms ease-in-out;
+}
+
+#formularioContacto .boton_enviar{
+    align-self: end;
+    outline: none;
+}
+
+#formularioContacto .boton_enviar:hover{
+    background-color: var(--blue_grey_second);
+}
+
+#formularioAnadir .boton_enviar:active, .libroResultadosBusqueda .anadirResultadosBusqueda:active{
+    background-color: var(--dark_blue);
+    color: var(--white);
+}
+
+p.exito{
+    color: var(--dark_blue);
+}

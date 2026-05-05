@@ -179,3 +179,10 @@ class LibroCategoriaSerializer(serializers.ModelSerializer):
     class Meta:
         model = LibroCategoria
         fields = ['id', 'usuario_libro', 'categoria', 'fecha_creacion']
+
+
+# Emails de contacto
+class ContactoSerializer(serializers.Serializer):
+    nombre = serializers.CharField(max_length=100)
+    email = serializers.EmailField()
+    mensaje = serializers.CharField()

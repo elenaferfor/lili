@@ -1,5 +1,7 @@
 from datetime import datetime
 
+import resend
+from django.conf import settings
 from django.db import transaction
 from django.db.models import Q
 from django_filters.rest_framework import DjangoFilterBackend
@@ -8,6 +10,7 @@ from rest_framework.decorators import action
 from rest_framework.filters import SearchFilter, OrderingFilter
 from rest_framework.permissions import AllowAny, IsAdminUser, IsAuthenticated
 from rest_framework.response import Response
+from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet
 
 from .filters import UsuarioLibroFilter, AmistadFilter, PrestamoFilter, NotificacionFilter, LibroCategoriaFilter, \
@@ -16,7 +19,7 @@ from .models import Autor, Libro, UsuarioLili, Amistad, Prestamo, Serie, Categor
     LibroCategoria, Editorial
 from lili_api.serializers import AutorSerializer, LibroSerializer, UsuarioLiliSerializer, SerieSerializer, \
     CategoriaSerializer, UsuarioLibroSerializer, AmistadSerializer, PrestamoSerializer, NotificacionSerializer, \
-    LibroCategoriaSerializer, EditorialSerializer, UsuarioLiliPublicoSerializer
+    LibroCategoriaSerializer, EditorialSerializer, UsuarioLiliPublicoSerializer, ContactoSerializer
 from .permissions import OwnProfilePermission, PrestamoPermission, LibroCategoriaPermission, AmistadPermission, \
     UsuarioLiliPermission
 
@@ -503,3 +506,28 @@ class LibroCategoriaView(ModelViewSet):
     # Permisos: cada usuario puede cambiar sus cosas y el admin las de todos
     def get_permissions(self):
         return [LibroCategoriaPermission()]
+
+# Emails de contacto
+resend.api_key = settings.RESEND_API_KEY
+
+class ContactoView(APIView):
+    def post(self, request):
+        serializer = ContactoSerializer(data=request.data)
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        data = serializer.validated_data
+        try:
+            resend.Emails.send({
+                "from": "onboarding@resend.dev",
+                "to": [settings.CONTACT_RECIPIENT_EMAIL],
+                "subject": f"Mensaje de {data['nombre']}",
+                "html": f"""
+                    <p><strong>Nombre:</strong> {data['nombre']}</p>
+                    <p><strong>Email:</strong> {data['email']}</p>
+                    <p><strong>Mensaje:</strong> {data['mensaje']}</p>
+                """,
+            })
+            return Response({'success': True}, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
