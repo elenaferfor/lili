@@ -109,7 +109,7 @@ class UsuarioLiliSerializer(serializers.ModelSerializer):
 class UsuarioLiliPublicoSerializer(serializers.ModelSerializer):
     class Meta:
         model = UsuarioLili
-        fields = ['id', 'username', 'first_name', 'last_name', 'date_joined']
+        fields = ['id', 'username', 'date_joined']
 
 class SerieSerializer(serializers.ModelSerializer):
     class Meta:

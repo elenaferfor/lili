@@ -17,7 +17,8 @@ from .models import Autor, Libro, UsuarioLili, Amistad, Prestamo, Serie, Categor
 from lili_api.serializers import AutorSerializer, LibroSerializer, UsuarioLiliSerializer, SerieSerializer, \
     CategoriaSerializer, UsuarioLibroSerializer, AmistadSerializer, PrestamoSerializer, NotificacionSerializer, \
     LibroCategoriaSerializer, EditorialSerializer, UsuarioLiliPublicoSerializer
-from .permissions import OwnProfilePermission, PrestamoPermission, LibroCategoriaPermission, AmistadPermission
+from .permissions import OwnProfilePermission, PrestamoPermission, LibroCategoriaPermission, AmistadPermission, \
+    UsuarioLiliPermission
 
 
 class AutorView(ModelViewSet):
@@ -51,7 +52,7 @@ class LibroView(ModelViewSet):
     serializer_class = LibroSerializer
 
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
-    search_fields = ['titulo', 'isbn', 'autores', 'editorial', 'ano_pub_og', 'sinopsis']
+    search_fields = ['titulo', 'sinopsis', 'autores__nombre', 'editorial__nombre']
     ordering_fields = ['nombre', 'autores__nombre', 'editorial__nombre']
     filterset_class = LibroFilter
 
@@ -84,7 +85,7 @@ class UsuarioLiliView(ModelViewSet):
 
     # Permisos: cada usuario puede cambiar sus cosas
     def get_permissions(self):
-        return [OwnProfilePermission()]
+        return [IsAuthenticated()]
 
 class SerieView(ModelViewSet):
     def get_queryset(self):

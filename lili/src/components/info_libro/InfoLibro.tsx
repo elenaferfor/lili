@@ -9,37 +9,14 @@ import {useUsuarioLibro} from "../../hooks/useUsuarioLibro.tsx";
 import {useMutation, useQueryClient} from "@tanstack/react-query";
 import api from "../../api/Axios.tsx";
 import {useAuth} from "../../auth/AuthContext.tsx";
-
-type SyncEstado = "idle" | "pendiente" | "enviando" | "ok";
-
-type PostRequest = {
-    "usuario": number | undefined;
-    "libro": number;
-    "serie": number | null;
-    "numero_en_serie": number | null;
-    "estado": string;
-    "favorito": boolean;
-    "publico": boolean;
-    "categorias": number[];
-};
-
-type Favorito = {
-    isFav: boolean;
-    clase: string;
-    iconoClase: string;
-}
-
-const FAVORITOS: Favorito[] = [
-    { isFav: true, clase: "estadoFavorito", iconoClase: "material-symbols-rounded notificaciones icon_fill"},
-    { isFav: false, clase: "", iconoClase: "material-symbols-rounded notificaciones"}
-]
+import {type Favorito, FAVORITOS, type UsuarioLibroPostRequest, type SyncEstado} from "../../types.tsx";
 
 const InfoLibro = (props: any) => {
     const { libroId } = useParams();
     const libroIdNum = Number(libroId);
     const queryClient = useQueryClient();
     const [noUsuarioLibro, setNoUsuarioLibro] = useState(true); 
-    const [requestBody, setRequestBody] = useState<PostRequest>();
+    const [requestBody, setRequestBody] = useState<UsuarioLibroPostRequest>();
     const { user } = useAuth();
     
     const [isFav, setIsFav] = useState<Favorito>(FAVORITOS[1]);
@@ -61,7 +38,7 @@ const InfoLibro = (props: any) => {
                 "favorito": false,
                 "publico": true,
                 "categorias": []
-            })
+            });
             return;
         }
         setNoUsuarioLibro(false);
@@ -159,7 +136,7 @@ const InfoLibro = (props: any) => {
                         </div>
                         :
                         <div className="detalleLibroEstados">
-                            <EstadoCategoriasLibro/>
+                            <EstadoCategoriasLibro libroId={libroIdNum}/>
                             <EstadoLecturaLibro/>
                             <button className={isFav.clase} onClick={() => toggleFav(isFav)}>Favorito 
                                 <i className={isFav.iconoClase}>favorite</i>{syncIconoFav()}</button>

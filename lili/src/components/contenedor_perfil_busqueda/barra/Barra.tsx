@@ -2,49 +2,45 @@ import "./Barra.css"
 import {Link} from "react-router-dom";
 import Resultado from "./resultado/Resultado.tsx";
 import "./Barra.css";
-import {useEffect, useState} from "react";
+import {useState} from "react";
+import {useBusqueda} from "../../../hooks/useBusqueda.tsx";
 
 const Barra = () => {
-
-    const [isSearching, setIsSearching] = useState(false);
+    
     const [searchValue, setSearchValue] = useState("");
-    
-    const instaSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setSearchValue(e.target.value);
-    }
-    
-    useEffect(() => {
-        if(searchValue !== ""){
-            setIsSearching(true);
-        }else{
-            setIsSearching(false);
-        }
-    }, [searchValue]);
-    
-    
+    const { resultados, cargando, pendiente } = useBusqueda(searchValue);
     
     return <div className="barra">
         <form id="search" name="search" action="#" method="post">
             <input type="search" className="f_barra" name="f_barra"
                    placeholder="Buscar libro, autor, ISBN, @usuario..."
                    value={searchValue}
-                   onChange={instaSearch}
+                   onChange={e => setSearchValue(e.target.value)}
             />
             <button type="submit" className="lupa">
                 <i className="material-symbols-rounded notificaciones">search</i>
             </button>
         </form>
-        { isSearching &&
+        { (cargando || resultados.length > 0) &&
             <div className="resultadosBusqueda">
                 <div className="resultadosLista">
-                    <Resultado/>
-                    <Resultado/>
-                    <Resultado/>
-                    <Resultado/>
-                    <Resultado/>
+                    {
+                        resultados.map((item, index) => (
+                            <Resultado key={index} item={item}/>
+                        ))
+                    }
                 </div>
+                { resultados[0]?.tipo === 'usuario' || resultados.length > 0 &&
+                    <div className="verResultados">
+                        <Link to="#">Ver todos los resultados o añadir manualmente</Link>
+                    </div>
+                }
+            </div>
+        }
+        { !cargando && !pendiente && resultados.length === 0 && searchValue &&
+            <div className="resultadosBusqueda">
                 <div className="verResultados">
-                    <Link to="#">Ver todos los resultados o añadir manualmente</Link>
+                    <p>{`No se han encontrado resultados para ${searchValue}`}</p>
                 </div>
             </div>
         }

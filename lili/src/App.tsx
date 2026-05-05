@@ -8,6 +8,7 @@ import DetalleLibro from "./screens/detalle_libro/DetalleLibro.tsx";
 import Categorias from "./screens/categorias/Categorias.tsx";
 import {QueryClient, QueryClientProvider} from "@tanstack/react-query";
 import Register from "./screens/register/Register.tsx";
+import Legal from "./screens/legal/Legal.tsx";
 
 const queryClient = new QueryClient();
 
@@ -33,6 +34,11 @@ function App() {
                     <Route path="/libro/:libroId" element={
                         <RutaProtegida>
                             <DetalleLibro/>
+                        </RutaProtegida>
+                    }/>
+                    <Route path="/legal" element={
+                        <RutaProtegida>
+                            <Legal/>
                         </RutaProtegida>
                     }/>
                 </Routes>

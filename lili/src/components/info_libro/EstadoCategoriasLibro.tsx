@@ -1,24 +1,11 @@
 import {useEffect, useRef, useState} from "react";
 import api from "../../api/Axios.tsx";
 import {useMutation} from "@tanstack/react-query";
-import {useParams} from "react-router-dom";
-import {useCategorias, useUsuarioLibro} from "../../hooks/useUsuarioLibro.tsx";
+import {useUsuarioLibro} from "../../hooks/useUsuarioLibro.tsx";
+import {useCategorias} from "../../hooks/useCategoria.tsx";
+import {type Categoria, CATEGORIAS_EXCLUIDAS, type SyncEstado} from "../../types.tsx";
 
-const CATEGORIAS_EXCLUIDAS = ["Leyendo", "Préstamos", "Prestados"];
-
-type SyncEstado = "idle" | "pendiente" | "enviando" | "ok";
-
-type Categoria = {
-    id: number;
-    nombre: string;
-    activa: boolean;
-    sync: SyncEstado;
-}
-
-const EstadoCategoriasLibro = () => {
-
-    const { libroId } = useParams<{ libroId: string }>();
-    const libroIdNum = Number(libroId);
+const EstadoCategoriasLibro = (props: any) => {
     
     const [categoriasIsOpen, setCategoriasIsOpen] = useState(false);
 
@@ -30,7 +17,7 @@ const EstadoCategoriasLibro = () => {
     
     // Traer categorías de la API
     const { data: categoriasUsuario, isLoading: loadingCategorias } = useCategorias();
-    const { data: usuarioLibro, isLoading: loadingLibro } = useUsuarioLibro(libroIdNum);
+    const { data: usuarioLibro, isLoading: loadingLibro } = useUsuarioLibro(props.libroId);
 
     useEffect(() => {
         if(!categoriasUsuario || !usuarioLibro) return;
@@ -124,16 +111,16 @@ const EstadoCategoriasLibro = () => {
     }
     
     const syncIcono = (sync: SyncEstado) => {
-        if(sync === "pendiente") return <i className="material-symbols-rounded sync-pendiente">schedule</i>;
-        if(sync === "enviando") return <i className="material-symbols-rounded sync-enviando">sync</i>;
-        if(sync === "ok") return <i className="material-symbols-rounded sync-ok">check_circle</i>;
+        if(sync === "pendiente") return <i className="material-symbols-rounded">schedule</i>;
+        if(sync === "enviando") return <i className="material-symbols-rounded">sync</i>;
+        if(sync === "ok") return <i className="material-symbols-rounded">check_circle</i>;
         return null;
     }
 
     const isLoading = loadingCategorias || loadingLibro;
     
     return <div id="estadoCategorias">
-        <button className="" onClick={() => setCategoriasIsOpen(o => !o)} ref={btnCategoriasRef}>Categorías</button>
+        <button className="" onClick={() => setCategoriasIsOpen(open => !open)} ref={btnCategoriasRef}>Categorías</button>
         { isLoading && <span>Cargando...</span>}
         { categoriasIsOpen &&
             <div className="categorias" ref={categoriasRef}>

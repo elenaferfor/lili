@@ -48,3 +48,17 @@ nav a:active:not(.activo){
 nav a:active{
     background-color: var(--white);
 }
+
+nav .disabled{
+    background-color: var(--blue_grey_second);
+    color: var(--light_blue_second);
+    transition: none;
+    cursor: unset;
+    pointer-events: none;
+}
+
+nav a.disabled:hover{
+    transform: translateX(0);
+    background-color: var(--blue_grey_second);
+    color: var(--light_blue_second);
+}

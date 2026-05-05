@@ -3,22 +3,7 @@ import api from "../../api/Axios.tsx";
 import {useParams} from "react-router-dom";
 import {useMutation, useQueryClient} from "@tanstack/react-query";
 import { useUsuarioLibro } from "../../hooks/useUsuarioLibro.tsx";
-
-type SyncEstado = "idle" | "pendiente" | "enviando" | "ok";
-
-type EstadoOpcion = {
-    valor: string;
-    texto: string;
-    clase: string;
-    icono: string;
-}
-
-const ESTADOS: EstadoOpcion[] = [
-    { valor: "leido", texto: "Leído", clase:"estadoVerde", icono:"check"},
-    { valor: "leyendo", texto: "Leyendo", clase:"estadoNaranja", icono:"menu_book"},
-    { valor: "abandonado", texto: "Abandonado", clase:"estadoRojo", icono:"close"},
-    { valor: "s_e", texto: "Sin empezar", clase:"", icono:""}
-]
+import {type EstadoOpcion, ESTADOS, type SyncEstado} from "../../types.tsx";
 
 const EstadoLecturaLibro = () => {
     const { libroId } = useParams<{ libroId: string }>();

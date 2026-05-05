@@ -7,7 +7,7 @@ import {useNavigate} from "react-router-dom";
 import Etiquetas from "../../components/etiquetas/Etiquetas.tsx";
 import {useEffect, useState} from "react";
 import GetLibrosCategoria from "../../components/get_libros/GetLibrosCategoria.tsx";
-import {useCategorias} from "../../hooks/useUsuarioLibro.tsx";
+import {useCategorias} from "../../hooks/useCategoria.tsx";
 
 const Categorias = () => {
 

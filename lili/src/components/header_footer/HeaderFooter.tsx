@@ -27,7 +27,7 @@ const HeaderFooter = () => {
                 <Link to="#">Contacto</Link>
             </div>
             <div className="contenedor_enlace_footer">
-                <Link to="#">Legal</Link>
+                <Link to="/legal">Legal</Link>
             </div>
         </div>
     </div>

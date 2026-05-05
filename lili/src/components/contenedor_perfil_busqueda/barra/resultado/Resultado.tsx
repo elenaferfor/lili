@@ -1,25 +1,42 @@
-import EstadoCategoriasLibro from "../../../info_libro/EstadoCategoriasLibro.tsx";
+import "./Resultado.css";
+import {Link} from "react-router-dom";
+import AnadirBtnRapido from "./AnadirBtnRapido.tsx";
+import AnadirBtn from "./AnadirBtn.tsx";
 
-const Resultado = () => {
+const Resultado = (props: any) => {
     
-    return <div className="resultado">
-        <div className="detalleLibroInfo">
-            <div className="detalleLibroPortada">
-                <img src="/covers/7maridos.webp" alt=""/>
-            </div>
-            <div className="detalleLibroTexto">
-                <h1>Título</h1>
-                <p className="autor">Autor</p>
-                <p><span>ISBN/UID:</span> 1234567890123</p>
-                <p><span>Editorial:</span> Editorial</p>
-                <div className="detalleLibroEstados">
-                    <button className="estadoAnadir">Añadir
-                        <i className="material-symbols-rounded">add</i></button>
-                    <EstadoCategoriasLibro/>
+    if(props.item.tipo === 'usuario'){
+        // TODO: añadir páginas de usuario y autor y enlazar los resultados
+        return <div className="resultado">
+            <Link to="#" className="detalleUsuarioInfo">
+                <h1>{`@${props.item.username}`}</h1>
+            </Link>
+        </div>
+    }else if(props.item.tipo === 'autor'){
+        return <div className="resultado"> 
+            <Link to="#" className="detalleAutorInfo">
+                <h1>{`${props.item.nombre}`}</h1>
+            </Link>
+        </div>
+    }else{
+        return <div className="resultado">
+            <div className="detalleLibroInfo">
+                <Link to={`/libro/${props.item.id}/`} className="detalleLibroPortada">
+                    <img src={props.item.portada} alt={props.item.titulo}/>
+                </Link>
+                <div className="detalleLibroTexto">
+                    <Link to={`/libro/${props.item.id}/`}><h1>{props.item.titulo}</h1></Link>
+                    <p className="autor">{props.item.autores_detalle.map((a: any) => a.nombre).join(", ")}</p>
+                    <p><span>ISBN/UID:</span> {props.item.isbn}</p>
+                    <p><span>Editorial:</span> {props.item.editorial_detalle.nombre}</p>
+                    <div className="detalleLibroEstados">
+                        <AnadirBtn item={props.item}/>
+                        <AnadirBtnRapido item={props.item}/>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
+    }
 
 }
 

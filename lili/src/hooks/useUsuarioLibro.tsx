@@ -1,5 +1,5 @@
 import {useQuery} from "@tanstack/react-query";
-import { getUsuarioLibro, getCategoriasUsuario} from "../api/ilbroService.tsx";
+import { getUsuarioLibro} from "../api/usuarioLibroService.tsx";
 
 export const useUsuarioLibro = (libroIdNum: number) => {
     return useQuery({
@@ -7,10 +7,3 @@ export const useUsuarioLibro = (libroIdNum: number) => {
         queryFn: () => getUsuarioLibro(libroIdNum),
     });
 };
-
-export const useCategorias = () => {
-    return useQuery({
-        queryKey: ["categoriasUsuario"],
-        queryFn: getCategoriasUsuario,
-    });
-}
