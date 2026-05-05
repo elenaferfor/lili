@@ -2,3 +2,21 @@
     color: var(--dark_blue);
     font-size: 2rem;
 }
+
+.legal{
+    color: var(--dark_blue);
+    padding: 2rem 2rem 3rem;
+}
+
+.legal h2{
+    margin-top: 1rem;
+}
+
+.legal p{
+    text-indent: 2rem;
+}
+
+.legal li{
+    list-style-position: inside;
+    padding-left: 3rem;
+}
