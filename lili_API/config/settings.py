@@ -13,9 +13,13 @@ import os
 from datetime import timedelta
 from pathlib import Path
 
+from dotenv import load_dotenv
+
 # from django.conf.global_settings import EMAIL_BACKEND
 
 # from django.conf.global_settings import AUTH_USER_MODEL
+
+load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -171,5 +175,5 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-RESEND_API_KEY = '***REMOVED***'
-CONTACT_RECIPIENT_EMAIL = 'efernandezf25@fpcoruna.afundacion.org'
+RESEND_API_KEY = os.environ.get('RESEND_API_KEY')
+CONTACT_RECIPIENT_EMAIL = os.environ.get('CONTACT_RECIPIENT_EMAIL')
