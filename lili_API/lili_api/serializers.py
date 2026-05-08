@@ -1,4 +1,5 @@
 from django.db.models import Q
+from drf_spectacular.utils import extend_schema_field
 from rest_framework import serializers
 
 from .models import Autor, Editorial, Libro, UsuarioLili, Amistad, Prestamo, Serie, Categoria, UsuarioLibro, Notificacion, LibroCategoria
@@ -68,12 +69,35 @@ class LibroSerializer(serializers.ModelSerializer):
             libro.autores.set(autores)
             return libro
 
+class AmistadSerializer(serializers.ModelSerializer):
+    usuario_a = serializers.PrimaryKeyRelatedField(queryset=UsuarioLili.objects.all(), write_only=True)
+    usuario_a_nombre = UsuarioNombreSerializer(source="usuario_a", read_only=True)
+    usuario_b = serializers.PrimaryKeyRelatedField(queryset=UsuarioLili.objects.all(), write_only=True)
+    usuario_b_nombre = UsuarioNombreSerializer(source="usuario_b", read_only=True)
+
+    class Meta:
+        model = Amistad
+        fields = ['id', 'usuario_a', 'usuario_a_nombre', 'usuario_b', 'usuario_b_nombre', 'estado',
+                  'fecha_creacion', 'fecha_actualizacion']
+
+class PrestamoSerializer(serializers.ModelSerializer):
+    usuario_libro = serializers.PrimaryKeyRelatedField(queryset=UsuarioLibro.objects.all(), write_only=True)
+    libro_detalle = LibroTituloSerializer(source="usuario_libro.libro", read_only=True)
+    prestatario = serializers.PrimaryKeyRelatedField(queryset=UsuarioLili.objects.all(), write_only=True)
+    prestatario_nombre = UsuarioNombreSerializer(source='prestatario', read_only=True)
+
+    class Meta:
+        model = Prestamo
+        fields = ['id', 'usuario_libro', 'libro_detalle', 'prestatario', 'prestatario_nombre',
+                  'fecha_inicio', 'fecha_fin', 'estado']
+
 class UsuarioLiliSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
     amistades = serializers.SerializerMethodField()
     prestamos_hechos = serializers.SerializerMethodField()
     prestamos_recibidos = serializers.SerializerMethodField()
 
+    @extend_schema_field(AmistadSerializer(many=True))
     def get_amistades(self, obj):
         amistades = Amistad.objects.filter( Q(usuario_a=obj) | Q(usuario_b=obj) )
         return [
@@ -86,10 +110,12 @@ class UsuarioLiliSerializer(serializers.ModelSerializer):
             for amistad in amistades
         ]
 
+    @extend_schema_field(PrestamoSerializer(many=True))
     def get_prestamos_hechos(self, obj):
         prestamos = Prestamo.objects.filter(usuario_libro__usuario=obj)
         return prestamos.values_list('id', flat=True)
 
+    @extend_schema_field(PrestamoSerializer(many=True))
     def get_prestamos_recibidos(self, obj):
         prestamos = Prestamo.objects.filter(prestatario=obj)
         return prestamos.values_list('id', flat=True)
@@ -145,28 +171,6 @@ class UsuarioLibroSerializer(serializers.ModelSerializer):
             libro_usuario.serie.set(serie)
             libro_usuario.categorias.set(categorias)
             return libro_usuario
-
-class AmistadSerializer(serializers.ModelSerializer):
-    usuario_a = serializers.PrimaryKeyRelatedField(queryset=UsuarioLili.objects.all(), write_only=True)
-    usuario_a_nombre = UsuarioNombreSerializer(source="usuario_a", read_only=True)
-    usuario_b = serializers.PrimaryKeyRelatedField(queryset=UsuarioLili.objects.all(), write_only=True)
-    usuario_b_nombre = UsuarioNombreSerializer(source="usuario_b", read_only=True)
-
-    class Meta:
-        model = Amistad
-        fields = ['id', 'usuario_a', 'usuario_a_nombre', 'usuario_b', 'usuario_b_nombre', 'estado',
-                  'fecha_creacion', 'fecha_actualizacion']
-
-class PrestamoSerializer(serializers.ModelSerializer):
-    usuario_libro = serializers.PrimaryKeyRelatedField(queryset=UsuarioLibro.objects.all(), write_only=True)
-    libro_detalle = LibroTituloSerializer(source="usuario_libro.libro", read_only=True)
-    prestatario = serializers.PrimaryKeyRelatedField(queryset=UsuarioLili.objects.all(), write_only=True)
-    prestatario_nombre = UsuarioNombreSerializer(source='prestatario', read_only=True)
-
-    class Meta:
-        model = Prestamo
-        fields = ['id', 'usuario_libro', 'libro_detalle', 'prestatario', 'prestatario_nombre',
-                  'fecha_inicio', 'fecha_fin', 'estado']
 
 class NotificacionSerializer(serializers.ModelSerializer):
     class Meta:

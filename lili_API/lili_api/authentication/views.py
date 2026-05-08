@@ -9,7 +9,15 @@ from rest_framework_simplejwt.exceptions import TokenError
 
 from lili_api.models import UsuarioLili
 
+from lili_api.schemas import (
+    login_schema,
+    logout_schema,
+    refresh_schema,
+    me_schema,
+    register_schema,
+)
 
+@login_schema
 class LoginView(APIView):
     permission_classes = [permissions.AllowAny]
 
@@ -30,30 +38,30 @@ class LoginView(APIView):
                 status=status.HTTP_401_UNAUTHORIZED
             )
 
-        refresh = RefreshToken.for_user(user)
-        access = refresh.access_token
+        access_token = str(RefreshToken.for_user(user).access_token)
+        refresh_token = str(RefreshToken.for_user(user))
 
         res = Response(
             {
-                # 'access': str(access),
+                'access': access_token,
                 'user': {'id': user.pk, 'username': user.get_username()},
             }
         )
 
         res.set_cookie(
             key='access_token',
-            value=str(access),
-            # httponly=getattr(settings, 'AUTH_COOKIE_HTTPONLY', True),
-            secure=getattr(settings, 'AUTH_COOKIE_SECURE', True),
+            value=access_token,
+            httponly=getattr(settings, 'AUTH_COOKIE_HTTPONLY', True),
+            secure=getattr(settings, 'AUTH_COOKIE_SECURE', False),
             samesite=getattr(settings, 'AUTH_COOKIE_SAMESITE', 'Lax'),
             # path='/auth/',
             max_age=5 * 60
         )
         res.set_cookie(
             key='refresh_token',
-            value=str(refresh),
+            value=refresh_token,
             httponly=True,
-            secure=getattr(settings, 'AUTH_COOKIE_SECURE', True),
+            secure=getattr(settings, 'AUTH_COOKIE_SECURE', False),
             samesite=getattr(settings, 'AUTH_COOKIE_SAMESITE', 'Lax'),
             path='/api/auth/',
             max_age=7 * 24 * 60 * 60
@@ -61,6 +69,7 @@ class LoginView(APIView):
 
         return res
 
+@refresh_schema
 class RefreshView(APIView):
     permission_classes = [permissions.AllowAny]
 
@@ -95,6 +104,7 @@ class RefreshView(APIView):
 
         return res
 
+@me_schema
 class MeView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
@@ -102,6 +112,7 @@ class MeView(APIView):
         return Response(
             {'id': request.user.pk, 'username': request.user.get_username(), })
 
+@logout_schema
 class LogoutView(APIView):
     permission_classes = [permissions.AllowAny]
 
@@ -125,6 +136,7 @@ class LogoutView(APIView):
         res.delete_cookie('refresh_token', path='/auth/')
         return res
 
+@register_schema
 class RegisterView(APIView):
     permission_classes = [permissions.AllowAny]
 

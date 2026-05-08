@@ -5,10 +5,10 @@ from django.conf import settings
 from django.db import transaction
 from django.db.models import Q
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import status, permissions
+from rest_framework import status
 from rest_framework.decorators import action
 from rest_framework.filters import SearchFilter, OrderingFilter
-from rest_framework.permissions import AllowAny, IsAdminUser, IsAuthenticated
+from rest_framework.permissions import IsAdminUser, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet
@@ -20,10 +20,24 @@ from .models import Autor, Libro, UsuarioLili, Amistad, Prestamo, Serie, Categor
 from lili_api.serializers import AutorSerializer, LibroSerializer, UsuarioLiliSerializer, SerieSerializer, \
     CategoriaSerializer, UsuarioLibroSerializer, AmistadSerializer, PrestamoSerializer, NotificacionSerializer, \
     LibroCategoriaSerializer, EditorialSerializer, UsuarioLiliPublicoSerializer, ContactoSerializer
-from .permissions import OwnProfilePermission, PrestamoPermission, LibroCategoriaPermission, AmistadPermission, \
-    UsuarioLiliPermission
+from .permissions import OwnProfilePermission, PrestamoPermission, LibroCategoriaPermission, AmistadPermission
 
+from .schemas import (
+    autor_schema,
+    editorial_schema,
+    libro_schema,
+    usuario_lili_schema,
+    serie_schema,
+    categoria_schema,
+    usuario_libro_schema,
+    amistad_schema,
+    prestamo_schema,
+    notificacion_schema,
+    libro_categoria_schema,
+    contacto_post_schema,
+)
 
+@autor_schema
 class AutorView(ModelViewSet):
     queryset = Autor.objects.all()
     serializer_class = AutorSerializer
@@ -37,6 +51,7 @@ class AutorView(ModelViewSet):
             return [IsAuthenticated()]
         return [IsAdminUser()]
 
+@editorial_schema
 class EditorialView(ModelViewSet):
     queryset = Editorial.objects.all()
     serializer_class = EditorialSerializer
@@ -50,6 +65,7 @@ class EditorialView(ModelViewSet):
             return [IsAuthenticated()]
         return [IsAdminUser()]
 
+@libro_schema
 class LibroView(ModelViewSet):
     queryset = Libro.objects.all().select_related('editorial').prefetch_related('autores').order_by('id')
     serializer_class = LibroSerializer
@@ -64,6 +80,7 @@ class LibroView(ModelViewSet):
             return [IsAuthenticated()]
         return [IsAdminUser()]
 
+@usuario_lili_schema
 class UsuarioLiliView(ModelViewSet):
     # Los admins no salen en la lista
     queryset = UsuarioLili.objects.filter(is_staff=False).prefetch_related('libros')
@@ -71,10 +88,13 @@ class UsuarioLiliView(ModelViewSet):
     def get_serializer_class(self):
         # admin y uno mismo pueden ver todo
         if self.action in ['retrieve', 'update', 'partial_update', 'destroy']:
-            obj = self.get_object()
-            if self.request.user.is_staff or obj == self.request.user:
+            try:
+                obj = self.get_object()
+                if self.request.user.is_staff or obj == self.request.user:
+                    return UsuarioLiliSerializer
+                return UsuarioLiliPublicoSerializer
+            except Exception:
                 return UsuarioLiliSerializer
-            return UsuarioLiliPublicoSerializer
 
         # en la lista completa sólo admin puede ver todo
         if self.request.user.is_staff:
@@ -90,6 +110,7 @@ class UsuarioLiliView(ModelViewSet):
     def get_permissions(self):
         return [IsAuthenticated()]
 
+@serie_schema
 class SerieView(ModelViewSet):
     def get_queryset(self):
         if self.request.user.is_staff:
@@ -107,6 +128,7 @@ class SerieView(ModelViewSet):
     def get_permissions(self):
         return [OwnProfilePermission()]
 
+@categoria_schema
 class CategoriaView(ModelViewSet):
     def get_queryset(self):
         if self.request.user.is_staff:
@@ -125,6 +147,7 @@ class CategoriaView(ModelViewSet):
     def get_permissions(self):
         return [OwnProfilePermission()]
 
+@usuario_libro_schema
 class UsuarioLibroView(ModelViewSet):
     # queryset = UsuarioLibro.objects.all().select_related('usuario', 'libro', 'serie').prefetch_related('categorias')
     serializer_class = UsuarioLibroSerializer
@@ -301,6 +324,7 @@ class UsuarioLibroView(ModelViewSet):
     def get_permissions(self):
         return [OwnProfilePermission()]
 
+@amistad_schema
 class AmistadView(ModelViewSet):
     def get_queryset(self):
         if self.request.user.is_staff:
@@ -377,6 +401,7 @@ class AmistadView(ModelViewSet):
     def get_permissions(self):
         return [AmistadPermission()]
 
+@prestamo_schema
 class PrestamoView(ModelViewSet):
     def get_queryset(self):
         if self.request.user.is_staff:
@@ -473,6 +498,7 @@ class PrestamoView(ModelViewSet):
     def get_permissions(self):
         return [PrestamoPermission()]
 
+@notificacion_schema
 class NotificacionView(ModelViewSet):
     def get_queryset(self):
         if self.request.user.is_staff:
@@ -490,11 +516,12 @@ class NotificacionView(ModelViewSet):
     def get_permissions(self):
         return [OwnProfilePermission()]
 
+@libro_categoria_schema
 class LibroCategoriaView(ModelViewSet):
     def get_queryset(self):
         if self.request.user.is_staff:
             return LibroCategoria.objects.all().select_related('usuario_libro', 'categoria')
-        return LibroCategoria.objects.filter(usuario__pk=self.request.user.pk).select_related('usuario_libro', 'categoria')
+        return LibroCategoria.objects.filter(usuario_libro__usuario__pk=self.request.user.pk).select_related('usuario_libro', 'categoria')
 
     serializer_class = LibroCategoriaSerializer
 
@@ -511,6 +538,7 @@ class LibroCategoriaView(ModelViewSet):
 resend.api_key = settings.RESEND_API_KEY
 
 class ContactoView(APIView):
+    @contacto_post_schema
     def post(self, request):
         serializer = ContactoSerializer(data=request.data)
         if not serializer.is_valid():
