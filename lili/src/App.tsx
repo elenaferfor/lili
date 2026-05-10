@@ -10,11 +10,11 @@ import {QueryClient, QueryClientProvider} from "@tanstack/react-query";
 import Register from "./screens/register/Register.tsx";
 import Legal from "./screens/legal/Legal.tsx";
 import Contacto from "./screens/contacto/Contacto.tsx";
+import Anadir from "./screens/anadir/Anadir.tsx";
 
 const queryClient = new QueryClient();
 
 function App() {
-
   return (
       <QueryClientProvider client={queryClient}>
           <BrowserRouter>
@@ -35,6 +35,11 @@ function App() {
                     <Route path="/libro/:libroId" element={
                         <RutaProtegida>
                             <DetalleLibro/>
+                        </RutaProtegida>
+                    }/>
+                    <Route path="/resultados" element={
+                        <RutaProtegida>
+                            <Anadir/>
                         </RutaProtegida>
                     }/>
                     <Route path="/contacto" element={

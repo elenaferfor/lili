@@ -3,25 +3,7 @@ import {clasificarBusqueda} from "../components/contenedor_perfil_busqueda/barra
 import {getUsuario} from "../api/usuarioService.tsx";
 import {getLibroPorISBN, getLibrosPorGeneral} from "../api/libroService.tsx";
 import {getAutor} from "../api/autorService.tsx";
-
-
-export type ResultadoBusqueda = 
-    { tipo: 'autor'; id: number; nombre: string } |
-    { tipo: 'libro';
-            id: number;
-            titulo: string;
-            isbn: string;
-            formato: string;
-            ano_pub: string;
-            ano_pub_og: string;
-            portada: string;
-            sinopsis: string;
-            openlibrary_key: string;
-            fecha_actualizacion: string;
-            autores_detalle: { id: number; nombre: string }[];
-            editorial_detalle: { id: number; nombre: string }[];
-} |
-    { tipo: 'usuario'; id: number; username: string };
+import type {ResultadoBusqueda} from "../types.tsx";
 
 export const useBusqueda = (query: string) => {
 

@@ -42,6 +42,16 @@ class AutorView(ModelViewSet):
     queryset = Autor.objects.all()
     serializer_class = AutorSerializer
 
+    def create(self, request, *args, **kwargs):
+        nombre = request.data.get('nombre', '').strip()
+        editorial, created = Autor.objects.get_or_create(
+            nombre__iexact=nombre,
+            defaults={'nombre': nombre}
+        )
+        serializer = self.get_serializer(editorial)
+        status_code = status.HTTP_201_CREATED if created else status.HTTP_200_OK
+        return Response(serializer.data, status=status_code)
+
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
     search_fields = ['nombre']
     ordering_fields = ['nombre']
@@ -55,6 +65,16 @@ class AutorView(ModelViewSet):
 class EditorialView(ModelViewSet):
     queryset = Editorial.objects.all()
     serializer_class = EditorialSerializer
+
+    def create(self, request, *args, **kwargs):
+        nombre = request.data.get('nombre', '').strip()
+        editorial, created = Editorial.objects.get_or_create(
+            nombre__iexact=nombre,
+            defaults={'nombre': nombre}
+        )
+        serializer = self.get_serializer(editorial)
+        status_code = status.HTTP_201_CREATED if created else status.HTTP_200_OK
+        return Response(serializer.data, status=status_code)
 
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
     search_fields = ['nombre']

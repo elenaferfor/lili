@@ -33,6 +33,8 @@ const AnadirBtn = (props: any) => {
     const [estadoSeleccionado, setEstadoSeleccionado] = useState<EstadoOpcion>(ESTADOS[3]);
 
     const [isFav, setIsFav] = useState<Favorito>(FAVORITOS[1]);
+    
+    const [usuarioLibroExists, setUsuarioLibroExists] = useState<boolean>(false);
 
     const [sync, setSync] = useState<SyncEstado>("idle");
     const queryClient = useQueryClient();
@@ -107,12 +109,14 @@ const AnadirBtn = (props: any) => {
             setIsFav(FAVORITOS[1]);
             setEstadoSeleccionado(ESTADOS[3]);
             setNoCategorias(true);
+            setUsuarioLibroExists(false);
         }
         
         else if(!usuarioLibro && categoriasUsuario){
             setIsFav(FAVORITOS[1]);
             setEstadoSeleccionado(ESTADOS[3]);
             setNoCategorias(false);
+            setUsuarioLibroExists(false);
             setCatLista(
                 categoriasUsuario.filter(cat => !CATEGORIAS_EXCLUIDAS.includes(cat.nombre))
                     .map(cat => ({
@@ -129,10 +133,12 @@ const AnadirBtn = (props: any) => {
             const opcion = ESTADOS.find(e => e.valor === usuarioLibro.estado) ?? ESTADOS[3];
             setEstadoSeleccionado(opcion);
             setNoCategorias(true);
+            setUsuarioLibroExists(true);
         }
         
         else if(usuarioLibro && categoriasUsuario){
             setNoCategorias(false);
+            setUsuarioLibroExists(true);
             const idsActivos = new Set(usuarioLibro?.categorias_detalle.map(c => c.id));
             setCatLista(
                 categoriasUsuario.filter(cat => !CATEGORIAS_EXCLUIDAS.includes(cat.nombre))
@@ -229,14 +235,19 @@ const AnadirBtn = (props: any) => {
     }
     
     return <>
-        <button className="estadoAnadir" ref={btnAnadirRef} onClick={togglePanel}>Añadir
-            <i className="material-symbols-rounded">add</i>
+        <button className={props.clase} ref={btnAnadirRef} onClick={togglePanel}>
+            { usuarioLibroExists ? 
+                <>Modificar</> :
+                <>Añadir
+                    <i className="material-symbols-rounded">add</i>
+                </>
+            }
         </button>
         {anadirIsOpen &&
             <div className="panelAnadir" ref={panelAnadirRef}>
                 <div className="closeBtn" onClick={togglePanel}><i className="material-symbols-rounded">close</i></div>
                 <div className="panelAnadirLibro">
-                    <h1>Añadir libro</h1>
+                    { usuarioLibroExists ? <h1>Modificar libro</h1> : <h1>Añadir libro</h1>}
                     <p>Selecciona una o más categorías:</p>
                     { noCategorias ? <p>"No hay categorías, puedes crearlas en la página de categorías."</p> :
                         <div id="estadoCategorias">
@@ -282,7 +293,7 @@ const AnadirBtn = (props: any) => {
                     <button className={isFav.clase} onClick={() => toggleFav(isFav)}>Favorito
                         <i className={isFav.iconoClase}>favorite</i>
                     </button>
-                    <button className="anadirBtnFinal" onClick={handleAnadir}>Añadir {syncIcono()}</button>
+                    <button className="anadirBtnFinal" onClick={handleAnadir}>Enviar {syncIcono()}</button>
                 </div>
                 <div className="panelAnadirPrestamo">
                     <h1>Préstamos</h1>

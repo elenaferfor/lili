@@ -1,5 +1,5 @@
 import {useQuery} from "@tanstack/react-query";
-import {getAutor} from "../api/autorService.tsx";
+import {getAutor, getAutores} from "../api/autorService.tsx";
 
 
 export const useAutor = (nombre: string) => {
@@ -8,3 +8,10 @@ export const useAutor = (nombre: string) => {
         queryFn: () => getAutor(nombre),
     });
 };
+
+export const useAutores = () => {
+    return useQuery({
+        queryKey: ["autor"],
+        queryFn: () => getAutores(),
+    })
+}

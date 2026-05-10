@@ -30,7 +30,7 @@ const Resultado = (props: any) => {
                     <p><span>ISBN/UID:</span> {props.item.isbn}</p>
                     <p><span>Editorial:</span> {props.item.editorial_detalle.nombre}</p>
                     <div className="detalleLibroEstados">
-                        <AnadirBtn item={props.item}/>
+                        <AnadirBtn clase="estadoAnadir" item={props.item}/>
                         <AnadirBtnRapido item={props.item}/>
                     </div>
                 </div>

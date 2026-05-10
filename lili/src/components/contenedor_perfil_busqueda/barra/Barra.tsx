@@ -1,5 +1,5 @@
 import "./Barra.css"
-import {Link} from "react-router-dom";
+import {Link, useNavigate} from "react-router-dom";
 import Resultado from "./resultado/Resultado.tsx";
 import "./Barra.css";
 import {useState} from "react";
@@ -10,8 +10,16 @@ const Barra = () => {
     const [searchValue, setSearchValue] = useState("");
     const { resultados, cargando, pendiente } = useBusqueda(searchValue);
     
+    const navigate = useNavigate();
+    
+    const busquedaCompleta = (e: React.SubmitEvent) => {
+        e.preventDefault();
+        navigate(`/resultados?q=${encodeURIComponent(searchValue)}`);
+        setSearchValue('');
+    }
+    
     return <div className="barra">
-        <form id="search" name="search" action="#" method="post">
+        <form id="search" name="search" method="post" onSubmit={busquedaCompleta}>
             <input type="search" className="f_barra" name="f_barra"
                    placeholder="Buscar libro, autor, ISBN, @usuario..."
                    value={searchValue}
@@ -25,14 +33,14 @@ const Barra = () => {
             <div className="resultadosBusqueda">
                 <div className="resultadosLista">
                     {
-                        resultados.map((item, index) => (
+                        resultados.slice(0, 5).map((item, index) => (
                             <Resultado key={index} item={item}/>
                         ))
                     }
                 </div>
                 { resultados[0]?.tipo === 'usuario' || resultados.length > 0 &&
                     <div className="verResultados">
-                        <Link to="#">Ver todos los resultados o añadir manualmente</Link>
+                        <Link to={`/resultados?q=${encodeURIComponent(searchValue)}`}>Ver todos los resultados o añadir manualmente</Link>
                     </div>
                 }
             </div>

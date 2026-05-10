@@ -51,3 +51,52 @@ export type Categoria = {
 }
 // Categorías fijas del usuario
 export const CATEGORIAS_EXCLUIDAS = ["Leyendo", "Préstamos", "Prestados"];
+
+
+// Resultados búsqueda
+export type ResultadoBusqueda =
+    { tipo: 'autor'; id: number; nombre: string } |
+    { tipo: 'libro';
+        id: number;
+        titulo: string;
+        isbn: string;
+        formato: string;
+        ano_pub: string;
+        ano_pub_og: string;
+        portada: string;
+        sinopsis: string;
+        openlibrary_key: string;
+        fecha_actualizacion: string;
+        autores_detalle: { id: number; nombre: string }[];
+        editorial_detalle: { id: number; nombre: string }[];
+    } |
+    { tipo: 'usuario'; id: number; username: string };
+
+
+export const FORMATOS: Record<string, string> = {
+    t_dura: "tapa dura",
+    t_blanda: "tapa blanda",
+    bolsillo: "bolsillo"
+};
+
+
+// Libro
+export type Libro = {
+    titulo: string;
+    isbn: string;
+    formato: string;
+    ano_pub: string;
+    ano_pub_og: string;
+    portada: string;
+    sinopsis: string;
+    autores: number[];
+    editorial: number;
+}
+
+export type Autor = {
+    nombre: string;
+}
+
+export type Editorial = {
+    nombre: string;
+}

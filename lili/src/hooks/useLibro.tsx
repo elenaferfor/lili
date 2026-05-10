@@ -1,10 +1,11 @@
-import {useQuery} from "@tanstack/react-query";
+import {useQuery, type UseQueryOptions} from "@tanstack/react-query";
 import {getLibrosPorGeneral, getLibroPorISBN} from "../api/libroService.tsx";
 
-export const useLibroISBN = (isbn: string) => {
+export const useLibroISBN = (isbn: string, options?: Partial<UseQueryOptions>) => {
     return useQuery({
         queryKey: ["libroISBN", isbn],
         queryFn: () => getLibroPorISBN(isbn),
+        ...options,
     });
 };
 
