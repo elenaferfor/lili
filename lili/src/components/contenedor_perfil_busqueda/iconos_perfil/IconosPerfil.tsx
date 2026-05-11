@@ -8,7 +8,7 @@ const IconosPerfil = () => {
         <Link to="#" className="boton_notificaciones">
             <i className="material-symbols-rounded notificaciones icon_fill">notifications</i>
         </Link>
-        <Link to="./05_lili_perfil.html" className="boton_perfil">
+        <Link to="/perfil" className="boton_perfil">
             Perfil
             <i className="material-symbols-rounded icon_fill">person</i>
         </Link>

@@ -11,6 +11,7 @@ import Register from "./screens/register/Register.tsx";
 import Legal from "./screens/legal/Legal.tsx";
 import Contacto from "./screens/contacto/Contacto.tsx";
 import Anadir from "./screens/anadir/Anadir.tsx";
+import Perfil from "./screens/perfil/Perfil.tsx";
 
 const queryClient = new QueryClient();
 
@@ -40,6 +41,11 @@ function App() {
                     <Route path="/resultados" element={
                         <RutaProtegida>
                             <Anadir/>
+                        </RutaProtegida>
+                    }/>
+                    <Route path="/perfil" element={
+                        <RutaProtegida>
+                            <Perfil/>
                         </RutaProtegida>
                     }/>
                     <Route path="/contacto" element={
