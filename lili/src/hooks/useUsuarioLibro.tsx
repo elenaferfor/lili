@@ -1,5 +1,5 @@
 import {useQuery} from "@tanstack/react-query";
-import {getUsuarioLibro, getUsuarioLibrosLista} from "../api/usuarioLibroService.tsx";
+import {getUsuarioLibro, getUsuarioLibrosLista, getUsuarioLibrosListaAbc} from "../api/usuarioLibroService.tsx";
 
 export const useUsuarioLibro = (libroIdNum: number) => {
     return useQuery({
@@ -12,5 +12,12 @@ export const useUsuarioLibrosLista = () => {
     return useQuery({
         queryKey: ["usuarioLibrosLista"],
         queryFn: () => getUsuarioLibrosLista(),
+    });
+};
+
+export const useUsuarioLibrosListaAbc = () => {
+    return useQuery({
+        queryKey: ["usuarioLibrosListaAbc"],
+        queryFn: () => getUsuarioLibrosListaAbc(),
     });
 };

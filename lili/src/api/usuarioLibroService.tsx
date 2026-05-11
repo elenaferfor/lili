@@ -1,11 +1,5 @@
 import api from "./Axios.tsx";
-
-type UsuarioLibro = {
-    id: number;
-    estado: string;
-    categorias_detalle: { id: number; nombre: string }[];
-    favorito: boolean;
-};
+import type {UsuarioLibro} from "../types.tsx";
 
 export const getUsuarioLibro = async (libroIdNum: number): Promise<UsuarioLibro | undefined> => {
     const { data } = await api.get(`/libros_usuarios/`);
@@ -14,5 +8,10 @@ export const getUsuarioLibro = async (libroIdNum: number): Promise<UsuarioLibro 
 
 export const getUsuarioLibrosLista = async (): Promise<UsuarioLibro[] | undefined> => {
     const { data } = await api.get(`/libros_usuarios/?ordering=-fecha_anadido`);
+    return data.results ?? null;
+}
+
+export const getUsuarioLibrosListaAbc = async (): Promise<UsuarioLibro[] | undefined> => {
+    const { data } = await api.get(`/libros_usuarios/?ordering=titulo`);
     return data.results ?? null;
 }

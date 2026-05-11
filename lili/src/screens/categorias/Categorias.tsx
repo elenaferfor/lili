@@ -6,63 +6,59 @@ import Footer from "../../components/footer/Footer.tsx";
 import {useNavigate} from "react-router-dom";
 import Etiquetas from "../../components/etiquetas/Etiquetas.tsx";
 import {useEffect, useState} from "react";
-import GetLibrosCategoria from "../../components/get_libros/GetLibrosCategoria.tsx";
 import {useCategorias} from "../../hooks/useCategoria.tsx";
+import {useUsuarioLibrosListaAbc} from "../../hooks/useUsuarioLibro.tsx";
+import type {Prestamo, UsuarioLibro} from "../../types.tsx";
+import SectionCategorias from "../../components/section/SectionCategorias.tsx";
+import {usePrestamos} from "../../hooks/usePrestamos.tsx";
+import {useAuth} from "../../auth/AuthContext.tsx";
 
 const Categorias = () => {
-
-    const [catsUsuario, setCatsUsuario] = useState<any[]>([]);
+    
+    const user = useAuth();
     
     const navigate = useNavigate();
-    const [filtroActual, setFiltroActual] = useState("/libros_usuarios/?ordering=libro__titulo");
     const [tituloActual, setTituloActual] = useState("Todos los libros");
-    const [tipoJson, setTipoJson] = useState("categoria");
-    const [tagActivo, setTagActivo] = useState<number>(0);
+ 
 
-    // Traer categorías
-    const { data: categorias } = useCategorias();
-
-    useEffect(() => {
-        if(!categorias) return;
-        setCatsUsuario(categorias);
-    }, [categorias]);
+    // Traer categorías y libros
+    const { data: categorias, isLoading: categoriasIsLoading } = useCategorias();
+    const { data: libros, isLoading: librosIsLoading } = useUsuarioLibrosListaAbc();
+    const { data: prestamos } = usePrestamos();
     
-    const onChangeTag = (tag: string, pos: number) => {
+    const [listaLibros, setListaLibros] = useState<UsuarioLibro[] | Prestamo[] | undefined>([]);
+    
+    useEffect(() => {
+        if(!libros) return;
+        setListaLibros(libros);
+    }, [libros]);
+    
+    const onChangeTag = (tag: string) => {
         // Leyendo, prestados y préstamos no pertenecen a categorías, son llamadas a actions específicos
         if(tag === "Leyendo"){
-            setFiltroActual("/libros_usuarios/leyendo");
-            setTipoJson("estado");
+            setListaLibros(libros?.filter(l => l.estado === "leyendo"));
             setTituloActual("Leyendo");
-            setTagActivo(pos);
         }else if(tag === "Prestados"){
-            setFiltroActual("/prestamos/cedidos");
-            setTipoJson("prestamo");
+            setListaLibros(prestamos?.filter(p => p.prestatario_nombre.id !== user.user?.id ));
             setTituloActual("Prestados");
-            setTagActivo(pos);
         }else if(tag === "Préstamos"){
-            setFiltroActual("/prestamos/recibidos");
-            setTipoJson("prestamo");
+            setListaLibros(prestamos?.filter(p => p.prestatario_nombre.id === user.user?.id ));
             setTituloActual("Préstamos");
-            setTagActivo(pos);
             
             // Si la categoría tiene nombre, se llama a un filtro por nombre de categoría
         }else if(tag !== ""){
-            setFiltroActual("/libros_usuarios/?ordering=libro__titulo&categoria_nombre=" + tag);
-            setTipoJson("categoria");
+            setListaLibros(libros?.filter(l => l.categorias_detalle.map(c => c.nombre).includes(tag)))
             setTituloActual(tag);
-            setTagActivo(pos);
             
             // La otra opción es "todos", que trae todos los libros del usuario
         }else{
-            setFiltroActual("/libros_usuarios/?ordering=libro__titulo");
-            setTipoJson("categoria");
+            setListaLibros(libros);
             setTituloActual("Todos los libros");
-            setTagActivo(pos);
         }
     }
     
     const onBorrarCategoria = () => {
-        onChangeTag("", 0);
+        onChangeTag("");
     }
     
     return <>
@@ -77,14 +73,19 @@ const Categorias = () => {
                 <div className="migas">Biblioteca · Categorías</div>
                 <button onClick={() => navigate(-1)} className="volver">Volver</button>
                 <div className="secciones">
-                    <Etiquetas catsUsuario={catsUsuario} onChangeTag={onChangeTag}/>
-                    <GetLibrosCategoria catsUsuario={catsUsuario}
-                                        tipoJson={tipoJson}
-                                        tituloCat={tituloActual}
-                                        filtroBusqueda={filtroActual}
-                                        isTodos={tagActivo < 5}
-                                        onBorrarCategoria={onBorrarCategoria}
-                    />
+                    { categoriasIsLoading ?
+                        <>Cargando categorías...</> :
+                        <Etiquetas catsUsuario={categorias} onChangeTag={onChangeTag}/>
+                    }
+                    { categoriasIsLoading || librosIsLoading ?
+                        <>Cargando...</> :
+                        <SectionCategorias catsUsuario={categorias}
+                                           listaLibros={listaLibros}
+                                           tituloCat={tituloActual}
+                                           isTodos={tituloActual === "Todos los libros"}
+                                           onBorrarCategoria={onBorrarCategoria}
+                        />
+                    }
                 </div>
             </div>
         </main>

@@ -14,6 +14,18 @@ export type UsuarioLibroPostRequest = {
     "categorias": number[];
 };
 
+export type UsuarioLibro = {
+    id: number;
+    usuario: number;
+    libro_detalle: { id: number; titulo: string; portada: string; };
+    serie_detalle: { id: number; nombre: string; volumenes: number; }
+    numero_en_serie: number;
+    estado: string;
+    favorito: boolean;
+    publico: boolean;
+    fecha_anadido: string;
+    categorias_detalle: { id: number; nombre: string; }[];
+}
 
 // Clase Favorito para mostrar el icono de favorito en los libros
 export type Favorito = {
@@ -99,4 +111,13 @@ export type Autor = {
 
 export type Editorial = {
     nombre: string;
+}
+
+export type Prestamo = {
+    id: number;
+    libro_detalle: { id: number; titulo: string; portada: string; };
+    prestatario_nombre: { id: number; username: string; };
+    fecha_inicio: string;
+    fecha_fin: string;
+    estado: string;
 }

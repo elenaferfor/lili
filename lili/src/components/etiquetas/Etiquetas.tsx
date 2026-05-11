@@ -16,7 +16,7 @@ type CatPost = {
 
 const Etiquetas = (props: any) => {
     
-    const categoriasPpales = ["Leyendo", "Deseos", "Prestados", "Préstamos"];
+    const categoriasPpales = ["Leyendo", "Lista de deseos", "Prestados", "Préstamos"];
     const [tagActivo, setTagActivo] = useState(0);
     
     const queryClient = useQueryClient();
@@ -32,8 +32,7 @@ const Etiquetas = (props: any) => {
     
     const onClickTag = (pos: number, name: string) =>{
         setTagActivo(pos);
-        props.onChangeTag(name, pos);
-        console.log(pos + name);
+        props.onChangeTag(name);
     }
     
     // Mutación crear categoría
@@ -102,7 +101,7 @@ const Etiquetas = (props: any) => {
         </div>
         <div className="tags_usuario">
             {
-                props.catsUsuario.filter( (cat: { nombre: string; }) => !categoriasPpales.includes(cat.nombre) )
+                props.catsUsuario.filter((c: any) => !categoriasPpales.includes(c.nombre) )
                     .map( (cat: { nombre: any; }, index: number) => 
                         <BotonEtiqueta
                             key={index}

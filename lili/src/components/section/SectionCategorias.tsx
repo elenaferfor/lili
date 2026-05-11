@@ -2,6 +2,7 @@ import './SectionCategorias.css';
 import {useMutation, useQueryClient} from "@tanstack/react-query";
 import api from "../../api/Axios.tsx";
 import {useEffect, useState} from "react";
+import Libro from "../libro/Libro.tsx";
 
 type SyncEstado = "idle" | "pendiente" | "enviando" | "ok";
 
@@ -17,11 +18,14 @@ const SectionCategorias = (props: any ) => {
     const [syncBorrar, setSyncBorrar] = useState<SyncEstado>("idle");
     const queryClient = useQueryClient();
     
+    const [filtroLetra, setFiltroLetra] = useState<string>("TODOS");
+    const ABC = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    
     const [catActual, setCatActual] = useState<Categoria>();
     
     useEffect(() => {
         setCatActual(
-            props.catsUsuario.filter((cat: { nombre: any; }) => cat.nombre === props.tituloCat)[0]
+            props.catsUsuario.find((c: any) => c.nombre === props.tituloCat)
         );
         
     }, [props.tituloCat, props.catsUsuario]);
@@ -60,6 +64,7 @@ const SectionCategorias = (props: any ) => {
     
     const borrarCategoria = () => {
         borrar();
+        console.log(catActual);
     }
 
     const syncIconoPublica = () => {
@@ -74,9 +79,24 @@ const SectionCategorias = (props: any ) => {
         return null;
     };
     
+    // Filtrar por letras
+    const filtrarLetras = (letra: string) => {
+        setFiltroLetra(letra);
+    }
+
+    const librosFiltrados = filtroLetra === "TODOS" ?
+        props.listaLibros :
+        props.listaLibros.filter((l: any) => {
+            const primeraLetra = l.libro_detalle.titulo[0].toUpperCase();
+            if (filtroLetra === "#") {
+                return primeraLetra < "A" || primeraLetra > "Z";
+            }
+            return primeraLetra === filtroLetra;
+        });
+    
     return <section>
         <div className="h1_herramientas">
-            <h1>{props.tituloCat} ({props.numCat})</h1>
+            <h1>{props.tituloCat} ({librosFiltrados.length})</h1>
             {!props.isTodos &&
                 <div className="iconosCategorias">
                     { catActual?.publica ?
@@ -90,72 +110,29 @@ const SectionCategorias = (props: any ) => {
             }
         </div>
         <div className="filtro_abc">
-            <div className="filtro_abc_btn">A</div>
-            <div className="filtro_abc_btn">B</div>
-            <div className="filtro_abc_btn">C</div>
-            <div className="filtro_abc_btn">D</div>
-            <div className="filtro_abc_btn">E</div>
-            <div className="filtro_abc_btn">F</div>
-            <div className="filtro_abc_btn">G</div>
-            <div className="filtro_abc_btn">H</div>
-            <div className="filtro_abc_btn">I</div>
-            <div className="filtro_abc_btn">J</div>
-            <div className="filtro_abc_btn">K</div>
-            <div className="filtro_abc_btn">L</div>
-            <div className="filtro_abc_btn">M</div>
-            <div className="filtro_abc_btn">N</div>
-            <div className="filtro_abc_btn">O</div>
-            <div className="filtro_abc_btn">P</div>
-            <div className="filtro_abc_btn">Q</div>
-            <div className="filtro_abc_btn">R</div>
-            <div className="filtro_abc_btn">S</div>
-            <div className="filtro_abc_btn">T</div>
-            <div className="filtro_abc_btn">U</div>
-            <div className="filtro_abc_btn">V</div>
-            <div className="filtro_abc_btn">W</div>
-            <div className="filtro_abc_btn">X</div>
-            <div className="filtro_abc_btn">Y</div>
-            <div className="filtro_abc_btn">Z</div>
-            <div className="filtro_abc_btn">#</div>
-            <div className="filtro_abc_btn activo">TODOS</div>
+            { ABC.split("").map((l) => <div key={l} className={`filtro_abc_btn ${filtroLetra === l ? "activo" : ""}`} onClick={(e) => filtrarLetras(e.currentTarget.textContent)}>{l}</div>) }
+            <div className={`filtro_abc_btn ${filtroLetra === "#" ? "activo" : ""}`} onClick={(e) => filtrarLetras(e.currentTarget.textContent)}>#</div>
+            <div className={`filtro_abc_btn ${filtroLetra === "TODOS" ? "activo" : ""}`} onClick={(e) => filtrarLetras(e.currentTarget.textContent)}>TODOS</div>
         </div>
 
         <div className="filtro_abc_movil">
             Filtrar:
             <select id="abc" name="abc">
-                <option value="A">A</option>
-                <option value="B">B</option>
-                <option value="C">C</option>
-                <option value="D">D</option>
-                <option value="E">E</option>
-                <option value="F">F</option>
-                <option value="G">G</option>
-                <option value="H">H</option>
-                <option value="I">I</option>
-                <option value="J">J</option>
-                <option value="K">K</option>
-                <option value="L">L</option>
-                <option value="M">M</option>
-                <option value="N">N</option>
-                <option value="O">O</option>
-                <option value="P">P</option>
-                <option value="Q">Q</option>
-                <option value="R">R</option>
-                <option value="S">S</option>
-                <option value="T">T</option>
-                <option value="U">U</option>
-                <option value="V">V</option>
-                <option value="W">W</option>
-                <option value="X">X</option>
-                <option value="Y">Y</option>
-                <option value="Z">Z</option>
-                <option value="#">#</option>
-                <option value="TODOS">TODOS</option>
+                <option onClick={() => filtrarLetras("TODOS")}>TODOS</option>
+                { ABC.split("").map((l) => <option key={l} value={l} onClick={() => filtrarLetras(l)}>{l}</option>) }
+                <option onClick={() => filtrarLetras("#")}>#</option>
             </select>
         </div>
 
         <div className="carruselLibrosCategorias">
-            {props.listaLibros}
+            {librosFiltrados.map((l: any, index: number) =>
+                <Libro
+                    key={index}
+                    titulo={l.libro_detalle.titulo}
+                    portada={l.libro_detalle.portada}
+                    id={l.libro_detalle.id}
+                />
+            )}
         </div>
     </section>
 }
