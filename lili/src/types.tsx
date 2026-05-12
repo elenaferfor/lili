@@ -38,6 +38,19 @@ export const FAVORITOS: Favorito[] = [
     { isFav: false, clase: "", iconoClase: "material-symbols-rounded notificaciones"}
 ]
 
+// Clase préstamo
+export type PrestamoIcono = {
+    tipo: string;
+    texto: string
+    clase: string;
+    icono: string;
+}
+
+export const ICONOS_PRESTAMO: PrestamoIcono[] = [
+    { tipo: "sin_prestamos", texto: "Sin préstamos", clase: "sin_prestamos", icono: "group" },
+    { tipo: "prestado", texto: "Prestado", clase: "prestado", icono: "partner_exchange" },
+    { tipo: "en_prestamo", texto: "En préstamo", clase: "en_prestamo", icono: "partner_exchange" }
+]
 
 // Clase estado para mostrar el estado de lectura de los libros
 export type EstadoOpcion = {
@@ -50,7 +63,7 @@ export const ESTADOS: EstadoOpcion[] = [
     { valor: "leido", texto: "Leído", clase:"estadoVerde", icono:"check"},
     { valor: "leyendo", texto: "Leyendo", clase:"estadoNaranja", icono:"menu_book"},
     { valor: "abandonado", texto: "Abandonado", clase:"estadoRojo", icono:"close"},
-    { valor: "s_e", texto: "Sin empezar", clase:"", icono:""}
+    { valor: "s_e", texto: "Sin empezar", clase:"", icono:"check_indeterminate_small"}
 ]
 
 
@@ -119,5 +132,13 @@ export type Prestamo = {
     prestatario_nombre: { id: number; username: string; };
     fecha_inicio: string;
     fecha_fin: string;
+    estado: string;
+    prestador_id: number;
+}
+
+export type Amistad = {
+    id: number;
+    usuario_a_nombre: { id: number; username: string };
+    usuario_b_nombre: { id: number; username: string };
     estado: string;
 }

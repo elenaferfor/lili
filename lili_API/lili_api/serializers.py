@@ -85,10 +85,11 @@ class PrestamoSerializer(serializers.ModelSerializer):
     libro_detalle = LibroTituloSerializer(source="usuario_libro.libro", read_only=True)
     prestatario = serializers.PrimaryKeyRelatedField(queryset=UsuarioLili.objects.all(), write_only=True)
     prestatario_nombre = UsuarioNombreSerializer(source='prestatario', read_only=True)
+    prestador_id = serializers.IntegerField(source="usuario_libro.usuario.id", read_only=True)
 
     class Meta:
         model = Prestamo
-        fields = ['id', 'usuario_libro', 'libro_detalle', 'prestatario', 'prestatario_nombre',
+        fields = ['id', 'usuario_libro', 'libro_detalle', 'prestatario', 'prestatario_nombre', 'prestador_id',
                   'fecha_inicio', 'fecha_fin', 'estado']
 
 class UsuarioLiliSerializer(serializers.ModelSerializer):

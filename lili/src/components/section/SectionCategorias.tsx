@@ -127,10 +127,10 @@ const SectionCategorias = (props: any ) => {
         <div className="carruselLibrosCategorias">
             {librosFiltrados.map((l: any, index: number) =>
                 <Libro
+                    libro={l}
                     key={index}
-                    titulo={l.libro_detalle.titulo}
-                    portada={l.libro_detalle.portada}
-                    id={l.libro_detalle.id}
+                    prestamos={props.prestamos}
+                    catsUsuario={props.catsUsuario}
                 />
             )}
         </div>

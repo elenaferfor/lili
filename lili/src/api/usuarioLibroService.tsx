@@ -12,6 +12,6 @@ export const getUsuarioLibrosLista = async (): Promise<UsuarioLibro[] | undefine
 }
 
 export const getUsuarioLibrosListaAbc = async (): Promise<UsuarioLibro[] | undefined> => {
-    const { data } = await api.get(`/libros_usuarios/?ordering=titulo`);
+    const { data } = await api.get(`/libros_usuarios/?ordering=libro__titulo`);
     return data.results ?? null;
 }

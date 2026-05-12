@@ -81,6 +81,7 @@ const Categorias = () => {
                         <>Cargando...</> :
                         <SectionCategorias catsUsuario={categorias}
                                            listaLibros={listaLibros}
+                                           prestamos={prestamos}
                                            tituloCat={tituloActual}
                                            isTodos={tituloActual === "Todos los libros"}
                                            onBorrarCategoria={onBorrarCategoria}

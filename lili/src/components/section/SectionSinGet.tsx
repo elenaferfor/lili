@@ -4,11 +4,12 @@ import Libro from "../libro/Libro.tsx";
 
 const SectionSinGet = (props: any) => {
     
-    const libros = props.listaLibros?.map((jsonLibro: any) => (
+    const libros = props.listaLibros?.map((l: any, index: number) => (
         <Libro
-            titulo={jsonLibro.libro_detalle.titulo}
-            portada={jsonLibro.libro_detalle.portada}
-            id={jsonLibro.libro_detalle.id}
+            key={index}
+            libro={l}
+            prestamos={props.prestamos}
+            catsUsuario={props.catsUsuario}
         />
     ));
 

@@ -4,12 +4,12 @@ import {Link} from "react-router-dom";
 
 const SectionAmigos = (props: any) => {
 
-    const amigos = props.amigos?.map((json: any) => (
+    const amigos = props.amigos?.map((a: any) => (
         <div className="amigo">
             <div className="fotoPerfil">
-                <img src="/perfil/te.JPG" alt={json.usuario_b_nombre.username}/>
+                <img src="/perfil/te.JPG" alt={a.usuario_b_nombre.username}/>
             </div>
-            <Link to="#">@{json.usuario_b_nombre.username}</Link>
+            <Link to="#">@{a.usuario_b_nombre.username}</Link>
         </div>
     ));
 

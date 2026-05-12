@@ -1,34 +1,74 @@
 import {Link} from "react-router-dom";
 import "./Libro.css"
 import {useEffect, useState} from "react";
-import api from "../../api/Axios.tsx";
+import {
+    type EstadoOpcion,
+    ESTADOS,
+    type Favorito,
+    FAVORITOS,
+    ICONOS_PRESTAMO, type Prestamo,
+    type PrestamoIcono
+} from "../../types.tsx";
+import PanelLibro from "../panel_libro/PanelLibro.tsx";
+import {useAuth} from "../../auth/AuthContext.tsx";
 
-const Libro = (props: { portada: string | undefined; id: number; titulo: string | undefined; }) => {
+const Libro = (props: any) => {
     
-    const [estadoLectura, setEstadoLectura] = useState<string>("");
-    const [favorito, setFavorito] = useState<boolean>(false);
-    const [estadoPrestar, setEstadoPrestar] = useState<string>("");
-    const [categorias, setCategorias] = useState<string[]>([]);
+    const libroData = props.libro;
+    const [panelAbierto, setPanelAbierto] = useState(false);
+    
+    const [isFav, setIsFav] = useState<Favorito>(FAVORITOS[1]);
+    const [estadoSeleccionado, setEstadoSeleccionado] = useState<EstadoOpcion>(ESTADOS[3]);
+    const [estadoPrestamo, setEstadoPrestamo] = useState<PrestamoIcono>(ICONOS_PRESTAMO[0]);
+    
+    const user = useAuth();
     
     useEffect(() => {
-        api.get("/libros_usuarios").then(response => {
-            
-        });
-    }, []);
+        if(!props.libro) return;
+        setIsFav(libroData.favorito ? FAVORITOS[0] : FAVORITOS[1]);
+    }, [libroData.favorito]);
+
+    useEffect(() => {
+        if(!props.libro) return;
+        setEstadoSeleccionado(ESTADOS.find(e => e.valor === libroData.estado) ?? ESTADOS[3]);
+    }, [libroData.estado]);
+    
+    useEffect(() => {
+        if(!props.prestamos) return;
+        const prestamoActual = props.prestamos.find((p: Prestamo) => p.libro_detalle.id === libroData.id);
+        if(!prestamoActual){
+            setEstadoPrestamo(ICONOS_PRESTAMO[0]);
+            return;
+        }
+        if(prestamoActual.prestatario_nombre.id === user.user?.id) {
+            setEstadoPrestamo(ICONOS_PRESTAMO[2]);
+        }else{
+            setEstadoPrestamo(ICONOS_PRESTAMO[1]);
+        }
+    }, [props.prestamos]);
     
     return <div className="libro">
-        <div className="portada">
-            <img src={props.portada} alt="props.titulo"/>
+        <div className={`portada ${panelAbierto ? "hover-forzado" : ""}`}>
+            <img src={libroData.libro_detalle.portada} alt={libroData.libro_detalle.titulo}/>
             <div className="hoverLibro">
-                <div className="iconosHoverLibro">
-                    <i className="material-symbols-rounded green">check</i>
-                    <i className="material-symbols-rounded pink">favorite</i>
-                    <i className="material-symbols-rounded white">close</i>
+                <div className="iconosHoverLibro" onClick={() => setPanelAbierto(true)}>
+                    <i className={`material-symbols-rounded ${estadoSeleccionado.clase}`}>{estadoSeleccionado.icono}</i>
+                    <i className={`${isFav.iconoClase} pink`}>favorite</i>
+                    <i className={`material-symbols-rounded ${estadoPrestamo.clase}`}>{estadoPrestamo.icono}</i>
                 </div>
-                <Link to={"/libro/" + props.id}>Ver</Link>
+                {panelAbierto && (
+                    <div className="panelLibro">
+                        <PanelLibro
+                            libroId={libroData.libro_detalle.id}
+                            onClose={() => setPanelAbierto(false)}
+                        />
+                    </div>
+                )}
+                
+                <Link to={"/libro/" + libroData.libro_detalle.id}>Ver</Link>
             </div>
         </div>
-        <Link to={"/libro/" + props.id}>{props.titulo}</Link>
+        <Link to={"/libro/" + libroData.libro_detalle.id}>{libroData.libro_detalle.titulo}</Link>
     </div>
 }
 

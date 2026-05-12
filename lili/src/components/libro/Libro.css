@@ -44,7 +44,7 @@
     transition: all 100ms ease-in-out;
 }
 
-.libro > .portada:hover > img{
+.libro > .portada:hover > img, .libro > .portada.hover-forzado > img{
     filter: brightness(30%);
 }
 
@@ -82,7 +82,7 @@
 }
 
 .hoverLibro i:active, .hoverSerie i:active{
-    background-color: var(--white);
+    background-color: var(--green);
     color: var(--dark_blue);
 }
 
@@ -111,7 +111,8 @@
     color: var(--dark_blue);
 }
 
-.libro > .portada:hover > .hoverLibro, .libro > .portada:hover > .hoverSerie{
+.libro > .portada:hover > .hoverLibro, .libro > .portada:hover > .hoverSerie,
+.libro > .portada.hover-forzado > .hoverLibro{
     display: flex;
 }
 
@@ -122,4 +123,28 @@
     font-size: .9rem;
     text-align: center;
     padding: 0 .25rem;
+}
+
+.estadoVerde{
+    color: var(--green);
+}
+
+.estadoNaranja{
+    color: var(--orange);
+}
+
+.estadoRojo{
+    color: var(--red);
+}
+
+.sin_prestamos{
+    color: var(--white);
+}
+
+.prestado{
+    color: var(--orange);
+}
+
+.en_prestamo{
+    color: var(--green);
 }

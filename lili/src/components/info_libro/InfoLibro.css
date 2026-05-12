@@ -50,7 +50,7 @@
 }
 
 /* BOTONES DE ESTADO */
-.detalleLibroEstados button, #estadoLectura button, .panelAnadirLibro button{
+.detalleLibroEstados button, #estadoLectura button{
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
@@ -71,7 +71,7 @@
     transition: all 200ms ease-in-out;
 }
 
-.detalleLibroEstados button i, .panelAnadirLibro button i{
+.detalleLibroEstados button i{
     font-size: 1rem;
 }
 
