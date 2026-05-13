@@ -3,6 +3,7 @@ import {useMutation, useQueryClient} from "@tanstack/react-query";
 import api from "../../api/Axios.tsx";
 import {useEffect, useState} from "react";
 import Libro from "../libro/Libro.tsx";
+import Serie from "../serie/Serie.tsx";
 
 type SyncEstado = "idle" | "pendiente" | "enviando" | "ok";
 
@@ -11,6 +12,10 @@ type Categoria = {
     nombre: string;
     publica: boolean;
 }
+
+type ItemLista =
+    { tipo: "libro"; datos: any } |
+    { tipo: "serie"; serieId: number; libros: any[] };
 
 const SectionCategorias = (props: any ) => {
 
@@ -94,6 +99,44 @@ const SectionCategorias = (props: any ) => {
             return primeraLetra === filtroLetra;
         });
     
+    // Agrupar libros por serie
+    const librosSeriesOrdenados = (libros: any[]) => {
+        const seriesMap = new Map<number, any[]>();
+        const individuales: any[] = [];
+        
+        libros.forEach((l: any) => {
+            const serieId = l.serie_detalle?.id;
+            if(serieId){
+                if(!seriesMap.has(serieId)) seriesMap.set(serieId, []);
+                seriesMap.get(serieId)!.push(l);
+            }else{
+                individuales.push(l);
+            }
+        });
+        
+        const items: ItemLista[] = [
+            ...individuales.map(l => ({ tipo: "libro" as const, datos: l })),
+            ...Array.from(seriesMap.entries()).map(([serieId, libros]) => ({
+                tipo: "serie" as const,
+                serieId,
+                libros,
+            })),
+        ];
+        
+        return items.sort((a, b) => {
+            const tituloA = a.tipo === "libro" ?
+                a.datos.libro_detalle.titulo :
+                a.libros[0].serie_detalle.nombre;
+            const tituloB = b.tipo === "libro" ?
+                b.datos.libro_detalle.titulo :
+                b.libros[0].serie_detalle.nombre;
+            return tituloA.localeCompare(tituloB, "es", {sensitivity: "base"});
+        });
+    };
+
+    // Crear los grupos de series y libros sin serie
+    const listaOrdenada = librosSeriesOrdenados(librosFiltrados);
+    
     return <section>
         <div className="h1_herramientas">
             <h1>{props.tituloCat} ({librosFiltrados.length})</h1>
@@ -125,13 +168,22 @@ const SectionCategorias = (props: any ) => {
         </div>
 
         <div className="carruselLibrosCategorias">
-            {librosFiltrados.map((l: any, index: number) =>
-                <Libro
-                    libro={l}
-                    key={index}
-                    prestamos={props.prestamos}
-                    catsUsuario={props.catsUsuario}
-                />
+            {listaOrdenada.map(item =>
+                item.tipo === "libro" ? (
+                    <Libro
+                        key={`libro-${item.datos.libro_detalle.id}`}
+                        libro={item.datos}
+                        prestamos={props.prestamos}
+                        catsUsuario={props.catsUsuario}
+                    />
+                ) : (
+                    <Serie
+                        key={`serie-${item.serieId}`}
+                        librosDeEstaSerie={item.libros}
+                        prestamos={props.prestamos}
+                        catsUsuario={props.catsUsuario}
+                    />
+                )
             )}
         </div>
     </section>

@@ -97,6 +97,7 @@
     border-radius: 2rem;
     width: fit-content;
     border: none;
+    outline: none;
     cursor: pointer;
     transition: all 200ms ease-in-out;
 }
@@ -116,7 +117,7 @@
     display: flex;
 }
 
-.libro > a{
+.libro > a, .libro > p{
     color: var(--dark_blue);
     text-decoration: none;
     font-weight: 600;

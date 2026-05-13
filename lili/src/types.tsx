@@ -18,7 +18,7 @@ export type UsuarioLibro = {
     id: number;
     usuario: number;
     libro_detalle: { id: number; titulo: string; portada: string; };
-    serie_detalle: { id: number; nombre: string; volumenes: number; }
+    serie_detalle: { id: number; nombre: string; volumenes: number; } | null;
     numero_en_serie: number;
     estado: string;
     favorito: boolean;
