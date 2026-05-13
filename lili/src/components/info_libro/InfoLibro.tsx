@@ -2,15 +2,15 @@ import "../section/Section.css";
 import "./InfoLibro.css"
 import EstadoLecturaLibro from "./EstadoLecturaLibro.tsx";
 import EstadoCategoriasLibro from "./EstadoCategoriasLibro.tsx";
-import {useEffect, useState} from "react";
+import {useEffect, useRef, useState} from "react";
 import EstadoPrestamo from "./EstadoPrestamo.tsx";
 import {useParams} from "react-router-dom";
 import {useUsuarioLibro} from "../../hooks/useUsuarioLibro.tsx";
 import {useMutation, useQueryClient} from "@tanstack/react-query";
 import api from "../../api/Axios.tsx";
 import {useAuth} from "../../auth/AuthContext.tsx";
-import {type Favorito, FAVORITOS, type UsuarioLibroPostRequest, type SyncEstado, type Serie} from "../../types.tsx";
-import {useSeries} from "../../hooks/useSerie.tsx";
+import {type Favorito, FAVORITOS, type UsuarioLibroPostRequest, type SyncEstado} from "../../types.tsx";
+import EstadoSerieLibro from "./EstadoSerieLibro.tsx";
 
 const InfoLibro = (props: any) => {
     const { libroId } = useParams();
@@ -24,12 +24,12 @@ const InfoLibro = (props: any) => {
     const [syncFav, setSyncFav] = useState<SyncEstado>("idle");
     const [syncCrear, setSyncCrear] = useState<SyncEstado>("idle");
     
-    const [serieActual, setSerieActual] = useState<Serie | undefined>(undefined);
+    const [editandoSerie, setEditandoSerie] = useState<boolean>(false);
+    const btnSerieRef = useRef<HTMLButtonElement>(null);
+    const serieRef = useRef<HTMLDivElement>(null);
     
-    // Traer usuarioLibro
+    // Traer usuarioLibro y series del usuario
     const {data: usuarioLibro} = useUsuarioLibro(libroIdNum);
-    
-    const {data: series} = useSeries();
     
     useEffect(() => {
         if(!usuarioLibro){
@@ -52,10 +52,17 @@ const InfoLibro = (props: any) => {
     }, [usuarioLibro, user]);
 
     useEffect(() => {
-        if(!series) return;
-        setSerieActual(series.find(s => s.id === usuarioLibro?.serie_detalle.id));
-    }, [series]);
-
+        if (!editandoSerie) return;
+        const handler = (e: MouseEvent) => {
+            if (serieRef.current && !serieRef.current.contains(e.target as Node)
+                && !btnSerieRef.current?.contains(e.target as Node)) {
+                setEditandoSerie(false);
+            }
+        };
+        document.addEventListener("mousedown", handler);
+        return () => document.removeEventListener("mousedown", handler);
+    }, [editandoSerie]);
+    
     // Mutación crear libroUsuario
     const { mutate: crearLibroUsuario } = useMutation({
         mutationFn: () =>
@@ -157,9 +164,7 @@ const InfoLibro = (props: any) => {
                     }
                 </div>
             </div>
-            <div className="detaleLibroSerie">
-                {`${usuarioLibro?.serie_detalle.nombre} ${usuarioLibro?.numero_en_serie} de ${serieActual?.volumenes}`}
-            </div>
+            <EstadoSerieLibro usuarioLibro={usuarioLibro} libroIdNum={libroIdNum} />
             <div className="detalleLibroSinopsis">
                 <p>Sinopsis:</p>
                 <p>{props.data.sinopsis}</p>

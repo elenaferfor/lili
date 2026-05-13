@@ -164,9 +164,93 @@ button.estadoFavorito{
 
 /* SERIES */
 .detalleLibro .detalleLibroSerie{
-    text-align: center;
-    font-weight: bold;
+    display: flex;
+    justify-content: center;
 }
+
+.detalleLibro .detalleLibroSerie button{
+    text-align: center;
+    cursor: pointer;
+    width: fit-content;
+    padding: .2rem .7rem;
+    border-radius: .4rem;
+    background-color: unset;
+    border: none;
+    outline: none;
+    color: var(--dark_blue);
+}
+
+.detalleLibro .detalleLibroSerie button:hover{
+    background-color: var(--light_blue_second);
+}
+.detalleLibro .detalleLibroSerie button:active{
+    color: var(--white);
+    background-color: var(--dark_blue);
+    border: none;
+    outline: none;
+}
+
+/* EDITANDO SERIE */
+.detalleLibro .detalleLibroSerie .editandoSerie{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: .5rem;
+    position: relative;
+}
+
+.detalleLibro .detalleLibroSerie .editandoSerie input{
+    background-color: var(--light_blue_second);
+    border: none;
+    outline: none;
+    color: var(--dark_blue);
+    width: 10rem;
+    font-family: "Epunda Sans", sans-serif;
+    padding: .2rem .7rem;
+    border-radius: .4rem;
+}
+
+.detalleLibro .detalleLibroSerie .editandoSerie input[type=number]{
+    width: 3rem;
+}
+
+.detalleLibro .detalleLibroSerie .editandoSerie .editandoSerieBtn{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 10rem;
+    width: 1.2rem;
+}
+
+.detalleLibro .detalleLibroSerie .editandoSerie button i{
+    font-size: 1rem;
+}
+
+.detalleLibro .detalleLibroSerie .editandoSerie .editandoSerieBtn:hover {
+    background-color: var(--light_blue_second);
+}
+.detalleLibro .detalleLibroSerie .editandoSerie .editandoSerieBtn:active {
+    color: var(--white);
+    background-color: var(--dark_blue);
+}
+
+.detalleLibro .detalleLibroSerie .editandoSerie .serieTitulo .seriesOpciones{
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    top: 105%;
+    border-radius: .8rem;
+    background-color: var(--blue_grey_second);
+    overflow: hidden;
+    z-index: 1;
+    font-size: .8rem;
+}
+
+.serieTitulo .seriesOpciones button {
+    width: 100%;
+    border-radius: 0;
+}
+
 
 /* TEXTO SINOPSIS */
 .detalleLibro .detalleLibroSinopsis p{
