@@ -3,7 +3,6 @@ import "./InfoLibro.css"
 import EstadoLecturaLibro from "./EstadoLecturaLibro.tsx";
 import EstadoCategoriasLibro from "./EstadoCategoriasLibro.tsx";
 import {useEffect, useRef, useState} from "react";
-import EstadoPrestamo from "./EstadoPrestamo.tsx";
 import {useParams} from "react-router-dom";
 import {useUsuarioLibro} from "../../hooks/useUsuarioLibro.tsx";
 import {useMutation, useQueryClient} from "@tanstack/react-query";
@@ -11,6 +10,7 @@ import api from "../../api/Axios.tsx";
 import {useAuth} from "../../auth/AuthContext.tsx";
 import {type Favorito, FAVORITOS, type UsuarioLibroPostRequest, type SyncEstado} from "../../types.tsx";
 import EstadoSerieLibro from "./EstadoSerieLibro.tsx";
+import PanelLibro from "../panel_libro/PanelLibro.tsx";
 
 const InfoLibro = (props: any) => {
     const { libroId } = useParams();
@@ -23,6 +23,8 @@ const InfoLibro = (props: any) => {
     const [isFav, setIsFav] = useState<Favorito>(FAVORITOS[1]);
     const [syncFav, setSyncFav] = useState<SyncEstado>("idle");
     const [syncCrear, setSyncCrear] = useState<SyncEstado>("idle");
+
+    const [panelPrestarOpen, setPanelPrestarOpen] = useState(false);
     
     const [editandoSerie, setEditandoSerie] = useState<boolean>(false);
     const btnSerieRef = useRef<HTMLButtonElement>(null);
@@ -157,7 +159,20 @@ const InfoLibro = (props: any) => {
                             <EstadoLecturaLibro/>
                             <button className={isFav.clase} onClick={() => toggleFav(isFav)}>Favorito 
                                 <i className={isFav.iconoClase}>favorite</i>{syncIconoFav()}</button>
-                            <EstadoPrestamo/>
+
+                            {/* // Préstamo */ }
+                            <button onClick={() => setPanelPrestarOpen(true)}>
+                                Prestar
+                                <i className="material-symbols-rounded">group</i>
+                            </button>
+                            {panelPrestarOpen && (
+                                <PanelLibro
+                                    libroId={libroIdNum}
+                                    onClose={() => setPanelPrestarOpen(false)}
+                                    soloPrestar={true}
+                                />
+                            )}
+                            
                             <button onClick={crearBorrarLibroUsuario}>Eliminar
                                 <i className="material-symbols-rounded">close</i>{syncIconoCrear()}</button>
                         </div>

@@ -23,9 +23,10 @@ import {useSeries} from "../../hooks/useSerie.tsx";
 interface PanelLibroProps{
     libroId: number;
     onClose: () => void;
+    soloPrestar?: boolean;
 }
 
-const PanelLibro = ({libroId, onClose}: PanelLibroProps) => {
+const PanelLibro = ({ libroId, onClose, soloPrestar = false }: PanelLibroProps) => {
 
     const panelRef = useRef<HTMLDivElement>(null);
     const queryClient = useQueryClient();
@@ -390,87 +391,89 @@ const PanelLibro = ({libroId, onClose}: PanelLibroProps) => {
                 <div className="closeBtn" onClick={onClose}>
                     <i className="material-symbols-rounded">close</i>
                 </div>
-                <div className="panelAnadirLibro">
-                    <h1>{usuarioLibroExists ? "Modificar libro" : "Añadir libro"}</h1>
-                    <p>Selecciona una o más categorías y/o serie del libro:</p>
-                    <div className="categoriasSeries">
-                        {noCategorias
-                            ? <p>No hay categorías, puedes crearlas en la página de categorías.</p>
-                            : <div id="estadoCategorias">
-                                <button onClick={() => setCategoriasIsOpen(o => !o)} ref={btnCategoriasRef}>Categorías</button>
-                                {categoriasIsOpen && (
-                                    <div className="categorias" ref={categoriasRef}>
-                                        {catLista.map(cat => (
-                                            <button key={cat.id} className={cat.activa ? "catActiva" : ""} onClick={() => handleCategorias(cat.id)}>
-                                                {cat.nombre}
-                                                {cat.activa && <i className="material-symbols-rounded">check</i>}
-                                            </button>
-                                        ))}
-                                    </div>
-                                )}
-                            </div>
-                        }
-                        <div className="serie">
-                            <div className="serie_titulo">
-                                <input type="text" value={serieSeleccionada?.nombre}
-                                       onChange={ (e) => {
-                                           setSerieTexto(e.target.value);
-                                           setSerieSeleccionada(undefined);
-                                       }}
-                                       placeholder="Título de la serie"
-                                       onClick={() => setSeriesIsOpen(o => !o)}
-                                       ref={btnSeriesRef}/>
-                                {seriesIsOpen && (
-                                    <div className="seriesOpciones" ref={seriesRef}>
-                                        {seriesLista.map((serie: any, index: number) => (
-                                            <button key={index} onClick={() => handleSeries(serie)}>
-                                                {serie.nombre}
-                                            </button>
-                                        ))}
-                                    </div>
-                                )}
-                            </div>
-                            <div className="serie_numeros">
-                                <div className="serie_num">
-                                    <input type="number" value={serieSelecNum}
-                                           onChange={(e) => setSerieSelecNum(Number(e.target.value))}
-                                           placeholder="0"/>
+                {!soloPrestar && (
+                    <div className="panelAnadirLibro">
+                        <h1>{usuarioLibroExists ? "Modificar libro" : "Añadir libro"}</h1>
+                        <p>Selecciona una o más categorías y/o serie del libro:</p>
+                        <div className="categoriasSeries">
+                            {noCategorias
+                                ? <p>No hay categorías, puedes crearlas en la página de categorías.</p>
+                                : <div id="estadoCategorias">
+                                    <button onClick={() => setCategoriasIsOpen(o => !o)} ref={btnCategoriasRef}>Categorías</button>
+                                    {categoriasIsOpen && (
+                                        <div className="categorias" ref={categoriasRef}>
+                                            {catLista.map(cat => (
+                                                <button key={cat.id} className={cat.activa ? "catActiva" : ""} onClick={() => handleCategorias(cat.id)}>
+                                                    {cat.nombre}
+                                                    {cat.activa && <i className="material-symbols-rounded">check</i>}
+                                                </button>
+                                            ))}
+                                        </div>
+                                    )}
                                 </div>
-                                <span>de</span>
-                                <div className="serie_num">
-                                    <input type="number" value={serieSelecTotal}
-                                           onChange={(e) => setSerieSelecTotal(Number(e.target.value))}
-                                           placeholder="??"/>
+                            }
+                            <div className="serie">
+                                <div className="serie_titulo">
+                                    <input type="text" value={serieSeleccionada?.nombre}
+                                           onChange={ (e) => {
+                                               setSerieTexto(e.target.value);
+                                               setSerieSeleccionada(undefined);
+                                           }}
+                                           placeholder="Título de la serie"
+                                           onClick={() => setSeriesIsOpen(o => !o)}
+                                           ref={btnSeriesRef}/>
+                                    {seriesIsOpen && (
+                                        <div className="seriesOpciones" ref={seriesRef}>
+                                            {seriesLista.map((serie: any, index: number) => (
+                                                <button key={index} onClick={() => handleSeries(serie)}>
+                                                    {serie.nombre}
+                                                </button>
+                                            ))}
+                                        </div>
+                                    )}
+                                </div>
+                                <div className="serie_numeros">
+                                    <div className="serie_num">
+                                        <input type="number" value={serieSelecNum}
+                                               onChange={(e) => setSerieSelecNum(Number(e.target.value))}
+                                               placeholder="0"/>
+                                    </div>
+                                    <span>de</span>
+                                    <div className="serie_num">
+                                        <input type="number" value={serieSelecTotal}
+                                               onChange={(e) => setSerieSelecTotal(Number(e.target.value))}
+                                               placeholder="??"/>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    
-                    <p>Estado:</p>
-                    <div id="estadoLectura">
-                        <button className={estadoSeleccionado.clase} onClick={() => setEstadoIsOpen(o => !o)} ref={btnEstadoRef}>
-                            {estadoSeleccionado.texto}
-                            <i className="material-symbols-rounded">{estadoSeleccionado.icono}</i>
+                        
+                        <p>Estado:</p>
+                        <div id="estadoLectura">
+                            <button className={estadoSeleccionado.clase} onClick={() => setEstadoIsOpen(o => !o)} ref={btnEstadoRef}>
+                                {estadoSeleccionado.texto}
+                                <i className="material-symbols-rounded">{estadoSeleccionado.icono}</i>
+                            </button>
+                            {estadoIsOpen && (
+                                <div className="estadoLecturaOpciones" ref={estadoRef}>
+                                    {ESTADOS.map((opcion: any) => (
+                                        <button key={opcion.valor} className={opcion.clase} onClick={() => handleEstado(opcion)}>
+                                            {opcion.texto}
+                                            {opcion.icono && <i className="material-symbols-rounded">{opcion.icono}</i>}
+                                        </button>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+                        <p>Marcar como favorito:</p>
+                        <button className={isFav.clase} onClick={toggleFav}>
+                            Favorito <i className={isFav.iconoClase}>favorite</i>
                         </button>
-                        {estadoIsOpen && (
-                            <div className="estadoLecturaOpciones" ref={estadoRef}>
-                                {ESTADOS.map((opcion: any) => (
-                                    <button key={opcion.valor} className={opcion.clase} onClick={() => handleEstado(opcion)}>
-                                        {opcion.texto}
-                                        {opcion.icono && <i className="material-symbols-rounded">{opcion.icono}</i>}
-                                    </button>
-                                ))}
-                            </div>
-                        )}
+                        <button className="anadirBtnFinal" onClick={handleAnadir}>
+                            Enviar {syncIcono()}
+                        </button>
                     </div>
-                    <p>Marcar como favorito:</p>
-                    <button className={isFav.clase} onClick={toggleFav}>
-                        Favorito <i className={isFav.iconoClase}>favorite</i>
-                    </button>
-                    <button className="anadirBtnFinal" onClick={handleAnadir}>
-                        Enviar {syncIcono()}
-                    </button>
-                </div>
+                )}
                 <div className="panelAnadirPrestamo">
                     <h1>Préstamos</h1>
                     <p>Elige "prestar" o "en préstamo" para añadir seguimiento:</p>
@@ -513,18 +516,18 @@ const PanelLibro = ({libroId, onClose}: PanelLibroProps) => {
                                             </div>
                                             { amistadSeleccionada ? <p>{amigo.username}</p> : <p>@usuario...</p>}
                                         </button>
-                                            {amigoIsOpen &&
-                                                <div className="amigoOpciones amigo" ref={amigoRef}>
-                                                    {amistades?.map((a: Amistad) => (
-                                                        <button key={a.id} onClick={() => handleAmigo(a)}>
-                                                            <div className="amigoSeleccionadoFoto">
-                                                                <img src="/perfil/te.JPG" alt="Foto de perfil"/>
-                                                            </div>
-                                                            { a.usuario_a_nombre.id === user?.id ? a.usuario_b_nombre.username : a.usuario_a_nombre.username }
-                                                        </button>
-                                                    ))}
-                                                </div>
-                                            }
+                                        {amigoIsOpen &&
+                                            <div className="amigoOpciones amigoBtn" ref={amigoRef}>
+                                                {amistades?.map((a: Amistad) => (
+                                                    <button key={a.id} onClick={() => handleAmigo(a)}>
+                                                        <div className="amigoSeleccionadoFoto">
+                                                            <img src="/perfil/te.JPG" alt="Foto de perfil"/>
+                                                        </div>
+                                                        { a.usuario_a_nombre.id === user?.id ? a.usuario_b_nombre.username : a.usuario_a_nombre.username }
+                                                    </button>
+                                                ))}
+                                            </div>
+                                        }
                                     </>
                                 }
                             </>

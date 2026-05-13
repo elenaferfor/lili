@@ -192,9 +192,17 @@ input[type=number] {
     z-index: 1;
 }
 
-.barraPrestar .amigoOpciones.amigo {
+.barraPrestar .amigoOpciones.amigoBtn {
+    position: absolute;
+    top: 105%;
     right: 0;
-    height: 1.7rem;
+    width: max-content;
+    border-radius: .8rem;
+    background-color: var(--blue_grey_second);
+    overflow: hidden;
+    z-index: 1;
+    max-height: 12rem;
+    overflow-y: auto;
 }
 
 .barraPrestar .amigoOpciones.amigo button, .barraPrestar .prestamoOpciones button, .serie_titulo .seriesOpciones button {
@@ -217,6 +225,7 @@ input[type=number] {
     box-shadow: 0 0 6px 3px #00000040;
     border-radius: 10rem;
     padding: .1rem 1rem .1rem .1rem;
+    position: relative;
 }
 
 .amigoSeleccionadoFoto{
