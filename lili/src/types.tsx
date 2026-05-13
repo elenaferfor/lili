@@ -136,9 +136,21 @@ export type Prestamo = {
     prestador_id: number;
 }
 
+export type CrearPrestamo = {
+    usuario_libro_id: number | undefined;
+    prestatario_id: number;
+}
+
 export type Amistad = {
     id: number;
     usuario_a_nombre: { id: number; username: string };
     usuario_b_nombre: { id: number; username: string };
     estado: string;
+}
+
+export type Serie = {
+    id: number;
+    usuario: number;
+    nombre: string;
+    volumenes: number;
 }

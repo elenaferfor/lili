@@ -4,11 +4,11 @@ import {useEffect, useRef, useState} from "react";
 import {
     type Amistad,
     type Categoria,
-    CATEGORIAS_EXCLUIDAS,
+    CATEGORIAS_EXCLUIDAS, type CrearPrestamo,
     type EstadoOpcion,
     ESTADOS,
     type Favorito,
-    FAVORITOS, ICONOS_PRESTAMO, type Prestamo, type PrestamoIcono,
+    FAVORITOS, ICONOS_PRESTAMO, type Prestamo, type PrestamoIcono, type Serie,
     type SyncEstado, type UsuarioLibroPostRequest
 } from "../../types.tsx";
 import {useMutation, useQueryClient} from "@tanstack/react-query";
@@ -18,6 +18,7 @@ import {useCategorias} from "../../hooks/useCategoria.tsx";
 import {useUsuarioLibro} from "../../hooks/useUsuarioLibro.tsx";
 import {usePrestamos} from "../../hooks/usePrestamos.tsx";
 import {useAmistades} from "../../hooks/useAmistades.tsx";
+import {useSeries} from "../../hooks/useSerie.tsx";
 
 interface PanelLibroProps{
     libroId: number;
@@ -44,12 +45,15 @@ const PanelLibro = ({libroId, onClose}: PanelLibroProps) => {
     const [isFav, setIsFav] = useState<Favorito>(FAVORITOS[1]);
     const [usuarioLibroExists, setUsuarioLibroExists] = useState<boolean>(false);
     const [sync, setSync] = useState<SyncEstado>("idle");
+    const [syncPrestar, setSyncPrestar] = useState<SyncEstado>("idle");
     const [requestBody, setRequestBody] = useState<UsuarioLibroPostRequest>();
 
     const [prestamoIsOpen, setPrestamoIsOpen] = useState(false);
     const prestamoRef = useRef<HTMLDivElement>(null);
     const btnPrestamoRef = useRef<HTMLButtonElement>(null);
     const [prestamoSeleccionado, setPrestamoSeleccionado] = useState<PrestamoIcono>(ICONOS_PRESTAMO[0]);
+    const [crearPrestamoBody, setCrearPrestamoBody] = useState<CrearPrestamo>();
+    const [prestamoActual, setPrestamoActual] = useState<Prestamo | undefined>(undefined);
 
     const [amigoIsOpen, setAmigoIsOpen] = useState(false);
     const amigoRef = useRef<HTMLDivElement>(null);
@@ -57,9 +61,19 @@ const PanelLibro = ({libroId, onClose}: PanelLibroProps) => {
     const [amistadSeleccionada, setAmistadSeleccionada] = useState<Amistad | undefined>(undefined);
     const [amigo, setAmigo] = useState({id: -1, username: ""});
 
+    const [seriesIsOpen, setSeriesIsOpen] = useState(false);
+    const seriesRef = useRef<HTMLDivElement>(null);
+    const btnSeriesRef = useRef<HTMLInputElement>(null);
+    const [serieSeleccionada, setSerieSeleccionada] = useState<Serie | undefined>(undefined);
+    const [serieTexto, setSerieTexto] = useState<string>("");
+    const [serieSelecTotal, setSerieSelecTotal] = useState<number>(0);
+    const [serieSelecNum, setSerieSelecNum] = useState<number>(0);
+    const [seriesLista, setSeriesLista] = useState<Serie[]>([]);
+
     // Traer valores del servidor
     const { data: usuarioLibro} = useUsuarioLibro(libroId);
     const { data: categoriasUsuario } = useCategorias();
+    const { data: series } = useSeries();
     const { data: prestamos } = usePrestamos();
     const { data: amistades } = useAmistades();
 
@@ -74,75 +88,69 @@ const PanelLibro = ({libroId, onClose}: PanelLibroProps) => {
         return () => document.removeEventListener("mousedown", handleClickFuera);
     }, [onClose]);
 
-    // Set panel de añadir: valores iniciales
+    // Set panel de añadir:
+    // Set usuarioLibro y categorías (interdependientes)
     useEffect(() => {
-        if (!usuarioLibro && !categoriasUsuario) {
-            setIsFav(FAVORITOS[1]);
-            setEstadoSeleccionado(ESTADOS[3]);
-            setPrestamoSeleccionado(ICONOS_PRESTAMO[0]);
-            setNoCategorias(true);
+        if (!usuarioLibro) {
             setUsuarioLibroExists(false);
-            setAmistadSeleccionada(undefined);
-        } else if (!usuarioLibro && categoriasUsuario) {
-            setIsFav(FAVORITOS[1]);
             setEstadoSeleccionado(ESTADOS[3]);
-            setPrestamoSeleccionado(ICONOS_PRESTAMO[0]);
-            setNoCategorias(false);
-            setUsuarioLibroExists(false);
-            setAmistadSeleccionada(undefined);
+            setIsFav(FAVORITOS[1]);
             setCatLista(
-                categoriasUsuario
+                (categoriasUsuario ?? [])
                     .filter((cat: any) => !CATEGORIAS_EXCLUIDAS.includes(cat.nombre))
                     .map((cat: any) => ({ ...cat, activa: false, sync: "idle" as SyncEstado }))
             );
-        } else if (usuarioLibro && !categoriasUsuario) {
-            setIsFav(usuarioLibro.favorito ? FAVORITOS[0] : FAVORITOS[1]);
-            setEstadoSeleccionado(ESTADOS.find((e: EstadoOpcion) => e.valor === usuarioLibro.estado) ?? ESTADOS[3]);
-            setNoCategorias(true);
+        } else {
             setUsuarioLibroExists(true);
-            if(!prestamos) return;
-            const prestamoActual = prestamos.find((p: Prestamo) => p.libro_detalle.id === libroId);
-            if(!prestamoActual){
-                setPrestamoSeleccionado(ICONOS_PRESTAMO[0]);
-                return;
-            }
-            if(prestamoActual.prestatario_nombre.id === user?.id) {
-                setPrestamoSeleccionado(ICONOS_PRESTAMO[2]);
-                const amistadEncontrada = amistades?.find(a => a.usuario_a_nombre.id === prestamoActual.prestador_id || a.usuario_b_nombre.id === prestamoActual.prestador_id );
-                resolverAmigo(amistadEncontrada!);
-            }else{
-                setPrestamoSeleccionado(ICONOS_PRESTAMO[1]);
-                const amistadEncontrada = amistades?.find(a => a.usuario_a_nombre.id === prestamoActual.prestador_id || a.usuario_b_nombre.id === prestamoActual.prestador_id );
-                resolverAmigo(amistadEncontrada!);
-            }
-        } else if (usuarioLibro && categoriasUsuario) {
-            setNoCategorias(false);
-            setUsuarioLibroExists(true);
-            const idsActivos = new Set(usuarioLibro.categorias_detalle.map(c => c.id));
-            setCatLista(
-                categoriasUsuario
-                    .filter((cat: any) => !CATEGORIAS_EXCLUIDAS.includes(cat.nombre))
-                    .map((cat: any) => ({ ...cat, activa: idsActivos.has(cat.id), sync: "idle" as SyncEstado }))
-            );
             setEstadoSeleccionado(ESTADOS.find((e: EstadoOpcion) => e.valor === usuarioLibro.estado) ?? ESTADOS[3]);
             setIsFav(usuarioLibro.favorito ? FAVORITOS[0] : FAVORITOS[1]);
-            if(!prestamos) return;
-            const prestamoActual = prestamos.find((p: Prestamo) => p.libro_detalle.id === libroId);
-            if(!prestamoActual){
-                setPrestamoSeleccionado(ICONOS_PRESTAMO[0]);
-                return;
-            }
-            if(prestamoActual.prestatario_nombre.id === user?.id) {
-                setPrestamoSeleccionado(ICONOS_PRESTAMO[2]);
-                const amistadEncontrada = amistades?.find(a => a.usuario_a_nombre.id === prestamoActual.prestador_id || a.usuario_b_nombre.id === prestamoActual.prestador_id );
-                resolverAmigo(amistadEncontrada!);
-            }else{
-                setPrestamoSeleccionado(ICONOS_PRESTAMO[1]);
-                const amistadEncontrada = amistades?.find(a => a.usuario_a_nombre.id === prestamoActual.prestador_id || a.usuario_b_nombre.id === prestamoActual.prestador_id );
-                resolverAmigo(amistadEncontrada!);
+            if (categoriasUsuario) {
+                const idsActivos = new Set(usuarioLibro.categorias_detalle.map(c => c.id));
+                setCatLista(
+                    categoriasUsuario
+                        .filter((cat: any) => !CATEGORIAS_EXCLUIDAS.includes(cat.nombre))
+                        .map((cat: any) => ({ ...cat, activa: idsActivos.has(cat.id), sync: "idle" as SyncEstado }))
+                );
             }
         }
-    }, [usuarioLibro, categoriasUsuario, amistades]);
+        setNoCategorias(!categoriasUsuario);
+    }, [usuarioLibro, categoriasUsuario]);
+    
+    // Set series
+    useEffect(() => {
+        setSeriesLista(series ?? []);
+        if (!usuarioLibro) return;
+        if (usuarioLibro.serie_detalle) {
+            setSerieSeleccionada(series?.find(s => s.id === usuarioLibro.serie_detalle.id));
+            setSerieTexto(usuarioLibro.serie_detalle.nombre);
+            setSerieSelecTotal(usuarioLibro.serie_detalle.volumenes);
+            setSerieSelecNum(usuarioLibro.numero_en_serie);
+        }
+    }, [series, usuarioLibro]);
+    
+    // Set préstamos y amistades (interdependientes)
+    useEffect(() => {
+        if (!prestamos) return;
+        const encontrado = prestamos.find((p: Prestamo) =>
+            p.libro_detalle.id === libroId && p.estado === "activo"
+        );
+        setPrestamoActual(encontrado);
+        if (!encontrado) {
+            setPrestamoSeleccionado(ICONOS_PRESTAMO[0]);
+            setAmistadSeleccionada(undefined);
+            return;
+        }
+        if (encontrado.prestatario_nombre.id === user?.id) {
+            setPrestamoSeleccionado(ICONOS_PRESTAMO[2]);
+        } else {
+            setPrestamoSeleccionado(ICONOS_PRESTAMO[1]);
+        }
+        const amistadEncontrada = amistades?.find(a =>
+            a.usuario_a_nombre.id === encontrado.prestador_id ||
+            a.usuario_b_nombre.id === encontrado.prestador_id
+        );
+        resolverAmigo(amistadEncontrada!);
+    }, [prestamos, amistades]);
     
     // Settear amigo
     const resolverAmigo = (amistad: Amistad) => {
@@ -166,6 +174,19 @@ const PanelLibro = ({libroId, onClose}: PanelLibroProps) => {
         document.addEventListener("mousedown", handler);
         return () => document.removeEventListener("mousedown", handler);
     }, [categoriasIsOpen]);
+
+    // Abrir y cerrar series
+    useEffect(() => {
+        if (!seriesIsOpen) return;
+        const handler = (e: MouseEvent) => {
+            if (estadoRef.current && !estadoRef.current.contains(e.target as Node)
+                && !btnSeriesRef.current?.contains(e.target as Node)) {
+                setSeriesIsOpen(false);
+            }
+        };
+        document.addEventListener("mousedown", handler);
+        return () => document.removeEventListener("mousedown", handler);
+    }, [seriesIsOpen]);
     
     // Abrir y cerrar estado
     useEffect(() => {
@@ -212,6 +233,13 @@ const PanelLibro = ({libroId, onClose}: PanelLibroProps) => {
         );
     };
 
+    const handleSeries = (serie: Serie) => {
+        setSerieSeleccionada(serie);
+        setSerieTexto(serie.nombre);
+        setSerieSelecTotal(serie.volumenes);
+        setSeriesIsOpen(false);
+    };
+    
     const handleEstado = (opcion: EstadoOpcion) => {
         setEstadoSeleccionado(opcion);
         setEstadoIsOpen(false);
@@ -261,27 +289,97 @@ const PanelLibro = ({libroId, onClose}: PanelLibroProps) => {
         onError: () => setSync("idle"),
     });
 
+    // Mutación crear serie
+    const { mutate: actualizarSerie } = useMutation({
+        mutationFn: (usuarioLibroId: number) =>
+            api.post(`/libros_usuarios/${usuarioLibroId}/anadir_serie/`, {
+                serie: serieSeleccionada?.id ?? serieTexto,
+                num_en_serie: serieSelecNum
+            }),
+        onError: () => setSync("idle"),
+    });
+
+    // Mutación prestar
+    const { mutate: prestarLibro } = useMutation({
+        mutationFn: () =>
+            api.post(`/prestamos/crear_prestamo_prestador/`, crearPrestamoBody),
+        onMutate: () => setSyncPrestar("enviando"),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["prestar", libroId] });
+            setSyncPrestar("ok");
+            setTimeout(() => setSyncPrestar("idle"), 1500);
+        },
+        onError: () => setSync("idle"),
+    });
+
+    // Mutación devolver
+    const { mutate: devolverLibro } = useMutation({
+        mutationFn: () =>
+            api.post(`/prestamos/${prestamoActual?.id}/devolver/`),
+        onMutate: () => setSyncPrestar("enviando"),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["prestar", libroId] });
+            setSyncPrestar("ok");
+            setTimeout(() => setSyncPrestar("idle"), 1500);
+        },
+        onError: () => setSync("idle"),
+    });
+
+
     // Añadir el libro o modificar si el usuario ya lo tenía
     const handleAnadir = () => {
         const body: UsuarioLibroPostRequest = {
             usuario: user?.id,
             libro: libroId,
-            serie: null,
-            numero_en_serie: null,
+            serie: serieSeleccionada?.id ?? null,
+            numero_en_serie: serieSelecNum ?? null,
             estado: estadoSeleccionado.valor,
             favorito: isFav.isFav,
             publico: true,
             categorias: catLista.filter(c => c.activa).map(c => c.id),
         };
+
+        const onGuardado = {
+            onSuccess: (res: any) => {
+                const id = usuarioLibro?.id ?? res.data.id;
+                if (serieTexto) actualizarSerie(id);
+                queryClient.invalidateQueries({ queryKey: ["usuarioLibro", libroId] });
+                setSync("ok");
+                setTimeout(() => setSync("idle"), 1500);
+            },
+            onError: () => setSync("idle"),
+        };
+
         setRequestBody(body);
-        if (usuarioLibro) editarUsuarioLibro();
-        else crearUsuarioLibro();
+        if (usuarioLibro) editarUsuarioLibro(undefined, onGuardado);
+        else crearUsuarioLibro(undefined, onGuardado);
     };
+    
+    // Crear un préstamo prestador -> prestatario (se crea como activo)
+    const handlePrestar = () => {
+        if(prestamoSeleccionado.tipo === "prestado"){
+            const body: CrearPrestamo = {
+                usuario_libro_id: usuarioLibro?.id,
+                prestatario_id: amigo.id
+            }
+            setCrearPrestamoBody(body);
+            prestarLibro();
+        }else{
+            devolverLibro();
+        }
+        
+    }
 
     const syncIcono = () => {
         if (sync === "pendiente") return <i className="material-symbols-rounded">schedule</i>;
         if (sync === "enviando") return <i className="material-symbols-rounded">sync</i>;
         if (sync === "ok") return <i className="material-symbols-rounded">check_circle</i>;
+        return null;
+    };
+    const syncIconoPrestar = () => {
+        if (syncPrestar === "pendiente") return <i className="material-symbols-rounded">schedule</i>;
+        if (syncPrestar === "enviando") return <i className="material-symbols-rounded">sync</i>;
+        if (syncPrestar === "ok") return <i className="material-symbols-rounded">check_circle</i>;
         return null;
     };
 
@@ -294,23 +392,60 @@ const PanelLibro = ({libroId, onClose}: PanelLibroProps) => {
                 </div>
                 <div className="panelAnadirLibro">
                     <h1>{usuarioLibroExists ? "Modificar libro" : "Añadir libro"}</h1>
-                    <p>Selecciona una o más categorías:</p>
-                    {noCategorias
-                        ? <p>No hay categorías, puedes crearlas en la página de categorías.</p>
-                        : <div id="estadoCategorias">
-                            <button onClick={() => setCategoriasIsOpen(o => !o)} ref={btnCategoriasRef}>Categorías</button>
-                            {categoriasIsOpen && (
-                                <div className="categorias" ref={categoriasRef}>
-                                    {catLista.map(cat => (
-                                        <button key={cat.id} className={cat.activa ? "catActiva" : ""} onClick={() => handleCategorias(cat.id)}>
-                                            {cat.nombre}
-                                            {cat.activa && <i className="material-symbols-rounded">check</i>}
-                                        </button>
-                                    ))}
+                    <p>Selecciona una o más categorías y/o serie del libro:</p>
+                    <div className="categoriasSeries">
+                        {noCategorias
+                            ? <p>No hay categorías, puedes crearlas en la página de categorías.</p>
+                            : <div id="estadoCategorias">
+                                <button onClick={() => setCategoriasIsOpen(o => !o)} ref={btnCategoriasRef}>Categorías</button>
+                                {categoriasIsOpen && (
+                                    <div className="categorias" ref={categoriasRef}>
+                                        {catLista.map(cat => (
+                                            <button key={cat.id} className={cat.activa ? "catActiva" : ""} onClick={() => handleCategorias(cat.id)}>
+                                                {cat.nombre}
+                                                {cat.activa && <i className="material-symbols-rounded">check</i>}
+                                            </button>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
+                        }
+                        <div className="serie">
+                            <div className="serie_titulo">
+                                <input type="text" value={serieSeleccionada?.nombre}
+                                       onChange={ (e) => {
+                                           setSerieTexto(e.target.value);
+                                           setSerieSeleccionada(undefined);
+                                       }}
+                                       placeholder="Título de la serie"
+                                       onClick={() => setSeriesIsOpen(o => !o)}
+                                       ref={btnSeriesRef}/>
+                                {seriesIsOpen && (
+                                    <div className="seriesOpciones" ref={seriesRef}>
+                                        {seriesLista.map((serie: any, index: number) => (
+                                            <button key={index} onClick={() => handleSeries(serie)}>
+                                                {serie.nombre}
+                                            </button>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
+                            <div className="serie_numeros">
+                                <div className="serie_num">
+                                    <input type="number" value={serieSelecNum}
+                                           onChange={(e) => setSerieSelecNum(Number(e.target.value))}
+                                           placeholder="0"/>
                                 </div>
-                            )}
+                                <span>de</span>
+                                <div className="serie_num">
+                                    <input type="number" value={serieSelecTotal}
+                                           onChange={(e) => setSerieSelecTotal(Number(e.target.value))}
+                                           placeholder="??"/>
+                                </div>
+                            </div>
                         </div>
-                    }
+                    </div>
+                    
                     <p>Estado:</p>
                     <div id="estadoLectura">
                         <button className={estadoSeleccionado.clase} onClick={() => setEstadoIsOpen(o => !o)} ref={btnEstadoRef}>
@@ -360,7 +495,7 @@ const PanelLibro = ({libroId, onClose}: PanelLibroProps) => {
                                     {prestamoSeleccionado.icono && <i className="material-symbols-rounded">{prestamoSeleccionado.icono}</i>}
                                 </button>
                                 {prestamoIsOpen && (
-                                    <div className="estadoLecturaOpciones" ref={prestamoRef}>
+                                    <div className="prestamoOpciones" ref={prestamoRef}>
                                         {ICONOS_PRESTAMO.slice(0, 2).map((opcion: any) => (
                                             <button key={opcion.valor} onClick={() => handlePrestamo(opcion)}>
                                                 {opcion.texto}
@@ -379,7 +514,7 @@ const PanelLibro = ({libroId, onClose}: PanelLibroProps) => {
                                             { amistadSeleccionada ? <p>{amigo.username}</p> : <p>@usuario...</p>}
                                         </button>
                                             {amigoIsOpen &&
-                                                <div className="estadoLecturaOpciones amigo" ref={amigoRef}>
+                                                <div className="amigoOpciones amigo" ref={amigoRef}>
                                                     {amistades?.map((a: Amistad) => (
                                                         <button key={a.id} onClick={() => handleAmigo(a)}>
                                                             <div className="amigoSeleccionadoFoto">
@@ -394,11 +529,9 @@ const PanelLibro = ({libroId, onClose}: PanelLibroProps) => {
                                 }
                             </>
                         }
-                        
-                        
                     </div>
-                    <button className="anadirBtnFinal" onClick={handleAnadir} disabled={ prestamoSeleccionado.tipo === "en_prestamo" }>
-                        Enviar {syncIcono()}
+                    <button className="anadirBtnFinal" onClick={handlePrestar} disabled={ prestamoSeleccionado.tipo === "en_prestamo" }>
+                        Enviar {syncIconoPrestar()}
                     </button>
                 </div>
             </div>

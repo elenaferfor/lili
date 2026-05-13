@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, date
 
 import resend
 from django.conf import settings
@@ -423,6 +423,7 @@ class AmistadView(ModelViewSet):
 
 @prestamo_schema
 class PrestamoView(ModelViewSet):
+    queryset = Prestamo.objects.none()
     def get_queryset(self):
         if self.request.user.is_staff:
             return Prestamo.objects.all().select_related('usuario_libro', 'prestatario')
@@ -440,7 +441,7 @@ class PrestamoView(ModelViewSet):
             )
 
         prestamo.estado = Prestamo.EstadosPrestamo.ACTIVO
-        prestamo.fecha_inicio = datetime.now()
+        prestamo.fecha_inicio = date.today()
         prestamo.save()
         return Response(
             {"mensaje": "Préstamo aceptado"},
@@ -457,7 +458,7 @@ class PrestamoView(ModelViewSet):
             )
 
         prestamo.estado = Prestamo.EstadosPrestamo.DEVUELTO
-        prestamo.fecha_fin = datetime.now()
+        prestamo.fecha_fin = date.today()
         prestamo.save()
         return Response(
             {"mensaje": "Préstamo devuelto"},
@@ -506,6 +507,61 @@ class PrestamoView(ModelViewSet):
         return Response(
             PrestamoSerializer(prestamos_solicitados, many=True).data,
             status=status.HTTP_200_OK
+        )
+
+    @action(detail=False, methods=['post'])
+    @transaction.atomic
+    def crear_prestamo_prestador(self, request):
+        """
+        {
+            "usuario_libro_id": 1, # UsuarioLibro del prestador
+            "prestatario_id": 3 # ID del prestatario
+        }
+        """
+        usuario_libro_id = request.data.get('usuario_libro_id')
+        prestatario_id = request.data.get('prestatario_id')
+
+        if not usuario_libro_id or not prestatario_id:
+            return Response(
+                {"error": "Se necesita indicar usuario_libro_id y prestatario_id"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        try:
+            usuario_libro = UsuarioLibro.objects.get(pk=usuario_libro_id)
+        except UsuarioLibro.DoesNotExist:
+            return Response({"error": "UsuarioLibro no encontrado"}, status=status.HTTP_404_NOT_FOUND)
+
+        if usuario_libro.usuario != request.user:
+            return Response(status=status.HTTP_403_FORBIDDEN)
+
+        if Prestamo.objects.filter(usuario_libro=usuario_libro, estado=Prestamo.EstadosPrestamo.ACTIVO).exists():
+            return Response(
+                {"error": "Este libro ya tiene un préstamo activo"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        try:
+            prestatario = UsuarioLili.objects.get(pk=prestatario_id)
+        except UsuarioLili.DoesNotExist:
+            return Response({"error": "Prestatario no encontrado"}, status=status.HTTP_404_NOT_FOUND)
+
+        UsuarioLibro.objects.get_or_create(
+            usuario=prestatario,
+            libro=usuario_libro.libro,
+            defaults={'estado': UsuarioLibro.EstadosLectura.SIN_EMPEZAR}
+        )
+
+        prestamo = Prestamo.objects.create(
+            usuario_libro=usuario_libro,
+            prestatario=prestatario,
+            estado=Prestamo.EstadosPrestamo.ACTIVO,
+            fecha_inicio=date.today()
+        )
+
+        return Response(
+            PrestamoSerializer(prestamo).data,
+            status=status.HTTP_201_CREATED
         )
 
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]

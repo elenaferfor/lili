@@ -162,6 +162,12 @@ button.estadoFavorito{
     position: relative;
 }
 
+/* SERIES */
+.detalleLibro .detalleLibroSerie{
+    text-align: center;
+    font-weight: bold;
+}
+
 /* TEXTO SINOPSIS */
 .detalleLibro .detalleLibroSinopsis p{
     margin-bottom: 1rem;

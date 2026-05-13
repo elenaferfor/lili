@@ -1,12 +1,17 @@
 import ContenedorPerfilBusqueda from "../../components/contenedor_perfil_busqueda/ContenedorPerfilBusqueda.tsx";
-import Section from "../../components/section/Section.tsx";
 import Nav from "../../components/nav/Nav.tsx";
 import HeaderFooter from "../../components/header_footer/HeaderFooter.tsx";
 import Footer from "../../components/footer/Footer.tsx";
 import "./Index.css"
 import Logo from "../../components/logo/Logo.tsx";
+import SectionSinGet from "../../components/section/SectionSinGet.tsx";
+import {useUsuarioLibrosLista} from "../../hooks/useUsuarioLibro.tsx";
 
 const Index = () => {
+
+    const { data: libros, isLoading: librosIsLoading } = useUsuarioLibrosLista();
+    
+    const deseos = libros?.filter(l => l.categorias_detalle.some(c => c.nombre === "Lista de deseos"));
     
     return <>
         <header id="header">
@@ -19,8 +24,8 @@ const Index = () => {
             <div className="contenido">
                 <div className="migas">Biblioteca</div>
                 <div className="secciones">
-                    <Section titulo={"Últimos añadidos"} esLibroUsuario={true} filtroBusqueda={"/libros_usuarios/?ordering=-fecha_anadido"}/>
-                    <Section titulo={"Lista de deseos"} esLibroUsuario={true} filtroBusqueda={"/libros_usuarios/?serie=&estado=&favorito=unknown&categoria_nombre=lista+de+deseos"}/>
+                    <SectionSinGet titulo={"Últimos añadidos"} listaLibros={libros?.slice(0, 14)} isLoading={librosIsLoading}/>
+                    <SectionSinGet titulo={"Lista de deseos"} listaLibros={deseos?.slice(0, 14)} isLoading={librosIsLoading}/>
                     {/*
                     Añadir cuando funcione con Open Library
                     <Section titulo={"Recomendados para ti"} filtroBusqueda={""}/>

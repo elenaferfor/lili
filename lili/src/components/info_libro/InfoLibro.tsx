@@ -9,7 +9,8 @@ import {useUsuarioLibro} from "../../hooks/useUsuarioLibro.tsx";
 import {useMutation, useQueryClient} from "@tanstack/react-query";
 import api from "../../api/Axios.tsx";
 import {useAuth} from "../../auth/AuthContext.tsx";
-import {type Favorito, FAVORITOS, type UsuarioLibroPostRequest, type SyncEstado} from "../../types.tsx";
+import {type Favorito, FAVORITOS, type UsuarioLibroPostRequest, type SyncEstado, type Serie} from "../../types.tsx";
+import {useSeries} from "../../hooks/useSerie.tsx";
 
 const InfoLibro = (props: any) => {
     const { libroId } = useParams();
@@ -23,8 +24,12 @@ const InfoLibro = (props: any) => {
     const [syncFav, setSyncFav] = useState<SyncEstado>("idle");
     const [syncCrear, setSyncCrear] = useState<SyncEstado>("idle");
     
-    // Traer favorito
+    const [serieActual, setSerieActual] = useState<Serie | undefined>(undefined);
+    
+    // Traer usuarioLibro
     const {data: usuarioLibro} = useUsuarioLibro(libroIdNum);
+    
+    const {data: series} = useSeries();
     
     useEffect(() => {
         if(!usuarioLibro){
@@ -45,6 +50,11 @@ const InfoLibro = (props: any) => {
         const fav = usuarioLibro.favorito ? FAVORITOS[0] : FAVORITOS[1];
         setIsFav(fav);
     }, [usuarioLibro, user]);
+
+    useEffect(() => {
+        if(!series) return;
+        setSerieActual(series.find(s => s.id === usuarioLibro?.serie_detalle.id));
+    }, [series]);
 
     // Mutación crear libroUsuario
     const { mutate: crearLibroUsuario } = useMutation({
@@ -146,6 +156,9 @@ const InfoLibro = (props: any) => {
                         </div>
                     }
                 </div>
+            </div>
+            <div className="detaleLibroSerie">
+                {`${usuarioLibro?.serie_detalle.nombre} ${usuarioLibro?.numero_en_serie} de ${serieActual?.volumenes}`}
             </div>
             <div className="detalleLibroSinopsis">
                 <p>Sinopsis:</p>

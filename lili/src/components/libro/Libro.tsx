@@ -21,7 +21,7 @@ const Libro = (props: any) => {
     const [estadoSeleccionado, setEstadoSeleccionado] = useState<EstadoOpcion>(ESTADOS[3]);
     const [estadoPrestamo, setEstadoPrestamo] = useState<PrestamoIcono>(ICONOS_PRESTAMO[0]);
     
-    const user = useAuth();
+    const { user } = useAuth();
     
     useEffect(() => {
         if(!props.libro) return;
@@ -35,12 +35,12 @@ const Libro = (props: any) => {
     
     useEffect(() => {
         if(!props.prestamos) return;
-        const prestamoActual = props.prestamos.find((p: Prestamo) => p.libro_detalle.id === libroData.id);
+        const prestamoActual = props.prestamos.find((p: Prestamo) => p.libro_detalle.id === libroData.libro_detalle.id && p.estado === "activo");
         if(!prestamoActual){
             setEstadoPrestamo(ICONOS_PRESTAMO[0]);
             return;
         }
-        if(prestamoActual.prestatario_nombre.id === user.user?.id) {
+        if(prestamoActual.prestatario_nombre.id === user?.id) {
             setEstadoPrestamo(ICONOS_PRESTAMO[2]);
         }else{
             setEstadoPrestamo(ICONOS_PRESTAMO[1]);
@@ -57,12 +57,10 @@ const Libro = (props: any) => {
                     <i className={`material-symbols-rounded ${estadoPrestamo.clase}`}>{estadoPrestamo.icono}</i>
                 </div>
                 {panelAbierto && (
-                    <div className="panelLibro">
-                        <PanelLibro
-                            libroId={libroData.libro_detalle.id}
-                            onClose={() => setPanelAbierto(false)}
-                        />
-                    </div>
+                    <PanelLibro
+                        libroId={libroData.libro_detalle.id}
+                        onClose={() => setPanelAbierto(false)}
+                    />
                 )}
                 
                 <Link to={"/libro/" + libroData.libro_detalle.id}>Ver</Link>

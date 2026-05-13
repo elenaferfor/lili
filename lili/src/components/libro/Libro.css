@@ -142,9 +142,9 @@
 }
 
 .prestado{
-    color: var(--orange);
+    color: var(--green);
 }
 
 .en_prestamo{
-    color: var(--green);
+    color: var(--orange);
 }
