@@ -8,7 +8,7 @@ const Resultado = (props: any) => {
     if(props.item.tipo === 'usuario'){
         // TODO: añadir páginas de usuario y autor y enlazar los resultados
         return <div className="resultado">
-            <Link to="#" className="detalleUsuarioInfo">
+            <Link to={`/perfil/${props.item.id}`} className="detalleUsuarioInfo">
                 <h1>{`@${props.item.username}`}</h1>
             </Link>
         </div>

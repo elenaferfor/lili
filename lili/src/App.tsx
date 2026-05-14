@@ -16,6 +16,7 @@ import Amigos from "./screens/amigos/Amigos.tsx";
 import NotFound from "./screens/not_found/NotFound.tsx";
 import Notificaciones from "./screens/notificaciones/Notificaciones.tsx";
 import PerfilOtro from "./screens/perfil/PerfilOtro.tsx";
+import CategoriasOtro from "./screens/categorias/CategoriasOtro.tsx";
 
 const queryClient = new QueryClient();
 
@@ -35,6 +36,11 @@ function App() {
                     <Route path="/categorias" element={
                         <RutaProtegida>
                             <Categorias/>
+                        </RutaProtegida>
+                    }/>
+                    <Route path="/categorias/:userId/:catId" element={
+                        <RutaProtegida>
+                            <CategoriasOtro/>
                         </RutaProtegida>
                     }/>
                     <Route path="/libro/:libroId" element={

@@ -55,3 +55,8 @@ body{
 #root{
   width: 100%;
 }
+
+button{
+  outline: none;
+  border: none;
+}

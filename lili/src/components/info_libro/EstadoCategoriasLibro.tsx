@@ -3,7 +3,7 @@ import api from "../../api/Axios.tsx";
 import {useMutation} from "@tanstack/react-query";
 import {useUsuarioLibro} from "../../hooks/useUsuarioLibro.tsx";
 import {useCategorias} from "../../hooks/useCategoria.tsx";
-import {type Categoria, CATEGORIAS_EXCLUIDAS, type SyncEstado} from "../../types.tsx";
+import {type CategoriaDesplegable, CATEGORIAS_EXCLUIDAS, type SyncEstado} from "../../types.tsx";
 
 const EstadoCategoriasLibro = (props: any) => {
     
@@ -12,7 +12,7 @@ const EstadoCategoriasLibro = (props: any) => {
     const categoriasRef = useRef<HTMLDivElement>(null);
     const btnCategoriasRef = useRef<HTMLButtonElement>(null);
 
-    const [catLista, setCatLista] = useState<Categoria[]>([]);
+    const [catLista, setCatLista] = useState<CategoriaDesplegable[]>([]);
     const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
     
     // Traer categorías de la API

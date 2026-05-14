@@ -66,9 +66,15 @@ export const ESTADOS: EstadoOpcion[] = [
     { valor: "s_e", texto: "Sin empezar", clase:"", icono:"check_indeterminate_small"}
 ]
 
+export type Categoria = {
+    id: number;
+    usuario: number;
+    nombre: string;
+    publica: boolean;
+}
 
 // Tipo categoría para mostrar los desplegables de categorías de los libros
-export type Categoria = {
+export type CategoriaDesplegable = {
     id: number;
     nombre: string;
     activa: boolean;
@@ -148,6 +154,18 @@ export type Amistad = {
     usuario_b_nombre: { id: number; username: string };
     estado: string;
 }
+
+export type AmistadEstado = {
+    estado: string;
+    clase: string;
+}
+
+export const ESTADOS_AMISTAD: AmistadEstado[] = [
+    { estado: "s_s", clase: "amistad_sin_solicitar" },
+    { estado: "pen", clase: "amistad_pendiente" },
+    { estado: "ac", clase: "amistad_aceptada" },
+    { estado: "blo", clase: "amistad_bloqueada" }
+]
 
 export type Serie = {
     id: number;

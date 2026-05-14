@@ -3,7 +3,7 @@ import ReactDOM from "react-dom";
 import {useEffect, useRef, useState} from "react";
 import {
     type Amistad,
-    type Categoria,
+    type CategoriaDesplegable,
     CATEGORIAS_EXCLUIDAS, type CrearPrestamo,
     type EstadoOpcion,
     ESTADOS,
@@ -36,7 +36,7 @@ const PanelLibro = ({ libroId, onClose, soloPrestar = false }: PanelLibroProps) 
     const [categoriasIsOpen, setCategoriasIsOpen] = useState<boolean>(false);
     const categoriasRef = useRef<HTMLDivElement>(null);
     const btnCategoriasRef = useRef<HTMLButtonElement>(null);
-    const [catLista, setCatLista] = useState<Categoria[]>([]);
+    const [catLista, setCatLista] = useState<CategoriaDesplegable[]>([]);
 
     const [estadoIsOpen, setEstadoIsOpen] = useState(false);
     const estadoRef = useRef<HTMLDivElement>(null);

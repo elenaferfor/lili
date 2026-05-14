@@ -1,6 +1,8 @@
-import {Link} from "react-router-dom";
+import {Link, useNavigate} from "react-router-dom";
 
 const SectionAmigosCats = (props: any) => {
+    
+    const navigate = useNavigate();
     
     return <section className="sectionAmigosCats">
         <h1><Link to={`/perfil/${props.amigoId}`}>@{props.username}</Link></h1>
@@ -10,7 +12,7 @@ const SectionAmigosCats = (props: any) => {
             </div>
             <div className="tags_usuario">
                 { props.categorias && 
-                    props.categorias.map((c: any) => <button key={c.id}>{c.nombre}</button>)
+                    props.categorias.map((c: any) => <button key={c.id} onClick={() => navigate(`/categorias/${props.amigoId}/${c.id}`)}>{c.nombre}</button>)
                 }
             </div>
         </div>

@@ -1,11 +1,5 @@
 import api from "./Axios.tsx";
-
-type Categoria = {
-    id: number;
-    usuario: number;
-    nombre: string;
-    publica: boolean;
-}
+import type {Categoria} from "../types.tsx";
 
 export const getCategoriasUsuario = async (): Promise<Categoria[] | undefined> => {
     const { data } = await api.get("/categorias?ordering=nombre");

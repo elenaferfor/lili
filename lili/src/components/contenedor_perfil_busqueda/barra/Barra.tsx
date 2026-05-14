@@ -2,13 +2,14 @@ import "./Barra.css"
 import {Link, useNavigate} from "react-router-dom";
 import Resultado from "./resultado/Resultado.tsx";
 import "./Barra.css";
-import {useState} from "react";
+import {useEffect, useRef, useState} from "react";
 import {useBusqueda} from "../../../hooks/useBusqueda.tsx";
 
 const Barra = () => {
     
     const [searchValue, setSearchValue] = useState("");
     const { resultados, cargando, pendiente } = useBusqueda(searchValue);
+    const barraRef = useRef<HTMLDivElement>(null);
     
     const navigate = useNavigate();
     
@@ -17,8 +18,18 @@ const Barra = () => {
         navigate(`/resultados?q=${encodeURIComponent(searchValue)}`);
         setSearchValue('');
     }
+
+    useEffect(() => {
+        const handleClickFuera = (e: MouseEvent) => {
+            if (barraRef.current && !barraRef.current.contains(e.target as Node)) {
+                setSearchValue('');
+            }
+        };
+        document.addEventListener('mousedown', handleClickFuera);
+        return () => document.removeEventListener('mousedown', handleClickFuera);
+    }, []);
     
-    return <div className="barra">
+    return <div className="barra" ref={barraRef}>
         <form id="search" name="search" method="post" onSubmit={busquedaCompleta}>
             <input type="search" className="f_barra" name="f_barra"
                    placeholder="Buscar libro, autor, ISBN, @usuario..."
