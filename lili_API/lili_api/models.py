@@ -185,7 +185,7 @@ class Notificacion(models.Model):
     tipo = models.CharField(max_length=42)
     texto = models.TextField()
     leida = models.BooleanField(default=False)
-    fecha_creacion = models.DateField(auto_now_add=True)
+    fecha_creacion = models.DateTimeField(auto_now_add=True)
     referencia = models.IntegerField()
 
     class Meta:

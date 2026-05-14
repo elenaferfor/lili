@@ -10,6 +10,7 @@ const SectionSinGet = (props: any) => {
             libro={l}
             prestamos={props.prestamos}
             catsUsuario={props.catsUsuario}
+            deOtro={props.deOtro}
         />
     ));
 

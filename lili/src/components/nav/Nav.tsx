@@ -8,7 +8,7 @@ const Nav = () => {
         <Link to="/categorias" className="submenu">Categorías</Link>
         <Link to="/resultados" className="submenu">Añadir</Link>
         <Link to="#" className="disabled">Recomendaciones</Link>
-        <Link to="#">Amigos</Link>
+        <Link to="/amigos">Amigos</Link>
         <Link to="#" className="disabled">Configuración</Link>
     </nav>
 }

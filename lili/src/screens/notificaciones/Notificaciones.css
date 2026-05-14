@@ -1,0 +1,81 @@
+.sectionNotificaciones{
+    position: relative;
+}
+
+.sectionNotificaciones.nueva{
+    box-shadow: 0 0 10px 2px var(--blue_main);
+}
+
+.sectionNotificaciones .closeBtn{
+    color: var(--dark_blue);
+    position: absolute;
+    top: 0;
+    right: 0;
+    margin: 1rem;
+    cursor: pointer;
+}
+
+.notificaciones_info{
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    color: var(--dark_blue);
+}
+
+.notificaciones_info .libroFoto{
+    height: 6rem;
+    width: 4rem;
+    overflow: hidden;
+    position: relative;
+}
+
+.notificaciones_info .amigoFoto{
+    width: 6rem;
+    height: 6rem;
+    border-radius: 100%;
+    overflow: hidden;
+}
+
+.notificaciones_info .libroFoto img{
+    width: 100%;
+    object-fit: cover;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.notificaciones_info .amigoFoto img{
+    width: 100%;
+    object-fit: cover;
+}
+
+/* BOTONES ACEPTAR/RECHAZAR AMISTAD */
+.notificaciones_info .btn_amistad{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: "Jost", sans-serif;
+    color: var(--dark_blue);
+    padding: .2rem .7rem;
+    outline: none;
+    border: none;
+}
+
+.notificaciones_info .btn_amistad.aceptar{
+    background-color: var(--green);
+}
+
+.notificaciones_info .btn_amistad.rechazar{
+    background-color: var(--red);
+}
+
+.notificaciones_info .btn_amistad:hover{
+    background-color: var(--blue_grey_second);
+    color: var(--dark_blue);
+}
+
+.notificaciones_info .btn_amistad:active{
+    background-color: var(--blue_main);
+    color: var(--dark_blue);
+}

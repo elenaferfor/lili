@@ -12,6 +12,10 @@ import Legal from "./screens/legal/Legal.tsx";
 import Contacto from "./screens/contacto/Contacto.tsx";
 import Anadir from "./screens/anadir/Anadir.tsx";
 import Perfil from "./screens/perfil/Perfil.tsx";
+import Amigos from "./screens/amigos/Amigos.tsx";
+import NotFound from "./screens/not_found/NotFound.tsx";
+import Notificaciones from "./screens/notificaciones/Notificaciones.tsx";
+import PerfilOtro from "./screens/perfil/PerfilOtro.tsx";
 
 const queryClient = new QueryClient();
 
@@ -48,6 +52,21 @@ function App() {
                             <Perfil/>
                         </RutaProtegida>
                     }/>
+                    <Route path="/perfil/:userId" element={
+                        <RutaProtegida>
+                            <PerfilOtro/>
+                        </RutaProtegida>
+                    }/>
+                    <Route path="/amigos" element={
+                        <RutaProtegida>
+                            <Amigos/>
+                        </RutaProtegida>
+                    }/>
+                    <Route path="/notificaciones" element={
+                        <RutaProtegida>
+                            <Notificaciones/>
+                        </RutaProtegida>
+                    }/>
                     <Route path="/contacto" element={
                         <RutaProtegida>
                             <Contacto/>
@@ -57,6 +76,9 @@ function App() {
                         <RutaProtegida>
                             <Legal/>
                         </RutaProtegida>
+                    }/>
+                    <Route path="*" element={
+                        <NotFound/>
                     }/>
                 </Routes>
               </AuthProvider>

@@ -1,0 +1,51 @@
+.amigo_perfil_tags{
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+}
+
+.amigo_perfil_tags .amigoFoto{
+    width: 6rem;
+    height: 6rem;
+    border-radius: 100%;
+    overflow: hidden;
+}
+
+.amigo_perfil_tags img{
+    width: 100%;
+    object-fit: cover;
+}
+
+.amigo_perfil_tags .tags_usuario{
+    display: flex;
+    flex-flow: row wrap;
+    justify-content: flex-start;
+    gap: 1rem .5rem
+}
+
+.tags_usuario button{
+    padding: .5rem .8rem;
+    background-color: var(--blue_main);
+    border: none;
+    outline: none;
+    border-radius: .5rem;
+
+    font-family: 'Jost', sans-serif;
+    font-weight: bold;
+    font-size: .8rem;
+    color: var(--dark_blue);
+    cursor: pointer;
+
+    transition: all 200ms ease-in-out;
+}
+
+
+.tags_usuario button:hover{
+    background-color: var(--blue_grey_second);
+    color: var(--dark_blue);
+}
+
+.tags_usuario button:active{
+    background-color: var(--green);
+    color: var(--dark_blue);
+}

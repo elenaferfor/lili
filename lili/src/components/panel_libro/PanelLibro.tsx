@@ -44,6 +44,8 @@ const PanelLibro = ({ libroId, onClose, soloPrestar = false }: PanelLibroProps) 
     const [estadoSeleccionado, setEstadoSeleccionado] = useState<EstadoOpcion>(ESTADOS[3]);
 
     const [isFav, setIsFav] = useState<Favorito>(FAVORITOS[1]);
+    const [isPublico, setIsPublico] = useState<boolean>(true);
+    
     const [usuarioLibroExists, setUsuarioLibroExists] = useState<boolean>(false);
     const [sync, setSync] = useState<SyncEstado>("idle");
     const [syncPrestar, setSyncPrestar] = useState<SyncEstado>("idle");
@@ -96,6 +98,7 @@ const PanelLibro = ({ libroId, onClose, soloPrestar = false }: PanelLibroProps) 
             setUsuarioLibroExists(false);
             setEstadoSeleccionado(ESTADOS[3]);
             setIsFav(FAVORITOS[1]);
+            setIsPublico(true);
             setCatLista(
                 (categoriasUsuario ?? [])
                     .filter((cat: any) => !CATEGORIAS_EXCLUIDAS.includes(cat.nombre))
@@ -105,6 +108,7 @@ const PanelLibro = ({ libroId, onClose, soloPrestar = false }: PanelLibroProps) 
             setUsuarioLibroExists(true);
             setEstadoSeleccionado(ESTADOS.find((e: EstadoOpcion) => e.valor === usuarioLibro.estado) ?? ESTADOS[3]);
             setIsFav(usuarioLibro.favorito ? FAVORITOS[0] : FAVORITOS[1]);
+            setIsPublico(usuarioLibro.publico);
             if (categoriasUsuario) {
                 const idsActivos = new Set(usuarioLibro.categorias_detalle.map(c => c.id));
                 setCatLista(
@@ -122,7 +126,8 @@ const PanelLibro = ({ libroId, onClose, soloPrestar = false }: PanelLibroProps) 
         setSeriesLista(series ?? []);
         if (!usuarioLibro) return;
         if (usuarioLibro.serie_detalle) {
-            setSerieSeleccionada(series?.find(s => s.id === usuarioLibro.serie_detalle.id));
+            const serieDetalle = usuarioLibro.serie_detalle;
+            setSerieSeleccionada(series?.find(s => s.id === serieDetalle.id));
             setSerieTexto(usuarioLibro.serie_detalle.nombre);
             setSerieSelecTotal(usuarioLibro.serie_detalle.volumenes);
             setSerieSelecNum(usuarioLibro.numero_en_serie);
@@ -336,7 +341,7 @@ const PanelLibro = ({ libroId, onClose, soloPrestar = false }: PanelLibroProps) 
             numero_en_serie: serieSelecNum ?? null,
             estado: estadoSeleccionado.valor,
             favorito: isFav.isFav,
-            publico: true,
+            publico: isPublico,
             categorias: catLista.filter(c => c.activa).map(c => c.id),
         };
 
@@ -465,10 +470,19 @@ const PanelLibro = ({ libroId, onClose, soloPrestar = false }: PanelLibroProps) 
                                 </div>
                             )}
                         </div>
-                        <p>Marcar como favorito:</p>
-                        <button className={isFav.clase} onClick={toggleFav}>
-                            Favorito <i className={isFav.iconoClase}>favorite</i>
-                        </button>
+                        <p>Marcar como favorito o público:</p>
+                        <div className="fav_publico">
+                            <button className={isFav.clase} onClick={toggleFav}>
+                                Favorito <i className={isFav.iconoClase}>favorite</i>
+                            </button>
+                            <button className={isPublico ? "btnPublico activo" : "btnPublico"}
+                                onClick={() => setIsPublico(p => !p)}>
+                                {isPublico ? "Público" : "Privado"}
+                                <i className="material-symbols-rounded">
+                                    {isPublico ? "lock_open" : "lock"}
+                                </i>
+                            </button>
+                        </div>
                         <button className="anadirBtnFinal" onClick={handleAnadir}>
                             Enviar {syncIcono()}
                         </button>

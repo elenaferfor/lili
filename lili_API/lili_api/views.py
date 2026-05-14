@@ -163,6 +163,21 @@ class CategoriaView(ModelViewSet):
     filterset_fields = ['publica', 'usuario']
     ordering_fields = ['nombre']
 
+    @action(detail=False, methods=['get'], url_path='publicas')
+    def publicas(self, request):
+        """
+        GET categorías públicas, se filtra con ?usuario={id}
+        """
+
+        qs = Categoria.objects.filter(publica=True).select_related('usuario')
+
+        usuario_id = request.query_params.get('usuario')
+        if usuario_id:
+            qs = qs.filter(usuario__pk=usuario_id)
+
+        serializer = self.get_serializer(qs, many=True)
+        return Response(serializer.data)
+
     # Permisos: cada usuario puede cambiar sus cosas y el admin las de todos
     def get_permissions(self):
         return [OwnProfilePermission()]
@@ -211,6 +226,24 @@ class UsuarioLibroView(ModelViewSet):
         serializer = self.get_serializer(libro)
         return Response(
             {"mensaje": "Estado de favorito cambiado correctamente", "data": serializer.data},
+            status=status.HTTP_200_OK
+        )
+
+    # Alternar público libro
+    @action(detail=True, methods=['post'])
+    def cambiar_publico(self, request, pk=None):
+        libro = self.get_object()
+
+        if libro.publico:
+            libro.publico = False
+        else:
+            libro.publico = True
+
+        libro.save()
+
+        serializer = self.get_serializer(libro)
+        return Response(
+            {"mensaje": "Estado público cambiado correctamente", "data": serializer.data},
             status=status.HTTP_200_OK
         )
 
@@ -333,6 +366,22 @@ class UsuarioLibroView(ModelViewSet):
                 'serie': SerieSerializer(serie).data,
             },
             status=status.HTTP_201_CREATED if serie else status.HTTP_200_OK
+        )
+
+    @action(detail=False, methods=['get'])
+    def publicos(self, request):
+        # GET /usuario-libros/publicos/?usuario_id=3
+        libros_publicos = UsuarioLibro.objects.filter(
+            publico=True
+        ).select_related('usuario', 'libro', 'serie').prefetch_related('categorias')
+
+        usuario_id = request.query_params.get('usuario_id')
+        if usuario_id:
+            libros_publicos = libros_publicos.filter(usuario__pk=usuario_id)
+
+        return Response(
+            UsuarioLibroSerializer(libros_publicos, many=True).data,
+            status=status.HTTP_200_OK
         )
 
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]

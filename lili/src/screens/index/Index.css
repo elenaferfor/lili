@@ -73,3 +73,11 @@ main{
     flex-direction: column;
     gap: 3rem;
 }
+
+.secciones > h1{
+    font-family: "Jost", sans-serif;
+}
+
+.secciones > p{
+    color: var(--dark_blue);
+}

@@ -21,7 +21,9 @@ const InfoLibro = (props: any) => {
     const { user } = useAuth();
     
     const [isFav, setIsFav] = useState<Favorito>(FAVORITOS[1]);
+    const [isPublico, setIsPublico] = useState<boolean>(true);
     const [syncFav, setSyncFav] = useState<SyncEstado>("idle");
+    const [syncPublico, setSyncPublico] = useState<SyncEstado>("idle");
     const [syncCrear, setSyncCrear] = useState<SyncEstado>("idle");
 
     const [panelPrestarOpen, setPanelPrestarOpen] = useState(false);
@@ -36,6 +38,7 @@ const InfoLibro = (props: any) => {
     useEffect(() => {
         if(!usuarioLibro){
             setNoUsuarioLibro(true);
+            setIsPublico(true);
             setRequestBody({
                 "usuario": user?.id,
                 "libro": libroIdNum,
@@ -51,6 +54,7 @@ const InfoLibro = (props: any) => {
         setNoUsuarioLibro(false);
         const fav = usuarioLibro.favorito ? FAVORITOS[0] : FAVORITOS[1];
         setIsFav(fav);
+        setIsPublico(usuarioLibro.publico);
     }, [usuarioLibro, user]);
 
     useEffect(() => {
@@ -108,6 +112,19 @@ const InfoLibro = (props: any) => {
         onError: () => setSyncFav("idle"),
     });
     
+    // Mutación cambiar estado público
+    const { mutate: cambiarPublico } = useMutation({
+        mutationFn: () =>
+            api.post(`/libros_usuarios/${usuarioLibro?.id}/cambiar_publico/`),
+        onMutate: () => setSyncPublico("enviando"),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["usuarioLibro", libroIdNum] });
+            setSyncPublico("ok");
+            setTimeout(() => setSyncPublico("idle"), 1500);
+        },
+        onError: () => setSyncPublico("idle"),
+    });
+    
     const crearBorrarLibroUsuario = () => {
         if(noUsuarioLibro) {
             crearLibroUsuario();
@@ -121,9 +138,20 @@ const InfoLibro = (props: any) => {
         cambiarFavorito();
     }
 
+    const togglePublico = () => {
+        setIsPublico(p => !p);
+        cambiarPublico();
+    };
+
     const syncIconoFav = () => {
         if(syncFav === "enviando") return <i className="material-symbols-rounded">sync</i>;
         if(syncFav === "ok") return <i className="material-symbols-rounded">check_circle</i>;
+        return null;
+    };
+
+    const syncIconoPublico = () => {
+        if (syncPublico === "enviando") return <i className="material-symbols-rounded">sync</i>;
+        if (syncPublico === "ok") return <i className="material-symbols-rounded">check_circle</i>;
         return null;
     };
 
@@ -157,9 +185,18 @@ const InfoLibro = (props: any) => {
                         <div className="detalleLibroEstados">
                             <EstadoCategoriasLibro libroId={libroIdNum}/>
                             <EstadoLecturaLibro/>
-                            <button className={isFav.clase} onClick={() => toggleFav(isFav)}>Favorito 
-                                <i className={isFav.iconoClase}>favorite</i>{syncIconoFav()}</button>
 
+                            <button className={isFav.clase} onClick={() => toggleFav(isFav)}>Favorito
+                                <i className={isFav.iconoClase}>favorite</i>{syncIconoFav()}</button>
+                            <button className={isPublico ? "btnPublico activo" : "btnPublico"}
+                                    onClick={togglePublico}>
+                                {isPublico ? "Público" : "Privado"}
+                                <i className="material-symbols-rounded">
+                                    {isPublico ? "lock_open" : "lock"}
+                                </i>
+                                {syncIconoPublico()}
+                            </button>
+                            
                             {/* // Préstamo */ }
                             <button onClick={() => setPanelPrestarOpen(true)}>
                                 Prestar

@@ -15,3 +15,8 @@ export const getUsuarioLibrosListaAbc = async (): Promise<UsuarioLibro[] | undef
     const { data } = await api.get(`/libros_usuarios/?ordering=libro__titulo`);
     return data.results ?? null;
 }
+
+export const getUsuarioLibrosOtroUsuario = async (usuario_id: number): Promise<UsuarioLibro[] | undefined> => {
+    const { data } = await api.get(`/libros_usuarios/publicos/?usuario_id=${usuario_id}`);
+    return data ?? null;
+}

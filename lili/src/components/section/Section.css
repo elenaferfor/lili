@@ -24,4 +24,14 @@ section h1{
 section h1 > a{
     text-decoration: none;
     color: var(--dark_blue);
+    font-family: 'Jost', sans-serif;
+    font-weight: 600;
+}
+
+section h1 > a:hover{
+    color: var(--blue_grey_second);
+}
+
+section h1 > a:active{
+    color: var(--green);
 }

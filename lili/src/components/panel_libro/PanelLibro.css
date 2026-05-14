@@ -128,6 +128,20 @@ input[type=number] {
     -moz-appearance: textfield;
 }
 
+/* FAV PÚBLICO */
+.panelAnadirLibro .fav_publico{
+    display: flex;
+    gap: 0.5rem;
+}
+
+.panelAnadirLibro .fav_publico button:hover{
+    background-color: var(--light_blue_second);
+}
+
+.panelAnadirLibro .fav_publico button:active{
+    background-color: var(--dark_blue);
+}
+
 /* BOTONES */
 .panelAnadirLibro button i, .panelAnadirPrestamo button i{
     font-size: 1rem;

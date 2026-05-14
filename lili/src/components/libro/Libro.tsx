@@ -51,18 +51,21 @@ const Libro = (props: any) => {
         <div className={`portada ${panelAbierto ? "hover-forzado" : ""}`}>
             <img src={libroData.libro_detalle.portada} alt={libroData.libro_detalle.titulo}/>
             <div className="hoverLibro">
-                <div className="iconosHoverLibro" onClick={() => setPanelAbierto(true)}>
-                    <i className={`material-symbols-rounded ${estadoSeleccionado.clase}`}>{estadoSeleccionado.icono}</i>
-                    <i className={`${isFav.iconoClase} pink`}>favorite</i>
-                    <i className={`material-symbols-rounded ${estadoPrestamo.clase}`}>{estadoPrestamo.icono}</i>
-                </div>
-                {panelAbierto && (
-                    <PanelLibro
-                        libroId={libroData.libro_detalle.id}
-                        onClose={() => setPanelAbierto(false)}
-                    />
-                )}
-                
+                {!props.deOtro &&
+                    <>
+                        <div className="iconosHoverLibro" onClick={() => setPanelAbierto(true)}>
+                            <i className={`material-symbols-rounded ${estadoSeleccionado.clase}`}>{estadoSeleccionado.icono}</i>
+                            <i className={`${isFav.iconoClase} pink`}>favorite</i>
+                            <i className={`material-symbols-rounded ${estadoPrestamo.clase}`}>{estadoPrestamo.icono}</i>
+                        </div>
+                        {panelAbierto && (
+                            <PanelLibro
+                                libroId={libroData.libro_detalle.id}
+                                onClose={() => setPanelAbierto(false)}
+                            />
+                        )}
+                    </>
+                }
                 <Link to={"/libro/" + libroData.libro_detalle.id}>Ver</Link>
             </div>
         </div>

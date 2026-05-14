@@ -1,17 +1,28 @@
 import "./Section.css"
 import Carrusel from "../carrusel/Carrusel.tsx";
 import {Link} from "react-router-dom";
+import type {Amistad} from "../../types.tsx";
+import {useAuth} from "../../auth/AuthContext.tsx";
 
 const SectionAmigos = (props: any) => {
 
-    const amigos = props.amigos?.map((a: any) => (
-        <div className="amigo">
-            <div className="fotoPerfil">
-                <img src="/perfil/te.JPG" alt={a.usuario_b_nombre.username}/>
-            </div>
-            <Link to="#">@{a.usuario_b_nombre.username}</Link>
-        </div>
-    ));
+    const {user} = useAuth();
+    
+    const amigos = props.amigos?.filter((a: Amistad) => a.estado === "ac")
+        .map((a: any) => {
+            const otroUsuario = a.usuario_a_nombre.id === user?.id ? a.usuario_b_nombre : a.usuario_a_nombre;
+            
+            return (
+                <div className="amigo">
+                    <div className="fotoPerfil">
+                        <Link to={`/perfil/${otroUsuario.id}`}>
+                            <img src="/perfil/te.JPG" alt={otroUsuario.username}/>
+                        </Link>
+                    </div>
+                    <Link to={`/perfil/${otroUsuario.id}`}>@{otroUsuario.username}</Link>
+                </div>
+            );
+        });
 
     return <section>
         <h1>{props.titulo}</h1>
