@@ -6,8 +6,9 @@
     margin-bottom: .8rem;
 }
 
-.iconos_perfil > .menu_burger{
+#menu_burger{
     display: none;
+    margin-right: auto;
 }
 
 .iconos_perfil > .boton_perfil{
@@ -65,4 +66,8 @@
 .boton_perfil:active{
     background-color: var(--blue_main);
     color: var(--dark_blue);
+}
+
+.boton_perfil.green{
+    background-color: var(--green);
 }

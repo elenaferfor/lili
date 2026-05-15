@@ -1,4 +1,4 @@
-const BotonAtras = (props: { className: any; style: any; onClick: any; }) => {
+const BotonAtras = (props: { className?: any; style?: any; onClick?: any; }) => {
     
     const { className, style, onClick } = props;
     

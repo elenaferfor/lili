@@ -1,8 +1,3 @@
-import Logo from "../../components/logo/Logo.tsx";
-import Nav from "../../components/nav/Nav.tsx";
-import HeaderFooter from "../../components/header_footer/HeaderFooter.tsx";
-import ContenedorPerfilBusqueda from "../../components/contenedor_perfil_busqueda/ContenedorPerfilBusqueda.tsx";
-import Footer from "../../components/footer/Footer.tsx";
 import {useNavigate} from "react-router-dom";
 import Etiquetas from "../../components/etiquetas/Etiquetas.tsx";
 import {useEffect, useState} from "react";
@@ -12,6 +7,7 @@ import type {Prestamo, UsuarioLibro} from "../../types.tsx";
 import SectionCategorias from "../../components/section/SectionCategorias.tsx";
 import {usePrestamos} from "../../hooks/usePrestamos.tsx";
 import {useAuth} from "../../auth/AuthContext.tsx";
+import {Layout} from "../Layout.tsx";
 
 const Categorias = () => {
     
@@ -61,37 +57,28 @@ const Categorias = () => {
         onChangeTag("");
     }
     
-    return <>
-        <header id="header">
-            <Logo/>
-            <Nav/>
-            <HeaderFooter/>
-        </header>
-        <main>
-            <ContenedorPerfilBusqueda/>
-            <div className="contenido">
-                <div className="migas">Biblioteca · Categorías</div>
-                <button onClick={() => navigate(-1)} className="volver">Volver</button>
-                <div className="secciones">
-                    { categoriasIsLoading ?
-                        <>Cargando categorías...</> :
-                        <Etiquetas catsUsuario={categorias} onChangeTag={onChangeTag}/>
-                    }
-                    { categoriasIsLoading || librosIsLoading ?
-                        <>Cargando...</> :
-                        <SectionCategorias catsUsuario={categorias}
-                                           listaLibros={listaLibros}
-                                           prestamos={prestamos}
-                                           tituloCat={tituloActual}
-                                           isTodos={tituloActual === "Todos los libros"}
-                                           onBorrarCategoria={onBorrarCategoria}
-                        />
-                    }
-                </div>
+    return <Layout>
+        <div className="contenido">
+            <div className="migas">Biblioteca · Categorías</div>
+            <button onClick={() => navigate(-1)} className="volver">Volver</button>
+            <div className="secciones">
+                { categoriasIsLoading ?
+                    <>Cargando categorías...</> :
+                    <Etiquetas catsUsuario={categorias} onChangeTag={onChangeTag}/>
+                }
+                { categoriasIsLoading || librosIsLoading ?
+                    <>Cargando...</> :
+                    <SectionCategorias catsUsuario={categorias}
+                                       listaLibros={listaLibros}
+                                       prestamos={prestamos}
+                                       tituloCat={tituloActual}
+                                       isTodos={tituloActual === "Todos los libros"}
+                                       onBorrarCategoria={onBorrarCategoria}
+                    />
+                }
             </div>
-        </main>
-        <Footer/>
-    </>
+        </div>
+    </Layout>
 }
 
 export default Categorias;

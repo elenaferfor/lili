@@ -47,7 +47,7 @@ const Libro = (props: any) => {
         }
     }, [props.prestamos]);
     
-    return <div className="libro">
+    return <div className={`libro ${props.classSerie ?? ""}`}>
         <div className={`portada ${panelAbierto ? "hover-forzado" : ""}`}>
             <img src={libroData.libro_detalle.portada} alt={libroData.libro_detalle.titulo}/>
             <div className="hoverLibro">

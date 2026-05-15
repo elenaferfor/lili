@@ -1,14 +1,10 @@
 import {useNavigate, useParams} from "react-router-dom";
-import Nav from "../../components/nav/Nav.tsx";
-import HeaderFooter from "../../components/header_footer/HeaderFooter.tsx";
-import ContenedorPerfilBusqueda from "../../components/contenedor_perfil_busqueda/ContenedorPerfilBusqueda.tsx";
-import Footer from "../../components/footer/Footer.tsx";
 import InfoLibro from "../../components/info_libro/InfoLibro.tsx";
 import {useMemo} from "react";
-import Logo from "../../components/logo/Logo.tsx";
 import SectionSinGet from "../../components/section/SectionSinGet.tsx";
 import {useLibroID, useLibros} from "../../hooks/useLibro.tsx";
 import {useUsuarioLibrosLista} from "../../hooks/useUsuarioLibro.tsx";
+import {Layout} from "../Layout.tsx";
 
 const Index = () => {
     
@@ -35,33 +31,24 @@ const Index = () => {
         }, {} as Record<number, any[]>);
     }, [libros, libroActual, usuarioLibros]);
     
-    return <>
-        <header id="header">
-            <Logo/>
-            <Nav/>
-            <HeaderFooter/>
-        </header>
-        <main>
-            <ContenedorPerfilBusqueda/>
-            <div className="contenido">
-                <div className="migas">Biblioteca · {libroActual?.titulo}</div>
-                <button onClick={() => navigate(-1)} className="volver">Volver</button>
-                <div className="secciones">
-                    {libroActualIsLoading ? <p>Cargando...</p> :
-                        !libroActual ?
-                                <section><p>No se encuentra el libro.</p></section> :
-                                <>
-                                    <InfoLibro data={libroActual}/>
-                                    {libroActual.autores_detalle?.map((autor, index) => (
-                                        <SectionSinGet key={index} titulo={`Otros libros de ${autor.nombre}`} listaLibros={librosPorAutor[autor.id]?.slice(0, 14)} isLoading={librosIsLoading}/>   
-                                    ))}
-                                </>
-                    }
-                </div>
+    return <Layout>
+        <div className="contenido">
+            <div className="migas">Biblioteca · {libroActual?.titulo}</div>
+            <button onClick={() => navigate(-1)} className="volver">Volver</button>
+            <div className="secciones">
+                {libroActualIsLoading ? <p>Cargando...</p> :
+                    !libroActual ?
+                            <section><p>No se encuentra el libro.</p></section> :
+                            <>
+                                <InfoLibro data={libroActual}/>
+                                {libroActual.autores_detalle?.map((autor, index) => (
+                                    <SectionSinGet key={index} titulo={`Otros libros de ${autor.nombre}`} listaLibros={librosPorAutor[autor.id]?.slice(0, 14)} isLoading={librosIsLoading}/>   
+                                ))}
+                            </>
+                }
             </div>
-        </main>
-        <Footer/>
-    </>
+        </div>
+    </Layout>
 }
 
 export default Index;

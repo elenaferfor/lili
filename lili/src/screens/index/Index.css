@@ -10,6 +10,9 @@ header{
     display: flex;
     flex-direction: column;
     justify-content: space-between;
+    
+    pointer-events: initial;
+    transition: width 0.3s ease, opacity 0.3s ease;
 }
 
 .logo{

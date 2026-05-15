@@ -34,10 +34,10 @@ const SectionCategoriasOtro = (props: any ) => {
 
         <div className="filtro_abc_movil">
             Filtrar:
-            <select id="abc" name="abc">
-                <option onClick={() => filtrarLetras("TODOS")}>TODOS</option>
-                { ABC.split("").map((l) => <option key={l} value={l} onClick={() => filtrarLetras(l)}>{l}</option>) }
-                <option onClick={() => filtrarLetras("#")}>#</option>
+            <select id="abc" name="abc" value={filtroLetra} onChange={(e) => filtrarLetras(e.target.value)}>
+                <option value={"TODOS"}>TODOS</option>
+                { ABC.split("").map((l) => <option key={l} value={l}>{l}</option>) }
+                <option value={"#"}>#</option>
             </select>
         </div>
 

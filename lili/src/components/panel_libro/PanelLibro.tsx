@@ -419,7 +419,7 @@ const PanelLibro = ({ libroId, onClose, soloPrestar = false }: PanelLibroProps) 
                             }
                             <div className="serie">
                                 <div className="serie_titulo">
-                                    <input type="text" value={serieSeleccionada?.nombre}
+                                    <input type="text" value={serieTexto}
                                            onChange={ (e) => {
                                                setSerieTexto(e.target.value);
                                                setSerieSeleccionada(undefined);
@@ -513,8 +513,8 @@ const PanelLibro = ({ libroId, onClose, soloPrestar = false }: PanelLibroProps) 
                                 </button>
                                 {prestamoIsOpen && (
                                     <div className="prestamoOpciones" ref={prestamoRef}>
-                                        {ICONOS_PRESTAMO.slice(0, 2).map((opcion: any) => (
-                                            <button key={opcion.valor} onClick={() => handlePrestamo(opcion)}>
+                                        {ICONOS_PRESTAMO.slice(0, 2).map((opcion: any, index: number) => (
+                                            <button key={index} onClick={() => handlePrestamo(opcion)}>
                                                 {opcion.texto}
                                                 {opcion.icono && <i className="material-symbols-rounded">{opcion.icono}</i>}
                                             </button>

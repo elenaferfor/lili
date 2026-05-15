@@ -19,11 +19,13 @@ nav a{
     margin-bottom: .4rem;
     padding: .6rem .8rem;
     border-radius: .5rem;
+    opacity: 1;
 }
 
 nav a.submenu{
     background-color: var(--light_blue_second);
     width: 10rem;
+    opacity: 1;
 }
 
 nav a, nav a.submenu{

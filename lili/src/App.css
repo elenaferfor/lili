@@ -60,3 +60,21 @@ button{
   outline: none;
   border: none;
 }
+
+/* BOTONES MENÚ */
+#menu_burger, #menu_close{
+  background-color: unset;
+}
+
+#menu_burger{
+  color: var(--dark_blue);
+}
+
+#menu_close{
+  color: var(--white);
+}
+
+#menu_burger:hover{color: var(--blue_grey_second);}
+#menu_close:hover{color: var(--blue_grey_second);}
+#menu_burger:active{color: var(--green);}
+#menu_close:active{color: var(--green);}

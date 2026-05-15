@@ -20,6 +20,11 @@
     overflow: hidden;
 }
 
+.slick-slide{
+    display: flex !important;
+    justify-content: center;
+}
+
 .slick-slide > div {
     margin: 0 .5rem;
 }

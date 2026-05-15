@@ -26,6 +26,7 @@ const Serie = (props: any) => {
         { serieIsOpen &&
             props.librosDeEstaSerie.map((l: any, index: number) =>
                 <Libro
+                    classSerie={"serie"}
                     libro={l}
                     key={index}
                     prestamos={props.prestamos}

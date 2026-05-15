@@ -2,7 +2,7 @@ import "./Barra.css"
 import {Link, useNavigate} from "react-router-dom";
 import Resultado from "./resultado/Resultado.tsx";
 import "./Barra.css";
-import {useEffect, useRef, useState} from "react";
+import {useRef, useState} from "react";
 import {useBusqueda} from "../../../hooks/useBusqueda.tsx";
 
 const Barra = () => {
@@ -18,16 +18,6 @@ const Barra = () => {
         navigate(`/resultados?q=${encodeURIComponent(searchValue)}`);
         setSearchValue('');
     }
-
-    useEffect(() => {
-        const handleClickFuera = (e: MouseEvent) => {
-            if (barraRef.current && !barraRef.current.contains(e.target as Node)) {
-                setSearchValue('');
-            }
-        };
-        document.addEventListener('mousedown', handleClickFuera);
-        return () => document.removeEventListener('mousedown', handleClickFuera);
-    }, []);
     
     return <div className="barra" ref={barraRef}>
         <form id="search" name="search" method="post" onSubmit={busquedaCompleta}>

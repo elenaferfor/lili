@@ -1,11 +1,8 @@
-import Logo from "../../components/logo/Logo.tsx";
-import Nav from "../../components/nav/Nav.tsx";
-import HeaderFooter from "../../components/header_footer/HeaderFooter.tsx";
-import ContenedorPerfilBusqueda from "../../components/contenedor_perfil_busqueda/ContenedorPerfilBusqueda.tsx";
 import {useNavigate} from "react-router-dom";
 import "./Contacto.css";
 import React, {useState} from "react";
 import api from "../../api/Axios.tsx";
+import { Layout } from "../Layout.tsx";
 
 interface FormErrors {
     nombre?: string;
@@ -61,50 +58,42 @@ const Contacto = () => {
         return Object.keys(nuevosErrores).length === 0;
     }
     
-    return <>
-        <header id="header">
-            <Logo/>
-            <Nav/>
-            <HeaderFooter/>
-        </header>
-        <main>
-            <ContenedorPerfilBusqueda/>
-            <div className="contenido">
-                <div className="migas">Contacto</div>
-                <button onClick={() => navigate(-1)} className="volver">Volver</button>
-                <div className="secciones">
-                    <h1>Contacto</h1>
-                    <section className="formulario" id="formulario">
-                        <form id="formularioContacto" onSubmit={handleSubmit}>
-                            <div className="contacto_nombre">
-                                <label htmlFor="c_nombre">Nombre:</label>
-                                <input type="text" name="nombre" id="c_nombre" required value={form.nombre} onChange={handleChange}/>
-                                {errores.nombre && <p className="error">{errores.nombre}</p>}
-                            </div>
+    return <Layout>
+        <div className="contenido">
+            <div className="migas">Contacto</div>
+            <button onClick={() => navigate(-1)} className="volver">Volver</button>
+            <div className="secciones">
+                <h1>Contacto</h1>
+                <section className="formulario" id="formulario">
+                    <form id="formularioContacto" onSubmit={handleSubmit}>
+                        <div className="contacto_nombre">
+                            <label htmlFor="c_nombre">Nombre:</label>
+                            <input type="text" name="nombre" id="c_nombre" required value={form.nombre} onChange={handleChange}/>
+                            {errores.nombre && <p className="error">{errores.nombre}</p>}
+                        </div>
 
-                            <div className="contacto_email">
-                                <label htmlFor="c_email">Email:</label>
-                                <input type="email" name="email" id="c_email" required value={form.email} onChange={handleChange}/>
-                                {errores.email && <p className="error">{errores.email}</p>}
-                            </div>
+                        <div className="contacto_email">
+                            <label htmlFor="c_email">Email:</label>
+                            <input type="email" name="email" id="c_email" required value={form.email} onChange={handleChange}/>
+                            {errores.email && <p className="error">{errores.email}</p>}
+                        </div>
 
-                            <div className="contacto_mensaje">
-                                <label htmlFor="c_mensaje">Mensaje:</label>
-                                <textarea name="mensaje" id="c_mensaje" rows={8} required value={form.mensaje} onChange={handleChange}/>
-                                {errores.mensaje && <p className="error">{errores.mensaje}</p>}
-                            </div>
-                            
-                            <button className="boton_enviar" type="submit" disabled={estado === 'loading'}>
-                                {estado === 'loading' ? 'Enviando...' : 'Enviar'}
-                            </button>
-                            {estado === 'success' && <p className="exito">Mensaje enviado 👍</p>}
-                            {estado === 'error' && <p className="error">Error al enviar. Inténtalo de nuevo.</p>}
-                        </form>
-                    </section>
-                </div>
+                        <div className="contacto_mensaje">
+                            <label htmlFor="c_mensaje">Mensaje:</label>
+                            <textarea name="mensaje" id="c_mensaje" rows={8} required value={form.mensaje} onChange={handleChange}/>
+                            {errores.mensaje && <p className="error">{errores.mensaje}</p>}
+                        </div>
+                        
+                        <button className="boton_enviar" type="submit" disabled={estado === 'loading'}>
+                            {estado === 'loading' ? 'Enviando...' : 'Enviar'}
+                        </button>
+                        {estado === 'success' && <p className="exito">Mensaje enviado 👍</p>}
+                        {estado === 'error' && <p className="error">Error al enviar. Inténtalo de nuevo.</p>}
+                    </form>
+                </section>
             </div>
-        </main>
-    </>
+        </div>
+    </Layout>
 }
 
 export default Contacto;

@@ -26,7 +26,7 @@ const SectionSinGet = (props: any) => {
         <h1>{props.titulo}</h1>
         {props.isLoading
             ? <p>Cargando libros...</p>
-            : <Carrusel libros={libros} librosVista={5} librosGrupo={4} espaciado={16}/>
+            : <Carrusel libros={libros}/>
         }
     </section>
 }

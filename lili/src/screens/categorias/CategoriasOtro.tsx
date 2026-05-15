@@ -1,8 +1,3 @@
-import Logo from "../../components/logo/Logo.tsx";
-import Nav from "../../components/nav/Nav.tsx";
-import HeaderFooter from "../../components/header_footer/HeaderFooter.tsx";
-import ContenedorPerfilBusqueda from "../../components/contenedor_perfil_busqueda/ContenedorPerfilBusqueda.tsx";
-import Footer from "../../components/footer/Footer.tsx";
 import {useNavigate, useParams} from "react-router-dom";
 import {useEffect, useState} from "react";
 import {useCategoriasOtroUsuario} from "../../hooks/useCategoria.tsx";
@@ -11,6 +6,7 @@ import type {Categoria, UsuarioLibro} from "../../types.tsx";
 import {useAuth} from "../../auth/AuthContext.tsx";
 import SectionCategoriasOtro from "../../components/section/SectionCategoriasOtro.tsx";
 import {useAmistades} from "../../hooks/useAmistades.tsx";
+import {Layout} from "../Layout.tsx";
 
 const CategoriasOtro = () => {
     
@@ -57,29 +53,20 @@ const CategoriasOtro = () => {
         setTituloActual(`${categoriaActual?.nombre} de ${nombreAmigo}`)
     }, [categoriaActual, nombreAmigo]);
     
-    return <>
-        <header id="header">
-            <Logo/>
-            <Nav/>
-            <HeaderFooter/>
-        </header>
-        <main>
-            <ContenedorPerfilBusqueda/>
-            <div className="contenido">
-                <div className="migas">Biblioteca · Categorías</div>
-                <button onClick={() => navigate(-1)} className="volver">Volver</button>
-                <div className="secciones">
-                    { categoriasIsLoading || librosIsLoading ?
-                        <>Cargando...</> :
-                        <SectionCategoriasOtro listaLibros={listaLibros}
-                                           tituloCat={tituloActual}
-                        />
-                    }
-                </div>
+    return <Layout>
+        <div className="contenido">
+            <div className="migas">Biblioteca · Categorías</div>
+            <button onClick={() => navigate(-1)} className="volver">Volver</button>
+            <div className="secciones">
+                { categoriasIsLoading || librosIsLoading ?
+                    <>Cargando...</> :
+                    <SectionCategoriasOtro listaLibros={listaLibros}
+                                       tituloCat={tituloActual}
+                    />
+                }
             </div>
-        </main>
-        <Footer/>
-    </>
+        </div>
+    </Layout>
 }
 
 export default CategoriasOtro;

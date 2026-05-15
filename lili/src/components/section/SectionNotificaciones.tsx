@@ -34,10 +34,6 @@ const SectionNotificaciones = (props: any) => {
         }
     }, [props.amistades]);
     
-    useEffect(() => {
-        console.log(amistadInfo);
-    }, [amistadInfo]);
-    
     // Marcar notificación como leída al hacer hover
     const { mutate: marcarLeida } = useMutation({
         mutationFn: () => api.patch(`/notificaciones/${props.notif.id}/`, { leida: true }),
