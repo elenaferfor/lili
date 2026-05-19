@@ -250,8 +250,9 @@ input[type=number] {
     position: relative;
 }
 
-.amigoSeleccionado img{
+.amigoSeleccionado img, .amigoSeleccionadoFoto img{
     border-radius: 100%;
+    width: 100%;
     overflow: hidden;
     position: absolute;
     top: 50%;
