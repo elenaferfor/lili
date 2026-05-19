@@ -303,5 +303,28 @@
     .panelAnadir{
         left: 50%;
     }
+
+    .panelAnadirLibro, .panelAnadirPrestamo{
+        gap: .3rem;
+    }
+    
+    .panelAnadir h1{
+        font-size: 1.3rem;
+        margin-bottom: .2rem;
+    }
+    
+    .panelAnadir p{
+        font-size: .9rem;
+    }
+    
+    .panelAnadirLibro button, .panelAnadirLibro #estadoLectura button{
+        font-size: .8rem;
+        padding: .3rem .5rem;
+    }
+
+    .panelAnadirLibro .anadirBtnFinal, .panelAnadirPrestamo .anadirBtnFinal{
+        font-size: .8rem;
+        padding: .4rem .8rem;
+    }
     
 }

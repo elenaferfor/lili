@@ -55,7 +55,6 @@ const PanelLibro = ({ libroId, onClose, soloPrestar = false }: PanelLibroProps) 
     const prestamoRef = useRef<HTMLDivElement>(null);
     const btnPrestamoRef = useRef<HTMLButtonElement>(null);
     const [prestamoSeleccionado, setPrestamoSeleccionado] = useState<PrestamoIcono>(ICONOS_PRESTAMO[0]);
-    const [crearPrestamoBody, setCrearPrestamoBody] = useState<CrearPrestamo>();
     const [prestamoActual, setPrestamoActual] = useState<Prestamo | undefined>(undefined);
 
     const [amigoIsOpen, setAmigoIsOpen] = useState(false);
@@ -148,14 +147,19 @@ const PanelLibro = ({ libroId, onClose, soloPrestar = false }: PanelLibroProps) 
         }
         if (encontrado.prestatario_nombre.id === user?.id) {
             setPrestamoSeleccionado(ICONOS_PRESTAMO[2]);
+            const amistadEncontrada = amistades?.find(a =>
+                a.usuario_a_nombre.id === encontrado.prestador_id ||
+                a.usuario_b_nombre.id === encontrado.prestador_id
+            );
+            resolverAmigo(amistadEncontrada!);
         } else {
             setPrestamoSeleccionado(ICONOS_PRESTAMO[1]);
+            const amistadEncontrada = amistades?.find(a =>
+                a.usuario_a_nombre.id === encontrado.prestatario_nombre.id ||
+                a.usuario_b_nombre.id === encontrado.prestatario_nombre.id
+            );
+            resolverAmigo(amistadEncontrada!);
         }
-        const amistadEncontrada = amistades?.find(a =>
-            a.usuario_a_nombre.id === encontrado.prestador_id ||
-            a.usuario_b_nombre.id === encontrado.prestador_id
-        );
-        resolverAmigo(amistadEncontrada!);
     }, [prestamos, amistades]);
     
     // Settear amigo
@@ -307,8 +311,8 @@ const PanelLibro = ({ libroId, onClose, soloPrestar = false }: PanelLibroProps) 
 
     // Mutación prestar
     const { mutate: prestarLibro } = useMutation({
-        mutationFn: () =>
-            api.post(`/prestamos/crear_prestamo_prestador/`, crearPrestamoBody),
+        mutationFn: (body: CrearPrestamo) =>
+            api.post(`/prestamos/crear_prestamo_prestador/`, body),
         onMutate: () => setSyncPrestar("enviando"),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ["prestar", libroId] });
@@ -362,14 +366,38 @@ const PanelLibro = ({ libroId, onClose, soloPrestar = false }: PanelLibroProps) 
     };
     
     // Crear un préstamo prestador -> prestatario (se crea como activo)
-    const handlePrestar = () => {
+    const handlePrestar = async () => {
         if(prestamoSeleccionado.tipo === "prestado"){
+            
+            // Si no existe el UsuarioLibro, lo crea antes de prestarlo
+            let usuarioLibroId = usuarioLibro?.id;
+            
+            if(!usuarioLibro){
+                try{
+                    setSyncPrestar("enviando");
+                    const res = await api.post(`/libros_usuarios/`, {
+                        usuario: user?.id,
+                        libro: libroId,
+                        serie: serieSeleccionada?.id ?? null,
+                        numero_en_serie: serieSelecNum ?? null,
+                        estado: estadoSeleccionado.valor,
+                        favorito: false,
+                        publico: true,
+                        categorias: [],
+                    });
+                    usuarioLibroId = res.data.id;
+                    queryClient.invalidateQueries({ queryKey: ["usuarioLibro", libroId] });
+                }catch{
+                    setSyncPrestar("idle");
+                    return;
+                }
+            }
+            
             const body: CrearPrestamo = {
-                usuario_libro_id: usuarioLibro?.id,
+                usuario_libro_id: usuarioLibroId,
                 prestatario_id: amigo.id
             }
-            setCrearPrestamoBody(body);
-            prestarLibro();
+            prestarLibro(body);
         }else{
             devolverLibro();
         }
@@ -547,7 +575,10 @@ const PanelLibro = ({ libroId, onClose, soloPrestar = false }: PanelLibroProps) 
                             </>
                         }
                     </div>
-                    <button className="anadirBtnFinal" onClick={handlePrestar} disabled={ prestamoSeleccionado.tipo === "en_prestamo" }>
+                    <button className="anadirBtnFinal"
+                            onClick={handlePrestar}
+                            disabled={ prestamoSeleccionado.tipo === "en_prestamo" ||
+                                (prestamoSeleccionado.tipo === "prestado" && !amistadSeleccionada) }>
                         Enviar {syncIconoPrestar()}
                     </button>
                 </div>
