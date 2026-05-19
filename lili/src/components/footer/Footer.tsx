@@ -6,7 +6,7 @@ const Footer = () => {
     return <footer className="footer">
         <p>Las imágenes incluidas en esta web son Copyright © de sus respectivos autores.</p>
         <div className="cc">
-            <Link to="https://example.com">Lili</Link> 2025 por <Link to="https://example.com">elenaferfor</Link>.
+            <Link to="http://localhost:5173">Lili</Link> 2025 por <Link to="https://github.com/elenaferfor">elenaferfor</Link>.
         </div>
     </footer>
 }
