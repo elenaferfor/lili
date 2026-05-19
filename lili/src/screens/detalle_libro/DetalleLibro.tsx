@@ -42,7 +42,7 @@ const Index = () => {
                             <>
                                 <InfoLibro data={libroActual}/>
                                 {libroActual.autores_detalle?.map((autor, index) => (
-                                    <SectionSinGet key={index} titulo={`Otros libros de ${autor.nombre}`} listaLibros={librosPorAutor[autor.id]?.slice(0, 14)} isLoading={librosIsLoading}/>   
+                                    <SectionSinGet key={index} titulo={`Otros libros de ${autor.nombre}`} listaLibros={librosPorAutor[autor.id]?.slice(0, 15)} isLoading={librosIsLoading}/>   
                                 ))}
                             </>
                 }

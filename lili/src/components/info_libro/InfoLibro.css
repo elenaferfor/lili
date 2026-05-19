@@ -163,6 +163,21 @@ button.estadoFavorito{
     color: var(--dark_blue);
 }
 
+/* COLORES ESTADO PRÉSTAMO */
+.detalleLibroEstados .sin_prestamos{
+    background-color: var(--blue_grey_second);
+    color: var(--dark_blue);
+}
+.detalleLibroEstados .prestado{
+    background-color: var(--dark_blue);
+    color: var(--green);
+}
+.detalleLibroEstados .en_prestamo{
+    background-color: var(--dark_blue);
+    color: var(--orange);
+}
+
+
 /* SELECTORES ESTADOS */
 #estadoLectura, #estadoCategorias{
     position: relative;

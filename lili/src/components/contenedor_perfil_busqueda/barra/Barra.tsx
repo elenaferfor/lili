@@ -15,8 +15,21 @@ const Barra = () => {
     
     const busquedaCompleta = (e: React.SubmitEvent) => {
         e.preventDefault();
-        navigate(`/resultados?q=${encodeURIComponent(searchValue)}`);
-        setSearchValue('');
+
+        if (searchValue.startsWith("@")) {
+            const usuarioEncontrado = resultados[0]?.tipo === "usuario" ? resultados[0] : undefined;
+
+            if (usuarioEncontrado) {
+                navigate(`/perfil/${usuarioEncontrado.id}`);
+                setSearchValue('');
+            } else {
+                navigate(`/resultados?q=${encodeURIComponent(searchValue)}`);
+                setSearchValue('');
+            }
+        }else{
+            navigate(`/resultados?q=${encodeURIComponent(searchValue)}`);
+            setSearchValue('');
+        }
     }
     
     return <div className="barra" ref={barraRef}>
@@ -39,7 +52,7 @@ const Barra = () => {
                         ))
                     }
                 </div>
-                { resultados[0]?.tipo === 'usuario' || resultados.length > 0 &&
+                { resultados[0]?.tipo !== 'usuario' && resultados.length > 0 &&
                     <div className="verResultados">
                         <Link to={`/resultados?q=${encodeURIComponent(searchValue)}`}>Ver todos los resultados o añadir manualmente</Link>
                     </div>

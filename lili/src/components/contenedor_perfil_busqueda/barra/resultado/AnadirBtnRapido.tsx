@@ -4,6 +4,7 @@ import {useMutation, useQueryClient} from "@tanstack/react-query";
 import api from "../../../../api/Axios.tsx";
 import {useAuth} from "../../../../auth/AuthContext.tsx";
 import type {UsuarioLibroPostRequest, SyncEstado} from "../../../../types.tsx";
+import {importarLibroOpenLibrary} from "../../../../api/libroService.tsx";
 
 const AnadirBtnRapido = (props: any) => {
     
@@ -12,17 +13,34 @@ const AnadirBtnRapido = (props: any) => {
     const queryClient = useQueryClient();
     const [requestBody, setRequestBody] = useState<UsuarioLibroPostRequest>();
     const { user } = useAuth();
+
+    const [libroId, setLibroId] = useState<number | undefined>(props.item.id);
     
     // Libros usuario
-    const { data: usuarioLibro} = useUsuarioLibro(props.item.id);
+    const { data: usuarioLibro} = useUsuarioLibro(libroId!);
     
     // Mutación crear libroUsuario
     const { mutate: crearLibroUsuario } = useMutation({
-        mutationFn: () =>
-            api.post(`/libros_usuarios/`, requestBody),
+        mutationFn: async () => {
+            let resolvedId = props.item.id;
+            
+            // Libro de Openlibrary
+            if(props.item.fuente === "openlibrary"){
+                const libro = await importarLibroOpenLibrary(props.item.isbn);
+                resolvedId = libro?.id;
+            }
+            
+            const response = await api.post(`/libros_usuarios/`, {
+                ...requestBody,
+                libro: resolvedId,
+            });
+            
+            return { response, resolvedId };
+        },
         onMutate: () => setSync("enviando"),
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ["usuarioLibro", props.item.id] });
+        onSuccess: ({ resolvedId }) => {
+            setLibroId(resolvedId);
+            queryClient.invalidateQueries({ queryKey: ["usuarioLibro", resolvedId] });
             setSync("ok");
             setTimeout(() => setSync("idle"), 1500);
         },

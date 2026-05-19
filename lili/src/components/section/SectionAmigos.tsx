@@ -16,7 +16,7 @@ const SectionAmigos = (props: any) => {
                 <div className="amigo">
                     <div className="fotoPerfil">
                         <Link to={`/perfil/${otroUsuario.id}`}>
-                            <img src="/perfil/te.JPG" alt={otroUsuario.username}/>
+                            <img src="/perfil/profile.png" alt={otroUsuario.username}/>
                         </Link>
                     </div>
                     <Link to={`/perfil/${otroUsuario.id}`}>@{otroUsuario.username}</Link>

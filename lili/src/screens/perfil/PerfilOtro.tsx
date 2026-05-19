@@ -10,6 +10,7 @@ import {useAuth} from "../../auth/AuthContext.tsx";
 import {useMutation, useQueryClient} from "@tanstack/react-query";
 import api from "../../api/Axios.tsx";
 import {Layout} from "../Layout.tsx";
+import {useUsuarioID} from "../../hooks/useUsers.tsx";
 
 const PerfilOtro = () => {
     
@@ -20,11 +21,11 @@ const PerfilOtro = () => {
     const { user } = useAuth();
 
     const amigoId = Number(params.userId);
-    const [username, setUsername] = useState("");
   
     const { data: categorias, isLoading: categoriasIsLoading } = useCategoriasOtroUsuario(amigoId);
     const { data: amistades } = useAmistades();
     const { data: libros, isLoading: librosIsLoading } = useUsuarioLibrosOtroUsuario(amigoId);
+    const { data: usuario } = useUsuarioID(amigoId);
     
     const leyendo = libros?.filter(l => l.estado === "leyendo");
     const favoritos = libros?.filter(l => l.favorito);
@@ -65,20 +66,12 @@ const PerfilOtro = () => {
     });
     
     useEffect(() => {
-        const userAmistades = amistades?.filter((a: Amistad) => a.usuario_a_nombre.id === amigoId || a.usuario_b_nombre.id === amigoId);
-        if(!userAmistades?.length) return;
-
-        if (userAmistades[0].usuario_a_nombre.id === amigoId) {
-            setUsername(userAmistades[0].usuario_a_nombre.username);
-        } else {
-            setUsername(userAmistades[0].usuario_b_nombre.username);
-        }
-        
-        setAmistadActual(amistades?.find(a => {
-            if ((a.usuario_a_nombre.id === amigoId || a.usuario_b_nombre.id === amigoId) && (a.usuario_a_nombre.id === user?.id || a.usuario_b_nombre.id === user?.id)) {
-                return a;
-            }
-        }));
+        if (!amistades) return;
+        const amistad = amistades.find((a: Amistad) =>
+            (a.usuario_a_nombre.id === amigoId || a.usuario_b_nombre.id === amigoId) &&
+            (a.usuario_a_nombre.id === user?.id || a.usuario_b_nombre.id === user?.id)
+        );
+        if (amistad) setAmistadActual(amistad);
     }, [amistades, amigoId]);
 
     useEffect(() => {
@@ -88,7 +81,6 @@ const PerfilOtro = () => {
         if(amistadActual?.estado === "blo") setAmistadEstado(ESTADOS_AMISTAD[3]);
         if(amistadActual?.estado === "s_s") setAmistadEstado(ESTADOS_AMISTAD[0]);
     }, [amistadActual]);
-
     
     const bloqueAmistad = () => {
         if (amistadEstado.estado === "blo") return null;
@@ -123,10 +115,10 @@ const PerfilOtro = () => {
             <button onClick={() => navigate(-1)} className="volver">Volver</button>
             <div className="secciones">
                 <section className="no_shadow_section">
-                    <h1>@{username}</h1>
+                    <h1>@{usuario?.username}</h1>
                     <div className="perfilCabecera">
                         <div className="fotoPerfil">
-                            <img src="/perfil/te.JPG" alt="Té"/>
+                            <img src="/perfil/profile.png" alt="Foto de perfil"/>
                         </div>
                         <div className="perfilColecciones">
                             { bloqueAmistad() }
@@ -140,9 +132,9 @@ const PerfilOtro = () => {
                         </div>
                     </div>
                 </section>
-                <SectionSinGet titulo={"Leyendo"} listaLibros={leyendo} isLoading={librosIsLoading} deOtro={true}/>
-                <SectionSinGet titulo={"Últimos añadidos"} listaLibros={libros} isLoading={librosIsLoading} deOtro={true}/>
-                <SectionSinGet titulo={"Favoritos"} listaLibros={favoritos} isLoading={librosIsLoading} deOtro={true}/>
+                <SectionSinGet titulo={"Leyendo"} listaLibros={leyendo?.slice(0, 15)} isLoading={librosIsLoading} deOtro={true}/>
+                <SectionSinGet titulo={"Últimos añadidos"} listaLibros={libros?.slice(0, 15)} isLoading={librosIsLoading} deOtro={true}/>
+                <SectionSinGet titulo={"Favoritos"} listaLibros={favoritos?.slice(0, 15)} isLoading={librosIsLoading} deOtro={true}/>
             </div>
         </div>
     </Layout>

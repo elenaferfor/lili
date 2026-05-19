@@ -126,7 +126,8 @@ const EstadoCategoriasLibro = (props: any) => {
             <div className="categorias" ref={categoriasRef}>
                 {
                     catLista.map((cat) => (
-                        <button key={cat.id} className={cat.activa ? "catActiva" : ""} onClick={() => handleCategorias(cat.id)}>
+                        <button key={cat.id} className={cat.activa ? "catActiva" : ""}
+                                onClick={() => handleCategorias(cat.id)}>
                             {cat.nombre}
                             {cat.activa && <i className="material-symbols-rounded">check</i>}
                             {syncIcono(cat.sync)}

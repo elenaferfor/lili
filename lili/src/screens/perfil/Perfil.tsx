@@ -32,7 +32,7 @@ const Perfil = () => {
                     <h1>@{user.user?.username}</h1>
                     <div className="perfilCabecera">
                         <div className="fotoPerfil">
-                            <img src="/perfil/te.JPG" alt="Té"/>
+                            <img src="/perfil/profile.png" alt="Foto de perfil"/>
                         </div>
                         <div className="perfilColecciones">
                             <p className="perfilColeccionesP">Colecciones públicas:</p>
@@ -45,10 +45,10 @@ const Perfil = () => {
                         </div>
                     </div>
                 </section>
-                <SectionSinGet titulo={"Leyendo"} listaLibros={leyendo} isLoading={librosIsLoading}/>
-                <SectionSinGet titulo={"Últimos añadidos"} listaLibros={libros} isLoading={librosIsLoading}/>
-                <SectionSinGet titulo={"Favoritos"} listaLibros={favoritos} isLoading={librosIsLoading}/>
-                <SectionAmigos titulo={"Amistades"} amigos={amistades} isLoading={amistadesIsLoading}/>
+                <SectionSinGet titulo={"Leyendo"} listaLibros={leyendo?.slice(0, 15)} isLoading={librosIsLoading}/>
+                <SectionSinGet titulo={"Últimos añadidos"} listaLibros={libros?.slice(0, 15)} isLoading={librosIsLoading}/>
+                <SectionSinGet titulo={"Favoritos"} listaLibros={favoritos?.slice(0, 15)} isLoading={librosIsLoading}/>
+                <SectionAmigos titulo={"Amistades"} amigos={amistades?.slice(0, 15)} isLoading={amistadesIsLoading}/>
             </div>
         </div>
     </Layout>

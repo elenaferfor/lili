@@ -36,6 +36,8 @@ from .schemas import (
     libro_categoria_schema,
     contacto_post_schema,
 )
+from .services import obtener_libro_por_isbn
+
 
 @autor_schema
 class AutorView(ModelViewSet):
@@ -99,6 +101,79 @@ class LibroView(ModelViewSet):
         if self.action not in ["destroy", "partial_update"]:
             return [IsAuthenticated()]
         return [IsAdminUser()]
+
+    # Sobreescribe list() para devolver según la BD o según resultados de OL
+    def list(self, request, *args, **kwargs):
+        # Búsqueda normal
+        queryset = self.filter_queryset(self.get_queryset())
+
+        # Si hay resultados, respuesta normal
+        if queryset.exists():
+            page = self.paginate_queryset(queryset)
+            if page is not None:
+                serializer = self.get_serializer(page, many=True)
+                return self.get_paginated_response(serializer.data)
+            serializer = self.get_serializer(queryset, many=True)
+            return Response(serializer.data)
+
+        # Si no hay resultados, comprueba si se busca ISBN
+        query = request.query_params.get("isbn", "").strip()
+        if query:
+            datos = obtener_libro_por_isbn(query)
+            if datos:
+                datos["fuente"] = "openlibrary"
+                datos["autores_detalle"] = [{"nombre": a.nombre} for a in datos.pop("autores")]
+                editorial = datos.pop("editorial")
+                datos["editorial_detalle"] = {"nombre": editorial.nombre} if editorial else None
+                return Response({"results": [datos], "fuente": "openlibrary"})
+
+        # Si no hay resultados en ningún lado
+        return Response({"results": []})
+
+    @action(detail=False, methods=['post'], url_path='importar')
+    def importar(self, request):
+        """
+            POST /libros/importar/
+            Body: { "isbn": "9780140328721" }
+        """
+        isbn = request.data.get('isbn')
+        if not isbn:
+            return Response(
+                {"error": "Se requiere un ISBN"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        # Si ya existe en la BD
+        if Libro.objects.filter(isbn=isbn).exists():
+            return Response(
+                {"error": "El libro ya existe en la base de datos"},
+                status=status.HTTP_409_CONFLICT
+            )
+
+        # Si no existe, busca en Open Library
+        datos = obtener_libro_por_isbn(isbn)
+        if not datos:
+            return Response(
+                {"error": "No se encontró el libro en Open Library"},
+                status=status.HTTP_404_NOT_FOUND
+            )
+
+        # Si existe, lo mapea y guarda en BD
+        try:
+            with transaction.atomic():
+                autores = datos.pop('autores')
+                editorial = datos.pop('editorial')
+
+                libro = Libro.objects.create(**datos, editorial=editorial)
+                libro.autores.set(autores)
+        except Exception as e:
+            return Response(
+                {"error": f"Error al guardar el libro: {str(e)}"},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+
+        serializer = self.get_serializer(libro)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 @usuario_lili_schema
 class UsuarioLiliView(ModelViewSet):
@@ -184,13 +259,16 @@ class CategoriaView(ModelViewSet):
 
 @usuario_libro_schema
 class UsuarioLibroView(ModelViewSet):
-    # queryset = UsuarioLibro.objects.all().select_related('usuario', 'libro', 'serie').prefetch_related('categorias')
     serializer_class = UsuarioLibroSerializer
 
     def get_queryset(self):
         if self.request.user.is_staff:
-            return UsuarioLibro.objects.all().select_related('usuario', 'libro', 'serie').prefetch_related('categorias').order_by('id')
-        return UsuarioLibro.objects.filter(usuario__pk=self.request.user.pk).select_related('usuario', 'libro', 'serie').prefetch_related('categorias')
+            return (UsuarioLibro.objects.all()
+                    .select_related('usuario', 'libro', 'serie')
+                    .prefetch_related('categorias').order_by('id'))
+        return (UsuarioLibro.objects.filter(usuario__pk=self.request.user.pk)
+                .select_related('usuario', 'libro', 'serie')
+                .prefetch_related('categorias'))
 
     # Cambiar estado de libro
     @action(detail=True, methods=['post']) # permission_classes=[]
@@ -265,6 +343,23 @@ class UsuarioLibroView(ModelViewSet):
         )
         return Response(UsuarioLibroSerializer(libros_favoritos, many=True).data)
 
+    # Mostrar lista de públicos
+    @action(detail=False, methods=['get'])
+    def publicos(self, request):
+        # GET /usuario-libros/publicos/?usuario_id=3
+        libros_publicos = UsuarioLibro.objects.filter(
+            publico=True
+        ).select_related('usuario', 'libro', 'serie').prefetch_related('categorias')
+
+        usuario_id = request.query_params.get('usuario_id')
+        if usuario_id:
+            libros_publicos = libros_publicos.filter(usuario__pk=usuario_id)
+
+        return Response(
+            UsuarioLibroSerializer(libros_publicos, many=True).data,
+            status=status.HTTP_200_OK
+        )
+
     # Añadir libro a una categoría, si la categoría no existe, la crea
     @action(detail=False, methods=['post'])
     @transaction.atomic # Sin commits intermedios
@@ -306,7 +401,7 @@ class UsuarioLibroView(ModelViewSet):
             )
 
         # Crear relación
-        _, creada = LibroCategoria.objects.get_or_create(
+        relacion, creada = LibroCategoria.objects.get_or_create(
             usuario_libro=usuario_libro,
             categoria=cat,
         )
@@ -315,7 +410,7 @@ class UsuarioLibroView(ModelViewSet):
             {
                 'usuario_libro': UsuarioLibroSerializer(usuario_libro).data,
                 'categoria': CategoriaSerializer(cat).data,
-                'relacion': LibroCategoriaSerializer(creada).data,
+                'relacion': LibroCategoriaSerializer(relacion).data,
             },
             status=status.HTTP_201_CREATED if creada else status.HTTP_200_OK
         )
@@ -368,22 +463,6 @@ class UsuarioLibroView(ModelViewSet):
             status=status.HTTP_201_CREATED if serie else status.HTTP_200_OK
         )
 
-    @action(detail=False, methods=['get'])
-    def publicos(self, request):
-        # GET /usuario-libros/publicos/?usuario_id=3
-        libros_publicos = UsuarioLibro.objects.filter(
-            publico=True
-        ).select_related('usuario', 'libro', 'serie').prefetch_related('categorias')
-
-        usuario_id = request.query_params.get('usuario_id')
-        if usuario_id:
-            libros_publicos = libros_publicos.filter(usuario__pk=usuario_id)
-
-        return Response(
-            UsuarioLibroSerializer(libros_publicos, many=True).data,
-            status=status.HTTP_200_OK
-        )
-
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
     filterset_class = UsuarioLibroFilter
     search_fields = ['libro__titulo', 'serie__nombre']
@@ -431,7 +510,7 @@ class AmistadView(ModelViewSet):
         amistad.save()
         return Response(
             {"mensaje": "Amistad ignorada"},
-            status=status.HTTP_204_NO_CONTENT
+            status=status.HTTP_200_OK
         )
 
     @action(detail=True, methods=['post'])
@@ -447,7 +526,7 @@ class AmistadView(ModelViewSet):
         amistad.save()
         return Response(
             {"mensaje": "Usuario bloqueado"},
-            status=status.HTTP_204_NO_CONTENT
+            status=status.HTTP_200_OK
         )
 
     @action(detail=False, methods=['get'])

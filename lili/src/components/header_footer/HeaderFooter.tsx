@@ -10,7 +10,7 @@ const HeaderFooter = () => {
     const OnBotonLogout = async () => {
 
         try{
-            await logout;
+            await logout();
             navigate("/login");
         }catch{
             console.log("Error en el logout");

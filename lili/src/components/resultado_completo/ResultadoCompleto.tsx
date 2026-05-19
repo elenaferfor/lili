@@ -1,8 +1,10 @@
-import {Link} from "react-router-dom";
+import {Link, useNavigate} from "react-router-dom";
 import AnadirBtn from "../contenedor_perfil_busqueda/barra/resultado/AnadirBtn.tsx";
 import {FORMATOS} from "../../types.tsx";
 
 const ResultadoCompleto = (props: any) => {
+    
+    const navigate = useNavigate();
     
     if(props.item.tipo === 'usuario'){
         // TODO: añadir páginas de usuario y autor y enlazar los resultados
@@ -10,8 +12,9 @@ const ResultadoCompleto = (props: any) => {
             <Link to="#" className="detalleUsuarioInfo">
                 <h1>{`@${props.item.username}`}</h1>
             </Link>
-            <button className="anadirResultadosBusqueda">
-                Solicitar amistad <i className="material-symbols-rounded">add</i>
+            <button className="anadirResultadosBusqueda" 
+                    onClick={() => navigate(`/perfil/${props.item.id}`)}>
+                Ver perfil
             </button>
         </div>
     }else if(props.item.tipo === 'autor'){

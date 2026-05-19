@@ -8,9 +8,16 @@ import {useUsuarioLibro} from "../../hooks/useUsuarioLibro.tsx";
 import {useMutation, useQueryClient} from "@tanstack/react-query";
 import api from "../../api/Axios.tsx";
 import {useAuth} from "../../auth/AuthContext.tsx";
-import {type Favorito, FAVORITOS, type UsuarioLibroPostRequest, type SyncEstado} from "../../types.tsx";
+import {
+    type Favorito,
+    FAVORITOS,
+    type UsuarioLibroPostRequest,
+    type SyncEstado,
+    type PrestamoIcono, ICONOS_PRESTAMO, type Prestamo
+} from "../../types.tsx";
 import EstadoSerieLibro from "./EstadoSerieLibro.tsx";
 import PanelLibro from "../panel_libro/PanelLibro.tsx";
+import {usePrestamos} from "../../hooks/usePrestamos.tsx";
 
 const InfoLibro = (props: any) => {
     const { libroId } = useParams();
@@ -27,6 +34,7 @@ const InfoLibro = (props: any) => {
     const [syncCrear, setSyncCrear] = useState<SyncEstado>("idle");
 
     const [panelPrestarOpen, setPanelPrestarOpen] = useState(false);
+    const [iconoPrestamo, setIconoPrestamo] = useState<PrestamoIcono>(ICONOS_PRESTAMO[0]);
     
     const [editandoSerie, setEditandoSerie] = useState<boolean>(false);
     const btnSerieRef = useRef<HTMLButtonElement>(null);
@@ -34,6 +42,7 @@ const InfoLibro = (props: any) => {
     
     // Traer usuarioLibro y series del usuario
     const {data: usuarioLibro} = useUsuarioLibro(libroIdNum);
+    const {data: prestamos} = usePrestamos();
     
     useEffect(() => {
         if(!usuarioLibro){
@@ -68,6 +77,22 @@ const InfoLibro = (props: any) => {
         document.addEventListener("mousedown", handler);
         return () => document.removeEventListener("mousedown", handler);
     }, [editandoSerie]);
+
+    useEffect(() => {
+        if(!prestamos) return;
+        const encontrado = prestamos.find((p: Prestamo) =>
+            p.libro_detalle.id === libroIdNum && p.estado === "activo"
+        );
+        if(!encontrado){
+            setIconoPrestamo(ICONOS_PRESTAMO[0]);
+            return;
+        }
+        if(encontrado.prestatario_nombre.id === user?.id){
+            setIconoPrestamo(ICONOS_PRESTAMO[2]);
+        }else{
+            setIconoPrestamo(ICONOS_PRESTAMO[1]);
+        }
+    }, [prestamos]);
     
     // Mutación crear libroUsuario
     const { mutate: crearLibroUsuario } = useMutation({
@@ -198,9 +223,10 @@ const InfoLibro = (props: any) => {
                             </button>
                             
                             {/* // Préstamo */ }
-                            <button onClick={() => setPanelPrestarOpen(true)}>
-                                Prestar
-                                <i className="material-symbols-rounded">group</i>
+                            <button onClick={() => setPanelPrestarOpen(true)}
+                                    className={iconoPrestamo.clase}>
+                                {iconoPrestamo.texto}
+                                <i className="material-symbols-rounded">{iconoPrestamo.icono}</i>
                             </button>
                             {panelPrestarOpen && (
                                 <PanelLibro
@@ -216,7 +242,9 @@ const InfoLibro = (props: any) => {
                     }
                 </div>
             </div>
-            <EstadoSerieLibro usuarioLibro={usuarioLibro} libroIdNum={libroIdNum} />
+            { !noUsuarioLibro &&
+                <EstadoSerieLibro usuarioLibro={usuarioLibro} libroIdNum={libroIdNum} />
+            }
             <div className="detalleLibroSinopsis">
                 <p>Sinopsis:</p>
                 <p>{props.data.sinopsis}</p>

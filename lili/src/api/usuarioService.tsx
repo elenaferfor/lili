@@ -12,6 +12,11 @@ export const getUsuario = async (nombre: string): Promise<Usuario | undefined> =
         (usuario: Usuario) => usuario.username.toLowerCase() === nombre_n) ?? null;
 }
 
+export const getUsuarioPorID = async (id: number): Promise<Usuario | undefined> => {
+    const { data } = await api.get(`/usuarios/${id}/`);
+    return data ?? null;
+}
+
 export const getUsuarios = async (): Promise<Usuario[] | undefined> => {
     const { data } = await api.get(`/usuarios/`);
     return data.results;

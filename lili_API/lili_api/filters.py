@@ -1,4 +1,5 @@
 import django_filters
+from django_filters import CharFilter
 from django_filters.rest_framework import filters
 
 from lili_api.models import Amistad, UsuarioLibro, Prestamo, Notificacion, LibroCategoria, Libro
@@ -8,6 +9,8 @@ class LibroFilter(django_filters.FilterSet):
     autor_nombre = django_filters.CharFilter(
         field_name='autores__nombre',
         lookup_expr='iexact')
+
+    isbn = CharFilter(field_name='isbn', lookup_expr='exact')
 
     class Meta:
         model = Libro

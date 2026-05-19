@@ -184,7 +184,7 @@ CONTACT_RECIPIENT_EMAIL = os.environ.get('CONTACT_RECIPIENT_EMAIL')
 SPECTACULAR_SETTINGS = {
     'TITLE': 'Lili API',
     'DESCRIPTION': 'API de la aplicación Lili, para gestión de biblioteca personal',
-    'VERSION': '1.0.0',
+    'VERSION': '1.0.1',
     "SECURITY": [{"cookieJWTAuth": []}],
     "COMPONENTS": {
         "securitySchemes": {

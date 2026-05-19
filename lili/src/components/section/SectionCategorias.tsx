@@ -28,6 +28,8 @@ const SectionCategorias = (props: any ) => {
     
     const [catActual, setCatActual] = useState<Categoria>();
     
+    const CATEGORIAS_POR_DEFECTO = ["Leyendo", "Prestados", "Préstamos", "Deseos"];
+    
     useEffect(() => {
         setCatActual(
             props.catsUsuario.find((c: any) => c.nombre === props.tituloCat)
@@ -134,6 +136,10 @@ const SectionCategorias = (props: any ) => {
         });
     };
 
+    // Marcar el tipo de categoría para activar o desactivar los botones de modificar categoría
+    const esCategoriaDefecto = CATEGORIAS_POR_DEFECTO.includes(props.tituloCat ?? "");
+    const esDeseos = catActual?.nombre === "Deseos";
+    
     // Crear los grupos de series y libros sin serie
     const listaOrdenada = librosSeriesOrdenados(librosFiltrados);
     
@@ -142,11 +148,15 @@ const SectionCategorias = (props: any ) => {
             <h1>{props.tituloCat} ({librosFiltrados.length})</h1>
             {!props.isTodos &&
                 <div className="iconosCategorias">
-                    { catActual?.publica ?
-                        <i className="material-symbols-rounded icon_fill dark_blue" onClick={togglePublica}>lock_open</i> :
-                        <i className="material-symbols-rounded icon_fill dark_blue" onClick={togglePublica}>lock</i>
+                    { (!esCategoriaDefecto || esDeseos) &&
+                        ( catActual?.publica ?
+                                <i className="material-symbols-rounded icon_fill dark_blue" onClick={togglePublica}>lock_open</i> :
+                                <i className="material-symbols-rounded icon_fill dark_blue" onClick={togglePublica}>lock</i>
+                        )
                     }
-                    <i className="material-symbols-rounded icon_fill dark_blue" onClick={borrarCategoria}>close</i>
+                    { !esCategoriaDefecto &&
+                        <i className="material-symbols-rounded icon_fill dark_blue" onClick={borrarCategoria}>close</i>
+                    }
                     {syncIconoPublica()}
                     {syncIconoBorrar()}
                 </div>

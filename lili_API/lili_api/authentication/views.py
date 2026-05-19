@@ -117,6 +117,7 @@ class LogoutView(APIView):
     permission_classes = [permissions.AllowAny]
 
     def post(self, request):
+        print("COOKIES RECIBIDAS:", request.COOKIES)
         refresh_token = request.COOKIES.get('refresh_token')
 
         if refresh_token:
@@ -133,7 +134,24 @@ class LogoutView(APIView):
             {'detail': 'logout ok'},
             status=status.HTTP_200_OK
         )
-        res.delete_cookie('refresh_token', path='/auth/')
+
+        res.set_cookie(
+            key='access_token',
+            value='',
+            httponly=getattr(settings, 'AUTH_COOKIE_HTTPONLY', True),
+            secure=getattr(settings, 'AUTH_COOKIE_SECURE', False),
+            samesite=getattr(settings, 'AUTH_COOKIE_SAMESITE', 'Lax'),
+            max_age=0
+        )
+        res.set_cookie(
+            key='refresh_token',
+            value='',
+            httponly=True,
+            secure=getattr(settings, 'AUTH_COOKIE_SECURE', False),
+            samesite=getattr(settings, 'AUTH_COOKIE_SAMESITE', 'Lax'),
+            path='/api/auth/',
+            max_age=0
+        )
         return res
 
 @register_schema

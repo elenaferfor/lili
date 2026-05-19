@@ -501,7 +501,7 @@ const PanelLibro = ({ libroId, onClose, soloPrestar = false }: PanelLibroProps) 
                                 <p>de</p>
                                 <button className="amigoSeleccionado" ref={btnAmigoRef} onClick={() => setAmigoIsOpen(o => !o)}>
                                     <div className="amigoSeleccionadoFoto">
-                                        <img src="/perfil/te.JPG" alt="Foto de perfil"/>
+                                        <img src="/perfil/profile.png" alt="Foto de perfil"/>
                                     </div>
                                     { amistadSeleccionada ? <p>{amigo.username}</p> : <p>@usuario...</p>}
                                 </button>
@@ -526,7 +526,7 @@ const PanelLibro = ({ libroId, onClose, soloPrestar = false }: PanelLibroProps) 
                                         <p>a</p>
                                         <button className="amigoSeleccionado" ref={btnAmigoRef} onClick={() => setAmigoIsOpen(o => !o)}>
                                             <div className="amigoSeleccionadoFoto">
-                                                <img src="/perfil/te.JPG" alt="Foto de perfil"/>
+                                                <img src="/perfil/profile.png" alt="Foto de perfil"/>
                                             </div>
                                             { amistadSeleccionada ? <p>{amigo.username}</p> : <p>@usuario...</p>}
                                         </button>
@@ -535,7 +535,7 @@ const PanelLibro = ({ libroId, onClose, soloPrestar = false }: PanelLibroProps) 
                                                 {amistades?.map((a: Amistad) => (
                                                     <button key={a.id} onClick={() => handleAmigo(a)}>
                                                         <div className="amigoSeleccionadoFoto">
-                                                            <img src="/perfil/te.JPG" alt="Foto de perfil"/>
+                                                            <img src="/perfil/profile.png" alt="Foto de perfil"/>
                                                         </div>
                                                         { a.usuario_a_nombre.id === user?.id ? a.usuario_b_nombre.username : a.usuario_a_nombre.username }
                                                     </button>

@@ -163,6 +163,29 @@ editorial_schema = extend_schema_view(
 # LIBRO
 # ──────────────────────────────────────────────
 
+_importar_schema = extend_schema(
+    summary="Importar libro desde Open Library",
+    description=(
+        "Busca un libro por ISBN en Open Library y lo guarda en la base de datos. "
+        "Devuelve 409 si el libro ya existe. "
+        "Devuelve 404 si no se encuentra en Open Library."
+    ),
+    tags=["Libros"],
+    request=inline_serializer(
+        name="ImportarLibroRequest",
+        fields={
+            "isbn": serializers.CharField(help_text="ISBN del libro a importar"),
+        },
+    ),
+    responses={
+        201: LibroSerializer,
+        400: error_response("ISBN no proporcionado"),
+        404: R_404,
+        409: OpenApiResponse(description="El libro ya existe en la base de datos."),
+        500: OpenApiResponse(description="Error al guardar el libro."),
+    },
+)
+
 libro_schema = extend_schema_view(
     list=extend_schema(
         summary="Listar libros",
@@ -199,6 +222,7 @@ libro_schema = extend_schema_view(
         tags=["Libros"],
         responses={204: None, 401: R_401, 403: R_403, 404: R_404},
     ),
+    importar=_importar_schema,
 )
 
 
@@ -300,6 +324,25 @@ serie_schema = extend_schema_view(
 # CATEGORÍA
 # ──────────────────────────────────────────────
 
+_publicas_schema = extend_schema(
+    summary="Listar categorías públicas",
+    description=(
+        "Devuelve todas las categorías con `publica=True`. "
+        "Filtrable por `?usuario={id}`."
+    ),
+    tags=["Categorías"],
+    parameters=[
+        OpenApiParameter(
+            name="usuario",
+            type=OpenApiTypes.INT,
+            location=OpenApiParameter.QUERY,
+            required=False,
+            description="Filtra las categorías públicas de un usuario concreto.",
+        )
+    ],
+    responses={200: CategoriaSerializer(many=True), 401: R_401},
+)
+
 categoria_schema = extend_schema_view(
     list=extend_schema(
         summary="Listar categorías",
@@ -335,6 +378,7 @@ categoria_schema = extend_schema_view(
         tags=["Categorías"],
         responses={204: None, 401: R_401, 403: R_403, 404: R_404},
     ),
+    publicas=_publicas_schema,
 )
 
 
@@ -421,7 +465,7 @@ _anadir_schema = extend_schema(
             fields={
                 "usuario_libro": serializers.DictField(),
                 "categoria": serializers.DictField(),
-                "relacion": serializers.DictField(),
+                "relacion": LibroCategoriaSerializer,
             },
         ),
         200: OpenApiResponse(description="El libro ya estaba en esa categoría."),
@@ -475,6 +519,44 @@ _anadir_serie_schema = extend_schema(
     },
 )
 
+_cambiar_publico_schema = extend_schema(
+    summary="Alternar público",
+    description="Cambia el campo `publico` del `UsuarioLibro` al valor opuesto.",
+    tags=["Biblioteca personal"],
+    request=None,
+    responses={
+        200: inline_serializer(
+            name="CambiarPublicoResponse",
+            fields={
+                "mensaje": serializers.CharField(),
+                "data": serializers.DictField(),
+            },
+        ),
+        401: R_401,
+        403: R_403,
+        404: R_404,
+    },
+)
+
+_publicos_schema = extend_schema(
+    summary="Libros públicos",
+    description=(
+        "Devuelve los libros marcados como públicos. "
+        "Filtrable por `?usuario_id={id}` para obtener los de un usuario concreto."
+    ),
+    tags=["Biblioteca personal"],
+    parameters=[
+        OpenApiParameter(
+            name="usuario_id",
+            type=OpenApiTypes.INT,
+            location=OpenApiParameter.QUERY,
+            required=False,
+            description="ID del usuario cuyos libros públicos se quieren obtener.",
+        )
+    ],
+    responses={200: UsuarioLibroSerializer(many=True), 401: R_401},
+)
+
 usuario_libro_schema = extend_schema_view(
     list=extend_schema(
         summary="Listar biblioteca personal",
@@ -517,6 +599,8 @@ usuario_libro_schema = extend_schema_view(
     favoritos=_favoritos_schema,
     anadir=_anadir_schema,
     anadir_serie=_anadir_serie_schema,
+    cambiar_publico=_cambiar_publico_schema,
+    publicos=_publicos_schema,
 )
 
 
@@ -543,7 +627,7 @@ _ignorar_schema = extend_schema(
     tags=["Amistades"],
     request=None,
     responses={
-        204: None,
+        200: mensaje_ok("Amistad ignorada"),
         401: R_401,
         403: R_403,
         404: R_404,
@@ -556,7 +640,7 @@ _bloquear_schema = extend_schema(
     tags=["Amistades"],
     request=None,
     responses={
-        204: None,
+        200: mensaje_ok("Amistad bloqueada"),
         401: R_401,
         403: R_403,
         404: R_404,
@@ -676,6 +760,34 @@ _solicitados_a_mi_schema = extend_schema(
     responses={200: PrestamoSerializer(many=True), 401: R_401},
 )
 
+_crear_prestamo_prestador_schema = extend_schema(
+    summary="Crear préstamo como prestador",
+    description=(
+        "El propietario de un libro inicia directamente un préstamo activo a otro usuario. "
+        "Crea el préstamo en estado ACTIVO con `fecha_inicio` de hoy. "
+        "Si el prestatario no tiene el libro en su biblioteca, se le añade automáticamente."
+    ),
+    tags=["Préstamos"],
+    request=inline_serializer(
+        name="CrearPrestamoPrestadorRequest",
+        fields={
+            "usuario_libro_id": serializers.IntegerField(
+                help_text="ID del UsuarioLibro del prestador"
+            ),
+            "prestatario_id": serializers.IntegerField(
+                help_text="ID del usuario que recibirá el préstamo"
+            ),
+        },
+    ),
+    responses={
+        201: PrestamoSerializer,
+        400: error_response("Faltan campos o el libro ya tiene un préstamo activo"),
+        401: R_401,
+        403: R_403,
+        404: R_404,
+    },
+)
+
 prestamo_schema = extend_schema_view(
     list=extend_schema(
         summary="Listar préstamos",
@@ -717,6 +829,7 @@ prestamo_schema = extend_schema_view(
     cedidos=_cedidos_schema,
     solicitados_por_mi=_solicitados_por_mi_schema,
     solicitados_a_mi=_solicitados_a_mi_schema,
+    crear_prestamo_prestador=_crear_prestamo_prestador_schema,
 )
 
 

@@ -16,7 +16,7 @@ type CatPost = {
 
 const Etiquetas = (props: any) => {
     
-    const categoriasPpales = ["Leyendo", "Lista de deseos", "Prestados", "Préstamos"];
+    const categoriasPpales = ["Leyendo", "Deseos", "Prestados", "Préstamos"];
     const [tagActivo, setTagActivo] = useState(0);
     
     const queryClient = useQueryClient();

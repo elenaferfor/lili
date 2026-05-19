@@ -156,22 +156,18 @@ class UsuarioLibroSerializer(serializers.ModelSerializer):
     categorias = serializers.PrimaryKeyRelatedField(queryset=Categoria.objects.all(), many=True, write_only=True)
     categorias_detalle = CategoriaNombreSerializer(source="categorias", read_only=True, many=True)
 
+    def create(self, validated_data):
+        categorias = validated_data.pop('categorias')
+        libro_usuario = UsuarioLibro.objects.create(**validated_data)
+        libro_usuario.categorias.set(categorias)
+        return libro_usuario
+
     class Meta:
         model = UsuarioLibro
         fields = ['id', 'usuario', 'libro', 'libro_detalle',
                   'serie', 'serie_detalle', 'numero_en_serie',
                   'estado', 'favorito', 'publico',
                   'fecha_anadido', 'categorias', 'categorias_detalle']
-
-        def create(self, validated_data):
-            libro_usuario = UsuarioLibro.objects.create(**validated_data)
-            libro = validated_data.pop('libro')
-            serie = validated_data.pop('serie')
-            categorias = validated_data.pop('categorias')
-            libro_usuario.libro.set(libro)
-            libro_usuario.serie.set(serie)
-            libro_usuario.categorias.set(categorias)
-            return libro_usuario
 
 class NotificacionSerializer(serializers.ModelSerializer):
     class Meta:

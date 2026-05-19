@@ -12,7 +12,7 @@ type Libro = {
     openlibrary_key: string;
     fecha_actualizacion: string;
     autores_detalle: { id: number; nombre: string }[];
-    editorial_detalle: { id: number; nombre: string }[];
+    editorial_detalle: { id: number; nombre: string };
 };
 
 export type LibroGet = {
@@ -32,8 +32,9 @@ export type LibroGet = {
 
 // Por isbn
 export const getLibroPorISBN = async (isbn: string): Promise<Libro | undefined> => {
-    const { data } = await api.get(`/libros/`);
-    return data.results.find((result: any) => result.isbn === isbn) ?? null;
+    console.log("getLibroPorISBN llamado con:", isbn);
+    const { data } = await api.get(`/libros/?isbn=${isbn}`);
+    return data.results?.[0] ?? null;
 }
 
 // Por ID
@@ -52,4 +53,10 @@ export const getLibrosPorGeneral = async (busqueda: string): Promise<LibroGet[] 
 export const getLibros = async (): Promise <Libro[] | undefined> => {
     const { data } = await api.get(`/libros?ordering=titulo/`);
     return data.results;
+}
+
+// Importar de Open Library
+export const importarLibroOpenLibrary = async (isbn: string): Promise<Libro | undefined> => {
+    const { data } = await api.post(`/libros/importar/`, { isbn });
+    return data;
 }

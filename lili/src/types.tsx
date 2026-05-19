@@ -88,7 +88,8 @@ export const CATEGORIAS_EXCLUIDAS = ["Leyendo", "Préstamos", "Prestados"];
 export type ResultadoBusqueda =
     { tipo: 'autor'; id: number; nombre: string } |
     { tipo: 'libro';
-        id: number;
+        id?: number;
+        fuente?: 'openlibrary';
         titulo: string;
         isbn: string;
         formato: string;
@@ -99,7 +100,7 @@ export type ResultadoBusqueda =
         openlibrary_key: string;
         fecha_actualizacion: string;
         autores_detalle: { id: number; nombre: string }[];
-        editorial_detalle: { id: number; nombre: string }[];
+        editorial_detalle: { id: number; nombre: string };
     } |
     { tipo: 'usuario'; id: number; username: string };
 

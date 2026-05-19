@@ -7,14 +7,14 @@ const Index = () => {
 
     const { data: libros, isLoading: librosIsLoading } = useUsuarioLibrosLista();
     
-    const deseos = libros?.filter(l => l.categorias_detalle.some(c => c.nombre === "Lista de deseos"));
+    const deseos = libros?.filter(l => l.categorias_detalle.some(c => c.nombre === "Deseos"));
     
     return <Layout>
         <div className="contenido">
             <div className="migas">Biblioteca</div>
             <div className="secciones">
-                <SectionSinGet titulo={"Últimos añadidos"} listaLibros={libros?.slice(0, 14)} isLoading={librosIsLoading}/>
-                <SectionSinGet titulo={"Lista de deseos"} listaLibros={deseos?.slice(0, 14)} isLoading={librosIsLoading}/>
+                <SectionSinGet titulo={"Últimos añadidos"} listaLibros={libros?.slice(0, 15)} isLoading={librosIsLoading}/>
+                <SectionSinGet titulo={"Lista de deseos"} listaLibros={deseos?.slice(0, 15)} isLoading={librosIsLoading}/>
                 {/*
                 Añadir cuando funcione con Open Library
                 <Section titulo={"Recomendados para ti"} filtroBusqueda={""}/>
