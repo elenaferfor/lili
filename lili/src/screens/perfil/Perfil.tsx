@@ -7,6 +7,7 @@ import {useCategorias} from "../../hooks/useCategoria.tsx";
 import {useAmistades} from "../../hooks/useAmistades.tsx";
 import SectionAmigos from "../../components/section/SectionAmigos.tsx";
 import {Layout} from "../Layout.tsx";
+import {usePrestamos} from "../../hooks/usePrestamos.tsx";
 
 const Perfil = () => {
     
@@ -14,6 +15,7 @@ const Perfil = () => {
     const { data: libros, isLoading: librosIsLoading } = useUsuarioLibrosLista();
     const { data: categorias, isLoading: categoriasIsLoading } = useCategorias();
     const { data: amistades, isLoading: amistadesIsLoading } = useAmistades();
+    const { data: prestamos } = usePrestamos();
     
     
     const leyendo = libros?.filter(l => l.estado === "leyendo");
@@ -45,9 +47,9 @@ const Perfil = () => {
                         </div>
                     </div>
                 </section>
-                <SectionSinGet titulo={"Leyendo"} listaLibros={leyendo?.slice(0, 15)} isLoading={librosIsLoading}/>
-                <SectionSinGet titulo={"Últimos añadidos"} listaLibros={libros?.slice(0, 15)} isLoading={librosIsLoading}/>
-                <SectionSinGet titulo={"Favoritos"} listaLibros={favoritos?.slice(0, 15)} isLoading={librosIsLoading}/>
+                <SectionSinGet titulo={"Leyendo"} listaLibros={leyendo?.slice(0, 15)} isLoading={librosIsLoading} prestamos={prestamos}/>
+                <SectionSinGet titulo={"Últimos añadidos"} listaLibros={libros?.slice(0, 15)} isLoading={librosIsLoading} prestamos={prestamos}/>
+                <SectionSinGet titulo={"Favoritos"} listaLibros={favoritos?.slice(0, 15)} isLoading={librosIsLoading} prestamos={prestamos}/>
                 <SectionAmigos titulo={"Amistades"} amigos={amistades?.slice(0, 15)} isLoading={amistadesIsLoading}/>
             </div>
         </div>
