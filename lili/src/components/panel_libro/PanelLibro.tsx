@@ -68,8 +68,8 @@ const PanelLibro = ({ libroId, onClose, soloPrestar = false }: PanelLibroProps) 
     const btnSeriesRef = useRef<HTMLInputElement>(null);
     const [serieSeleccionada, setSerieSeleccionada] = useState<Serie | undefined>(undefined);
     const [serieTexto, setSerieTexto] = useState<string>("");
-    const [serieSelecTotal, setSerieSelecTotal] = useState<number>(0);
-    const [serieSelecNum, setSerieSelecNum] = useState<number>(0);
+    const [serieSelecTotal, setSerieSelecTotal] = useState<number | undefined>(undefined);
+    const [serieSelecNum, setSerieSelecNum] = useState<number | undefined>(undefined);
     const [seriesLista, setSeriesLista] = useState<Serie[]>([]);
 
     // Traer valores del servidor
@@ -480,14 +480,14 @@ const PanelLibro = ({ libroId, onClose, soloPrestar = false }: PanelLibroProps) 
                                 </div>
                                 <div className="serie_numeros">
                                     <div className="serie_num">
-                                        <input type="number" value={serieSelecNum}
-                                               onChange={(e) => setSerieSelecNum(Number(e.target.value))}
+                                        <input type="number" value={serieSelecNum ?? undefined}
+                                               onChange={(e) => setSerieSelecNum(Number(e.target.value) ? Number(e.target.value) : undefined)}
                                                placeholder="0"/>
                                     </div>
                                     <span>de</span>
                                     <div className="serie_num">
-                                        <input type="number" value={serieSelecTotal}
-                                               onChange={(e) => setSerieSelecTotal(Number(e.target.value))}
+                                        <input type="number" value={serieSelecTotal ?? undefined}
+                                               onChange={(e) => setSerieSelecTotal(Number(e.target.value) ? Number(e.target.value) : undefined)}
                                                placeholder="??"/>
                                     </div>
                                 </div>
