@@ -18,7 +18,8 @@ api.interceptors.response.use(
             error.response?.status === 401 &&
             !originalRequest._retry &&
             !originalRequest.url?.includes('/auth/logout/') &&
-            !originalRequest.url?.includes('/auth/me/')   // añadir esto
+            !originalRequest.url?.includes('/auth/me/') &&
+            !originalRequest.url?.includes('/auth/refresh/')
         ) {
             originalRequest._retry = true;
         
