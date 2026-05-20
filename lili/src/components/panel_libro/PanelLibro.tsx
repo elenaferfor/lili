@@ -56,6 +56,12 @@ const PanelLibro = ({ libroId, onClose, soloPrestar = false }: PanelLibroProps) 
     const btnPrestamoRef = useRef<HTMLButtonElement>(null);
     const [prestamoSeleccionado, setPrestamoSeleccionado] = useState<PrestamoIcono>(ICONOS_PRESTAMO[0]);
     const [prestamoActual, setPrestamoActual] = useState<Prestamo | undefined>(undefined);
+    const TEXTOS_PRESTAMOS = [
+        'Elige "prestar" y una amistad para crear un préstamo:',
+        'Elige "sin préstamos" para marcar como devuelto o elige otra amistad para cambiar el préstamo de usuario:',
+        'Este libro es un préstamo:'
+    ]
+    const [textoPrestamo, setTextoPrestamo] = useState<string>(TEXTOS_PRESTAMOS[0]);
 
     const [amigoIsOpen, setAmigoIsOpen] = useState(false);
     const amigoRef = useRef<HTMLDivElement>(null);
@@ -143,6 +149,7 @@ const PanelLibro = ({ libroId, onClose, soloPrestar = false }: PanelLibroProps) 
         if (!encontrado) {
             setPrestamoSeleccionado(ICONOS_PRESTAMO[0]);
             setAmistadSeleccionada(undefined);
+            setTextoPrestamo(TEXTOS_PRESTAMOS[0]);
             return;
         }
         if (encontrado.prestatario_nombre.id === user?.id) {
@@ -152,6 +159,7 @@ const PanelLibro = ({ libroId, onClose, soloPrestar = false }: PanelLibroProps) 
                 a.usuario_b_nombre.id === encontrado.prestador_id
             );
             resolverAmigo(amistadEncontrada!);
+            setTextoPrestamo(TEXTOS_PRESTAMOS[2]);
         } else {
             setPrestamoSeleccionado(ICONOS_PRESTAMO[1]);
             const amistadEncontrada = amistades?.find(a =>
@@ -159,6 +167,7 @@ const PanelLibro = ({ libroId, onClose, soloPrestar = false }: PanelLibroProps) 
                 a.usuario_b_nombre.id === encontrado.prestatario_nombre.id
             );
             resolverAmigo(amistadEncontrada!);
+            setTextoPrestamo(TEXTOS_PRESTAMOS[1]);
         }
     }, [prestamos, amistades]);
     
@@ -531,7 +540,7 @@ const PanelLibro = ({ libroId, onClose, soloPrestar = false }: PanelLibroProps) 
                 )}
                 <div className="panelAnadirPrestamo">
                     <h1>Préstamos</h1>
-                    <p>Elige "prestar" o "en préstamo" para añadir seguimiento:</p>
+                    <p>{textoPrestamo}</p>
                     <div className="barraPrestar">
                         { prestamoSeleccionado.tipo === "en_prestamo" ?
                             <>

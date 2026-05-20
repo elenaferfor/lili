@@ -27,7 +27,7 @@
 }
 
 .panelAnadir h1{
-    font-size: 2rem;
+    font-size: 1.9rem;
 }
 
 .panelAnadir .closeBtn{
@@ -49,12 +49,13 @@
 
 /* TEXTO */
 .panelAnadirLibro h1, .panelAnadirPrestamo h1{
-    margin-bottom: .5rem;
+    margin-bottom: .3rem;
 }
 
 .panelAnadirLibro p, .panelAnadirPrestamo p{
     margin: 0;
     text-align: left;
+    font-size: .9rem;
 }
 
 /* CATEGORÍAS Y SERIES */
@@ -175,7 +176,7 @@ input[type=number] {
     color: var(--dark_blue);
     border-radius: 10rem;
     font-size: .8rem;
-    padding: .6rem 1rem;
+    padding: .4rem .8rem;
     border: none;
     outline: none;
     margin-top: .5rem;
