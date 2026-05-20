@@ -40,7 +40,7 @@
 }
 
 .resultadosBusqueda_anadir, .resultadosBusqueda_anadir_vacio{
-    height: 40rem;
+    max-height: 40rem;
     padding: 0 1rem;
     display: flex;
     flex-direction: column;
