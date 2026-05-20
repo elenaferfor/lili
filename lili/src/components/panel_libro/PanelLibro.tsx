@@ -369,6 +369,19 @@ const PanelLibro = ({ libroId, onClose, soloPrestar = false }: PanelLibroProps) 
     const handlePrestar = async () => {
         if(prestamoSeleccionado.tipo === "prestado"){
             
+            // Si ya hay un préstamo activo, se devuelve y se crea uno nuevo
+            const prestamoOtroAmigo = prestamoActual && prestamoActual.prestatario_nombre.id !== amigo.id;
+            if(prestamoOtroAmigo){
+                try{
+                    setSyncPrestar("enviando");
+                    await api.post(`/prestamos/${prestamoActual!.id}/devolver/`);
+                    queryClient.invalidateQueries({ queryKey: ["prestar", libroId] });
+                }catch{
+                    setSyncPrestar("idle");
+                    return;
+                }
+            }
+            
             // Si no existe el UsuarioLibro, lo crea antes de prestarlo
             let usuarioLibroId = usuarioLibro?.id;
             
