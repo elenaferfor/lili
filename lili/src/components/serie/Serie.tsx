@@ -15,9 +15,11 @@ const Serie = (props: any) => {
             <div className="portada">
                 <img src={primerLibro?.libro_detalle.portada} alt={primerLibro?.libro_detalle.titulo} />
                 <div className="hoverSerie">
-                    <div className="iconosHoverSerie">
-                        <i className="material-symbols-rounded icon_fill white">settings</i>
-                    </div>
+                    {/* Sin implementar   
+                        <div className="iconosHoverSerie">
+                            <i className="material-symbols-rounded icon_fill white">settings</i>
+                        </div>
+                    */}
                     <button id="mostrarSerie" onClick={() => setSerieIsOpen(o => !o)}>{serieIsOpen ? "Ocultar" : "Mostrar"}</button>
                 </div>
             </div>

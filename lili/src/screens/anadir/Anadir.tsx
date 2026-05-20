@@ -1,4 +1,4 @@
-import {Link, useNavigate, useSearchParams} from "react-router-dom";
+import {useNavigate, useSearchParams} from "react-router-dom";
 import "./Anadir.css";
 import {useBusqueda} from "../../hooks/useBusqueda.tsx";
 import ResultadoCompleto from "../../components/resultado_completo/ResultadoCompleto.tsx";
