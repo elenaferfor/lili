@@ -1,6 +1,6 @@
 .login, .register{
     padding: 5% 0;
-    height: 100vh;
+    min-height: 100vh;
     background-color: var(--dark_blue);
     display: flex;
     flex-direction: column;
