@@ -1,5 +1,5 @@
 import {Link, useNavigate} from "react-router-dom";
-import SectionSinGet from "../../components/section/SectionSinGet.tsx";
+import Section from "../../components/section/Section.tsx";
 import {useUsuarioLibrosLista} from "../../hooks/useUsuarioLibro.tsx";
 import "./Perfil.css";
 import {useAuth} from "../../auth/AuthContext.tsx";
@@ -47,9 +47,9 @@ const Perfil = () => {
                         </div>
                     </div>
                 </section>
-                <SectionSinGet titulo={"Leyendo"} listaLibros={leyendo?.slice(0, 15)} isLoading={librosIsLoading} prestamos={prestamos}/>
-                <SectionSinGet titulo={"Últimos añadidos"} listaLibros={libros?.slice(0, 15)} isLoading={librosIsLoading} prestamos={prestamos}/>
-                <SectionSinGet titulo={"Favoritos"} listaLibros={favoritos?.slice(0, 15)} isLoading={librosIsLoading} prestamos={prestamos}/>
+                <Section titulo={"Leyendo"} listaLibros={leyendo?.slice(0, 15)} isLoading={librosIsLoading} prestamos={prestamos}/>
+                <Section titulo={"Últimos añadidos"} listaLibros={libros?.slice(0, 15)} isLoading={librosIsLoading} prestamos={prestamos}/>
+                <Section titulo={"Favoritos"} listaLibros={favoritos?.slice(0, 15)} isLoading={librosIsLoading} prestamos={prestamos}/>
                 <SectionAmigos titulo={"Amistades"} amigos={amistades?.slice(0, 15)} isLoading={amistadesIsLoading}/>
             </div>
         </div>

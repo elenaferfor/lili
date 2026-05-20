@@ -114,7 +114,7 @@ export const FORMATOS: Record<string, string> = {
 
 // Libro
 export type Libro = {
-    id: number;
+    id?: number;
     titulo: string;
     isbn: string;
     formato: string;

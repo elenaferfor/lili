@@ -10,4 +10,4 @@ const ContenedorPerfilBusqueda = () => {
     </div>
 }
 
-        export default ContenedorPerfilBusqueda;
+export default ContenedorPerfilBusqueda;

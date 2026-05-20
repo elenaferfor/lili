@@ -1,7 +1,7 @@
 import {useNavigate, useParams} from "react-router-dom";
 import InfoLibro from "../../components/info_libro/InfoLibro.tsx";
 import {useMemo} from "react";
-import SectionSinGet from "../../components/section/SectionSinGet.tsx";
+import Section from "../../components/section/Section.tsx";
 import {useLibroID, useLibros} from "../../hooks/useLibro.tsx";
 import {useUsuarioLibrosLista} from "../../hooks/useUsuarioLibro.tsx";
 import {Layout} from "../Layout.tsx";
@@ -42,7 +42,7 @@ const Index = () => {
                             <>
                                 <InfoLibro data={libroActual}/>
                                 {libroActual.autores_detalle?.map((autor, index) => (
-                                    <SectionSinGet key={index} titulo={`Otros libros de ${autor.nombre}`} listaLibros={librosPorAutor[autor.id]?.slice(0, 15)} isLoading={librosIsLoading}/>   
+                                    <Section key={index} titulo={`Otros libros de ${autor.nombre}`} listaLibros={librosPorAutor[autor.id]?.slice(0, 15)} isLoading={librosIsLoading}/>   
                                 ))}
                             </>
                 }

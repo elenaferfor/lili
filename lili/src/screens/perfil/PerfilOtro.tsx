@@ -1,5 +1,5 @@
 import {Link, useNavigate, useParams} from "react-router-dom";
-import SectionSinGet from "../../components/section/SectionSinGet.tsx";
+import Section from "../../components/section/Section.tsx";
 import {useUsuarioLibrosOtroUsuario} from "../../hooks/useUsuarioLibro.tsx";
 import "./Perfil.css";
 import {useCategoriasOtroUsuario} from "../../hooks/useCategoria.tsx";
@@ -132,9 +132,9 @@ const PerfilOtro = () => {
                         </div>
                     </div>
                 </section>
-                <SectionSinGet titulo={"Leyendo"} listaLibros={leyendo?.slice(0, 15)} isLoading={librosIsLoading} deOtro={true}/>
-                <SectionSinGet titulo={"Últimos añadidos"} listaLibros={libros?.slice(0, 15)} isLoading={librosIsLoading} deOtro={true}/>
-                <SectionSinGet titulo={"Favoritos"} listaLibros={favoritos?.slice(0, 15)} isLoading={librosIsLoading} deOtro={true}/>
+                <Section titulo={"Leyendo"} listaLibros={leyendo?.slice(0, 15)} isLoading={librosIsLoading} deOtro={true}/>
+                <Section titulo={"Últimos añadidos"} listaLibros={libros?.slice(0, 15)} isLoading={librosIsLoading} deOtro={true}/>
+                <Section titulo={"Favoritos"} listaLibros={favoritos?.slice(0, 15)} isLoading={librosIsLoading} deOtro={true}/>
             </div>
         </div>
     </Layout>
