@@ -52,6 +52,7 @@
     gap: 0 1.5rem;
     align-items: flex-start;
     min-height: 151px;
+    height: fit-content;
     color: var(--dark_blue);
 }
 
@@ -68,7 +69,7 @@
 }
 
 .resultado .detalleLibroInfo .detalleLibroTexto{
-    height: 100%;
+    height: fit-content;
     display: grid;
     grid-template-rows: 1fr 2fr repeat(2, 1fr) 2fr;
     justify-items: start;
