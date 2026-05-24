@@ -52,6 +52,11 @@
     color: var(--white)
 }
 
+.perfilColecciones .bloqueAmistad > button:disabled, .perfilColecciones > button:disabled{
+    background-color: var(--blue_grey_second);
+    color: var(--light_blue_second)
+}
+
 .amistad_solicitada{
     background-color: var(--blue_grey_second);
     color: var(--light_blue_second);

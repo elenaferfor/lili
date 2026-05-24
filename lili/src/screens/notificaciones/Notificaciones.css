@@ -30,19 +30,19 @@
 }
 
 .notificaciones_info .amigoFoto{
+    min-width: 2rem;
+    aspect-ratio: 1 / 1;
     width: 6rem;
-    height: 6rem;
     border-radius: 100%;
     overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .notificaciones_info .libroFoto img{
     width: 100%;
     object-fit: cover;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
 }
 
 .notificaciones_info .amigoFoto img{

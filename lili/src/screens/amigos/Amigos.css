@@ -6,7 +6,7 @@
 
 .amigo_perfil_tags .amigoFoto{
     width: 6rem;
-    height: 6rem;
+    aspect-ratio: 1/1;
     border-radius: 100%;
     overflow: hidden;
 }
