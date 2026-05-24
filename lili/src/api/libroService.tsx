@@ -32,15 +32,14 @@ export type LibroGet = {
 
 // Por isbn
 export const getLibroPorISBN = async (isbn: string): Promise<Libro | undefined> => {
-    console.log("getLibroPorISBN llamado con:", isbn);
     const { data } = await api.get(`/libros/?isbn=${isbn}`);
     return data.results?.[0] ?? null;
 }
 
 // Por ID
 export const getLibroPorID = async (id: number): Promise<LibroGet | undefined> => {
-    const { data } = await api.get(`/libros/`);
-    return data.results.find((result: any) => result.id === id) ?? undefined;
+    const { data } = await api.get(`/libros/${id}/`);
+    return data;
 }
 
 // General

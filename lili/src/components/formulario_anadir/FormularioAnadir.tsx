@@ -21,7 +21,7 @@ const FormularioAnadir = () => {
         portada: '',
         sinopsis: '',
         autores: [],
-        editorial: 0
+        editorial: null
     });
     
     const [autores, setAutores] = useState<string>('');
@@ -81,6 +81,10 @@ const FormularioAnadir = () => {
 
         if(!libro.isbn.trim())
             newErrors.isbn = 'El campo ISBN es obligatorio';
+
+        if (!/^(97[89])?\d{9}[\dX]$/.test(libro.isbn.replace(/-/g, ''))){
+            newErrors.isbn = 'Introduce un ISBN válido';
+        }
         
         if(libroExistente)
             newErrors.isbn = 'El libro con ese ISBN ya está registrado';
@@ -97,15 +101,19 @@ const FormularioAnadir = () => {
     
     const handleSubmit = async (libro: Libro) => {
         try{
-            const editorialId: number = await editorialMutation.mutateAsync(editorial);
-            const autoresIds = await Promise.all(
-                autores.split(",").map(nombre => autorMutation.mutateAsync(nombre.trim()))
-            );
+            const isbn = libro.isbn.replace(/-/g, '');
+            const editorialId: number | undefined = editorial.trim() ?  await editorialMutation.mutateAsync(editorial) : undefined;
+            const autoresIds: number[] = autores.trim() ? await Promise.all(
+                autores.split(",").map(nombre => autorMutation.mutateAsync(nombre.trim()))) : [];
+            
+            const portada: string = libro.portada ? libro.portada : '/covers/book-cover-placeholder.png';
             
             await crearLibroMutation.mutateAsync({
                 ...libro,
+                isbn: isbn,
                 editorial: editorialId,
                 autores: autoresIds,
+                portada: portada,
             });
         }catch (error){
             console.error('Error al guardar el libro: ', error);
@@ -122,15 +130,15 @@ const FormularioAnadir = () => {
         <form id="formularioAnadir" onSubmit={OnSubmit}>
             <div className="grid_formulario">
                 <div className="isbn">
-                    <label htmlFor="f_ISBN">ISBN</label>
-                    <input type="text" name="isbn" id="f_ISBN" required maxLength={13}
+                    <label htmlFor="f_ISBN">ISBN*</label>
+                    <input type="text" name="isbn" id="f_ISBN" required maxLength={17}
                         value={libro.isbn} onChange={OnChange}    
                     />
                     {errors.isbn && <p className="error">{errors.isbn}</p>}
                 </div>
 
                 <div className="titulo">
-                    <label htmlFor="f_titulo">Título</label>
+                    <label htmlFor="f_titulo">Título*</label>
                     <input type="text" name="titulo" id="f_titulo" required
                            value={libro.titulo} onChange={OnChange}
                     />

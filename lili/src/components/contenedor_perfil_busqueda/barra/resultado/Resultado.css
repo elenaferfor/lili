@@ -25,6 +25,10 @@
     gap: 2rem;
 }
 
+.resultado{
+    min-height: fit-content;
+}
+
 /* RESULTADO USUARIO O AUTOR */
 .resultado .detalleUsuarioInfo:hover h1, .resultado .detalleAutorInfo:hover h1{
     color: var(--blue_grey_second);
@@ -47,7 +51,7 @@
     display: flex;
     gap: 0 1.5rem;
     align-items: flex-start;
-    height: 151px;
+    min-height: 151px;
     color: var(--dark_blue);
 }
 

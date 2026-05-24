@@ -117,13 +117,13 @@ export type Libro = {
     id?: number;
     titulo: string;
     isbn: string;
-    formato: string;
-    ano_pub: string;
-    ano_pub_og: string;
-    portada: string;
-    sinopsis: string;
-    autores: number[];
-    editorial: number;
+    formato?: string;
+    ano_pub?: string;
+    ano_pub_og?: string;
+    portada?: string;
+    sinopsis?: string;
+    autores?: number[];
+    editorial?: number | null;
 }
 
 export type Autor = {

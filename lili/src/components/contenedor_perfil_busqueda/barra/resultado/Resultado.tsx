@@ -26,9 +26,9 @@ const Resultado = (props: any) => {
                 </Link>
                 <div className="detalleLibroTexto">
                     <Link to={`/libro/${props.item.id}/`}><h1>{props.item.titulo}</h1></Link>
-                    <p className="autor">{props.item.autores_detalle.map((a: any) => a.nombre).join(", ")}</p>
+                    <p className="autor">{props.item.autores_detalle?.map((a: any) => a.nombre ?? '').join(", ") ?? ''}</p>
                     <p><span>ISBN/UID:</span> {props.item.isbn}</p>
-                    <p><span>Editorial:</span> {props.item.editorial_detalle.nombre}</p>
+                    <p><span>Editorial:</span> {props.item.editorial_detalle?.nombre ?? ''}</p>
                     <div className="detalleLibroEstados">
                         <AnadirBtn clase="estadoAnadir" item={props.item}/>
                         <AnadirBtnRapido item={props.item}/>
