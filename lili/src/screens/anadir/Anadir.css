@@ -229,3 +229,7 @@
     background-color: var(--dark_blue);
     color: var(--white);
 }
+
+#formularioAnadir .error{
+    color: var(--red);
+}

@@ -102,9 +102,14 @@ const FormularioAnadir = () => {
     const handleSubmit = async (libro: Libro) => {
         try{
             const isbn = libro.isbn.replace(/-/g, '');
-            const editorialId: number | undefined = editorial.trim() ?  await editorialMutation.mutateAsync(editorial) : undefined;
-            const autoresIds: number[] = autores.trim() ? await Promise.all(
-                autores.split(",").map(nombre => autorMutation.mutateAsync(nombre.trim()))) : [];
+            let editorialId: number | undefined = undefined;
+            let autoresIds: number[] = [];
+            
+            if(isbn && libro.titulo.trim()){
+                editorialId = editorial.trim() ?  await editorialMutation.mutateAsync(editorial) : undefined;
+                autoresIds = autores.trim() ? await Promise.all(
+                    autores.split(",").map(nombre => autorMutation.mutateAsync(nombre.trim()))) : [];   
+            }
             
             const portada: string = libro.portada ? libro.portada : '/covers/book-cover-placeholder.png';
             
