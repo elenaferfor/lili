@@ -446,7 +446,7 @@ const PanelLibro = ({ libroId, onClose, soloPrestar = false }: PanelLibroProps) 
     return ReactDOM.createPortal(
         <>
             <div className="panelOverlay" onClick={onClose} />
-            <div className="panelAnadir" ref={panelRef}>
+            <div className="panelAnadir" ref={panelRef} data-no-cerrar-busqueda>
                 <div className="closeBtn" onClick={onClose}>
                     <i className="material-symbols-rounded">close</i>
                 </div>
