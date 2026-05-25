@@ -81,6 +81,6 @@ main{
     font-family: "Jost", sans-serif;
 }
 
-.secciones > p{
+.secciones p{
     color: var(--dark_blue);
 }

@@ -41,6 +41,7 @@ const AnadirBtnRapido = (props: any) => {
         onSuccess: ({ resolvedId }) => {
             setLibroId(resolvedId);
             queryClient.invalidateQueries({ queryKey: ["usuarioLibro", resolvedId] });
+            queryClient.invalidateQueries({ queryKey: ['usuarioLibrosLista'] });
             setSync("ok");
             setTimeout(() => setSync("idle"), 1500);
         },

@@ -15,12 +15,15 @@ const Index = () => {
         <div className="contenido">
             <div className="migas">Biblioteca</div>
             <div className="secciones">
-                <Section titulo={"Últimos añadidos"} listaLibros={libros?.slice(0, 15)} isLoading={librosIsLoading} prestamos={prestamos}/>
-                <Section titulo={"Lista de deseos"} listaLibros={deseos?.slice(0, 15)} isLoading={librosIsLoading} prestamos={prestamos}/>
-                {/*
-                Añadir cuando funcione con Open Library
-                <Section titulo={"Recomendados para ti"} filtroBusqueda={""}/>
-                */}
+                { !librosIsLoading && libros!.length <= 0 ?
+                    <section>
+                        <p>¡Bienvenide a Lili! Busca algún libro y añádelo a tu biblioteca para empezar tu colección.</p>
+                    </section> :
+                    <>
+                        <Section titulo={"Últimos añadidos"} listaLibros={libros?.slice(0, 15)} isLoading={librosIsLoading} prestamos={prestamos}/>
+                        <Section titulo={"Lista de deseos"} listaLibros={deseos?.slice(0, 15)} isLoading={librosIsLoading} prestamos={prestamos}/>
+                    </>
+                }
             </div>
         </div>
     </Layout>
