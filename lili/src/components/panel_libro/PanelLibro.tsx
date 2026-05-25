@@ -289,6 +289,8 @@ const PanelLibro = ({ libroId, onClose, soloPrestar = false }: PanelLibroProps) 
         onMutate: () => setSync("enviando"),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ["usuarioLibro", libroId] });
+            queryClient.invalidateQueries({ queryKey: ['usuarioLibrosLista'] });
+            queryClient.invalidateQueries({ queryKey: ['usuarioLibrosListaAbc'] });
             setSync("ok");
             setTimeout(() => setSync("idle"), 1500);
         },
@@ -302,6 +304,8 @@ const PanelLibro = ({ libroId, onClose, soloPrestar = false }: PanelLibroProps) 
         onMutate: () => setSync("enviando"),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ["usuarioLibro", libroId] });
+            queryClient.invalidateQueries({ queryKey: ['usuarioLibrosLista'] });
+            queryClient.invalidateQueries({ queryKey: ['usuarioLibrosListaAbc'] });
             setSync("ok");
             setTimeout(() => setSync("idle"), 1500);
         },
