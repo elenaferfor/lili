@@ -21,11 +21,12 @@
     gap: .5rem;
     position: relative;
     overflow: hidden;
+    width: 230px;
+    height: 348px;
 }
 
 .detalleLibro .detalleLibroInfo .detalleLibroPortada img{
-    width: 230px;
-    height: 347.14px;
+    object-fit: contain;
 }
 
 .detalleLibro .detalleLibroInfo .detalleLibroPortada .fav_publico{
