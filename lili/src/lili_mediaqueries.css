@@ -274,6 +274,11 @@
     }
 
     /* PÁGINA DETALLE */
+    .detalleLibroInfo .detalleLibroTexto{
+        grid-template-rows: auto auto repeat(6, auto) auto;
+        row-gap: 1rem;
+    }
+    
     .detalleLibroEstados{
         gap: 1.5rem 1rem;
     }

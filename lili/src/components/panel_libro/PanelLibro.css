@@ -195,6 +195,8 @@ input[type=number] {
     display: flex;
     gap: 1rem;
     position: relative;
+    flex-wrap: wrap;
+    max-width: 20rem;
 }
 
 .barraPrestar .prestamoOpciones, .serie_titulo .seriesOpciones {
