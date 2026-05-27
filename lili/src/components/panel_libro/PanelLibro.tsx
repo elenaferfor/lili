@@ -317,7 +317,8 @@ const PanelLibro = ({ libroId, onClose, soloPrestar = false }: PanelLibroProps) 
         mutationFn: (usuarioLibroId: number) =>
             api.post(`/libros_usuarios/${usuarioLibroId}/anadir_serie/`, {
                 serie: serieSeleccionada?.id ?? serieTexto,
-                num_en_serie: serieSelecNum
+                num_en_serie: serieSelecNum,
+                volumenes: serieSelecTotal
             }),
         onError: () => setSync("idle"),
     });
