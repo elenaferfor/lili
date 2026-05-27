@@ -255,6 +255,10 @@ button.estadoFavorito{
     background-color: var(--dark_blue);
 }
 
+.detalleLibro .detalleLibroSerie .editandoSerie .serieTitulo{
+    position: relative;
+}
+
 .detalleLibro .detalleLibroSerie .editandoSerie .serieTitulo .seriesOpciones{
     display: flex;
     flex-direction: column;
@@ -270,6 +274,7 @@ button.estadoFavorito{
 .serieTitulo .seriesOpciones button {
     width: 100%;
     border-radius: 0;
+    font-size: .8rem;
 }
 
 

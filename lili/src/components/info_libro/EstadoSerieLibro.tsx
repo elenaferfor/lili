@@ -12,16 +12,19 @@ interface EstadoSerieLibroProps {
 const EstadoSerieLibro = ({ usuarioLibro, libroIdNum }: EstadoSerieLibroProps) => {
     const queryClient = useQueryClient();
     const { data: series } = useSeries();
-
-    const [serieActual, setSerieActual] = useState<Serie | undefined>(undefined);
+    
     const [serieNueva, setSerieNueva] = useState<Serie | undefined>(undefined);
     const [serieTexto, setSerieTexto] = useState<string>("");
     const [numSerieNuevo, setNumSerieNuevo] = useState<number | undefined>(0);
+    const [volsNuevo, setVolsNuevo] = useState<number | undefined>(0);
     const [editandoSerie, setEditandoSerie] = useState<boolean>(false);
     const [syncSerie, setSyncSerie] = useState<SyncEstado>("idle");
 
+    const [verSeriesOpciones, setVerSeriesOpciones] = useState<boolean>(false);
+    
     const btnSerieRef = useRef<HTMLButtonElement>(null);
     const serieRef = useRef<HTMLDivElement>(null);
+    const seriesOpcionesRef = useRef<HTMLDivElement>(null); 
 
     useEffect(() => {
         if (!series) return;
@@ -29,10 +32,10 @@ const EstadoSerieLibro = ({ usuarioLibro, libroIdNum }: EstadoSerieLibroProps) =
         if (!usuarioLibro.serie_detalle) return;
 
         const serie = series.find((s: Serie) => s.id === usuarioLibro.serie_detalle.id);
-        setSerieActual(serie);
         setSerieNueva(serie);
         setSerieTexto(serie?.nombre ?? "");
         setNumSerieNuevo(usuarioLibro.numero_en_serie ?? 0);
+        setVolsNuevo(usuarioLibro.serie_detalle ? (serie?.volumenes ?? 0) : 0);
     }, [series, usuarioLibro]);
 
     useEffect(() => {
@@ -47,11 +50,24 @@ const EstadoSerieLibro = ({ usuarioLibro, libroIdNum }: EstadoSerieLibroProps) =
         return () => document.removeEventListener("mousedown", handler);
     }, [editandoSerie]);
 
+    useEffect(() => {
+        if(!verSeriesOpciones) return;
+        const handleVerSeriesOpciones = (e: MouseEvent) => {
+            if(seriesOpcionesRef.current && !seriesOpcionesRef.current.contains(e.target as Node)
+            && !serieRef.current?.contains(e.target as Node)) {
+                setVerSeriesOpciones(false);
+            }
+        };
+        document.addEventListener("mousedown", handleVerSeriesOpciones);
+        return () => document.removeEventListener("mousedown", handleVerSeriesOpciones);
+    }, [verSeriesOpciones]);
+
     const { mutate: guardarSerie } = useMutation({
         mutationFn: () =>
             api.post(`/libros_usuarios/${usuarioLibro?.id}/anadir_serie/`, {
                 serie: serieNueva?.nombre !== serieTexto ? serieTexto : (serieNueva?.id ?? serieTexto),
                 num_en_serie: numSerieNuevo,
+                volumenes: volsNuevo,
             }),
         onMutate: () => setSyncSerie("enviando"),
         onSuccess: () => {
@@ -70,8 +86,7 @@ const EstadoSerieLibro = ({ usuarioLibro, libroIdNum }: EstadoSerieLibroProps) =
 
     const labelSerie = usuarioLibro?.serie_detalle
         ? `${usuarioLibro.serie_detalle.nombre} ${usuarioLibro.numero_en_serie} de ${
-            (serieActual?.volumenes === undefined || serieActual?.volumenes === 0) ? "??" : serieActual.volumenes
-        }`
+            usuarioLibro.serie_detalle.volumenes || "??"}`
         : "Sin serie";
 
     return (
@@ -81,26 +96,32 @@ const EstadoSerieLibro = ({ usuarioLibro, libroIdNum }: EstadoSerieLibroProps) =
                     <div className="serieTitulo">
                         <input type="text" id="serie_nueva_titulo" placeholder="Título de la serie"
                                value={serieTexto}
-                               onChange={(e) => setSerieTexto(e.target.value)}/>
-                        <div className="seriesOpciones">
-                            {series?.map((serie: Serie, index: number) => (
-                                <button key={index} onClick={() => {
-                                    setSerieNueva(serie);
-                                    setSerieTexto(serie.nombre);
-                                }}>
-                                    {serie.nombre}
-                                </button>
-                            ))}
-                        </div>
+                               onChange={(e) => setSerieTexto(e.target.value)}
+                               onClick={() => setVerSeriesOpciones(o => !o)}
+                        />
+                        {verSeriesOpciones &&
+                            <div className="seriesOpciones" ref={seriesOpcionesRef}>
+                                {series?.map((serie: Serie, index: number) => (
+                                    <button key={index} onClick={() => {
+                                        setSerieNueva(serie);
+                                        setSerieTexto(serie.nombre);
+                                        setVolsNuevo(serie.volumenes ?? 0);
+                                        setVerSeriesOpciones(false);
+                                    }}>
+                                        {serie.nombre}
+                                    </button>
+                                ))}
+                            </div>
+                        }
                     </div>
                     <input type="number" id="serie_nueva_num" placeholder="0"
                            value={numSerieNuevo}
                            onChange={(e) => setNumSerieNuevo(Number(e.target.value))}/>
                     <span>de</span>
                     <input type="number" id="serie_nueva_num_total" placeholder="??"
-                           value={serieNueva?.volumenes}
+                           value={volsNuevo}
                            onChange={(e) =>
-                               setSerieNueva(prev => prev ? {...prev, volumenes: Number(e.target.value)} : undefined)}/>
+                               setVolsNuevo(Number(e.target.value))}/>
                     <button className="editandoSerieBtn" onClick={() => setEditandoSerie(o => !o)}>
                         <i className="material-symbols-rounded">close</i>
                     </button>
