@@ -75,6 +75,7 @@
     grid-template-rows: 1fr 2fr repeat(2, 1fr) 2fr;
     justify-items: start;
     font-size: .8rem;
+    text-align: left;
 }
 
 .detalleLibroTexto a{
