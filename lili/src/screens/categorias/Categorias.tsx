@@ -35,10 +35,10 @@ const Categorias = () => {
             setListaLibros(libros?.filter(l => l.estado === "leyendo"));
             setTituloActual("Leyendo");
         }else if(tag === "Prestados"){
-            setListaLibros(prestamos?.filter(p => p.prestatario_nombre.id !== user.user?.id ));
+            setListaLibros(prestamos?.filter(p => p.prestatario_nombre.id !== user.user?.id && p.estado === "activo"));
             setTituloActual("Prestados");
         }else if(tag === "Préstamos"){
-            setListaLibros(prestamos?.filter(p => p.prestatario_nombre.id === user.user?.id ));
+            setListaLibros(prestamos?.filter(p => p.prestatario_nombre.id === user.user?.id && p.estado === "activo"));
             setTituloActual("Préstamos");
             
             // Si la categoría tiene nombre, se llama a un filtro por nombre de categoría
