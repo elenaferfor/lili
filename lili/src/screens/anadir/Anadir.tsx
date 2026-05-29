@@ -17,24 +17,26 @@ const Anadir = () => {
             <div className="migas">Biblioteca · Añadir</div>
             <button onClick={() => navigate(-1)} className="volver">Volver</button>
             <div className="secciones">
-                <section>
-                    <div className="tituloAnadir">
-                        <h1>Añadir</h1>
-                        <a href="#formulario" onClick={(e) => {
-                            e.preventDefault();
-                            document.getElementById("formulario")?.scrollIntoView({behavior: "smooth"});
-                        }}>Añadir manualmente</a>
-                        { resultados.length === 0 ?
-                            <h2>No hay resultados</h2> :
-                            <h2>Mostrando resultados para <span>{query}...</span></h2>
-                        }
-                    </div>
-                    { resultados.length !== 0 &&
-                        <div className="resultadosBusqueda_anadir">
-                            { resultados.map((r, i) => <ResultadoCompleto item={r} key={i}/>) }
+                {query !== '' &&
+                    <section>
+                        <div className="tituloAnadir">
+                            <h1>Añadir</h1>
+                            <a href="#formulario" onClick={(e) => {
+                                e.preventDefault();
+                                document.getElementById("formulario")?.scrollIntoView({behavior: "smooth"});
+                            }}>Añadir manualmente</a>
+                            { resultados.length === 0 ?
+                                <h2>No hay resultados</h2> :
+                                <h2>Mostrando resultados para <span>{query}...</span></h2>
+                            }
                         </div>
-                    }
-                </section>
+                        { resultados.length !== 0 &&
+                            <div className="resultadosBusqueda_anadir">
+                                { resultados.map((r, i) => <ResultadoCompleto item={r} key={i}/>) }
+                            </div>
+                        }
+                    </section>
+                }
 
                 <FormularioAnadir/>
                 
