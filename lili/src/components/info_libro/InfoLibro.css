@@ -132,6 +132,8 @@ button.estadoFavorito{
     background-color: var(--blue_grey_second);
     overflow: hidden;
     z-index: 1;
+    max-height: 6rem;
+    overflow-y: scroll;
 }
 
 /* OPCIONES DESPLEGABLE CATEGORÍAS */
@@ -270,6 +272,8 @@ button.estadoFavorito{
     overflow: hidden;
     z-index: 1;
     font-size: .8rem;
+    max-height: 6rem;
+    overflow-y: scroll;
 }
 
 .serieTitulo .seriesOpciones button {

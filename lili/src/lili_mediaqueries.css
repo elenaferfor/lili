@@ -6,7 +6,7 @@
 }
 
 
-@media (max-width: 992px){ 
+@media (max-width: 992px){
     /* PÁGINA PERFIL */
     .perfilCabecera{
         flex-direction: column;
@@ -51,10 +51,9 @@
     #formularioAnadir .portada > input::file-selector-button{
         font-size: 1rem;
     }
-
 }
 
-@media (max-width: 768px){ 
+@media (max-width: 768px){
     body{
         font-size: 1.2rem;
     }
@@ -64,7 +63,7 @@
         width: 0;
         pointer-events: none;
     }
-    
+
     header.pantalla_pequena.menu_open{
         z-index: 10;
         width: 100vw;
@@ -74,11 +73,11 @@
         transition: all 200ms ease-in-out;
         pointer-events: initial;
     }
-    
+
     header.pantalla_pequena > * {
         opacity: 0;
     }
-    
+
     header.pantalla_pequena.menu_open > * {
         opacity: 1;
     }
@@ -113,7 +112,7 @@
         opacity: 0;
         width: 0;
     }
-    
+
     header.pantalla_pequena.menu_open nav a{
         font-size: 1rem;
         width: 13rem;
@@ -139,7 +138,7 @@
         justify-content: space-between;
         gap: 1rem;
     }
-    
+
     /* HEADER FOOTER */
     .boton_sesion button{
         padding: .6rem 1.2rem;
@@ -278,7 +277,7 @@
         grid-template-rows: auto auto repeat(6, auto) auto;
         row-gap: 1rem;
     }
-    
+
     .detalleLibroEstados{
         gap: 1.5rem 1rem;
     }
@@ -303,7 +302,7 @@
         width: 100px;
         height: 100px;
     }
-    
+
     /* PANEL LIBRO */
     .panelAnadir{
         left: 50%;
@@ -312,16 +311,16 @@
     .panelAnadirLibro, .panelAnadirPrestamo{
         gap: .3rem;
     }
-    
+
     .panelAnadir h1{
         font-size: 1.3rem;
         margin-bottom: .2rem;
     }
-    
+
     .panelAnadir p{
         font-size: .9rem;
     }
-    
+
     .panelAnadirLibro button, .panelAnadirLibro #estadoLectura button{
         font-size: .8rem;
         padding: .3rem .5rem;
@@ -331,5 +330,9 @@
         font-size: .8rem;
         padding: .4rem .8rem;
     }
-    
+
+    .barraPrestar .amigoOpciones.amigoBtn {
+        right: unset;
+        left: 0;
+    }
 }
