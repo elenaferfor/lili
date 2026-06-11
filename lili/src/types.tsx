@@ -62,7 +62,7 @@ export type EstadoOpcion = {
 export const ESTADOS: EstadoOpcion[] = [
     { valor: "leido", texto: "Leído", clase:"estadoVerde", icono:"check"},
     { valor: "leyendo", texto: "Leyendo", clase:"estadoNaranja", icono:"menu_book"},
-    { valor: "abandonado", texto: "Abandonado", clase:"estadoRojo", icono:"close"},
+    { valor: "ab", texto: "Abandonado", clase:"estadoRojo", icono:"close"},
     { valor: "s_e", texto: "Sin empezar", clase:"", icono:"check_indeterminate_small"}
 ]
 
